@@ -127,9 +127,8 @@ window.GorillaEditor = class
     @file = new GenBank(@initialDocument)
 
   startEditing: () ->
-    $(@editorId).css('width', '100%')
-    $(@editorId).css('word-wrap', 'break-word')
-    $(@editorId).css('font-family', 'monospace')
-
-
-    $(@editorId).html(@file.getAnnotatedSequence())
+    $(@editorId).css('width','100%')
+                .css('word-wrap','break-word')
+                .css('font-family','monospace')
+                .attr('contenteditable','true')
+                .html(@file.getAnnotatedSequence())
