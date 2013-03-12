@@ -192,7 +192,6 @@ window.GorillaEditor = class
     if "acgt".indexOf($(element).text()[caretPosition-1]) == -1
       t = element.textContent
       element.textContent = t[0...caretPosition-1] + t[caretPosition..]
-
       caretPosition -= 1
     else if pe.tagName == "SPAN"
       end = element.splitText(caretPosition)
@@ -210,9 +209,6 @@ window.GorillaEditor = class
       caretPosition = 1
       ins = true
 
-
-
-
     sel.removeAllRanges()
 
     elem = document.getElementById($(pe).attr('id'))
@@ -224,24 +220,3 @@ window.GorillaEditor = class
     l.collapse(true)
 
     sel.addRange l
-
-    return
-
-    position = window.getSelection().getRangeAt(0)
-    caretPosition = position.startOffset
-    console.log caretPosition
-    if caretPosition == 0
-      return
-    element = position.startContainer.parentElement
-    console.log element
-    console.log $(element).text()
-    if $(element) == $(@editorId)
-      console.log "hi"
-    beforeText = $(element).text()[0...caretPosition-1]
-    newChar = $(element).text()[caretPosition-1]
-    afterText = $(element).text()[caretPosition..]
-    console.log "#{beforeText} #{newChar} #{afterText}"
-    $(element).text(beforeText)
-    $(element).after(newChar)
-              .after("<span style='background-color:#{$(element).css('background-color')}' >#{afterText}</span>")
-    #$(element).text($(element).text()[0...-1])
