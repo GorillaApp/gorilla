@@ -5,7 +5,7 @@
 
 #= require logging
 
-logger = new Log(lc.ALL,ll.DEBUG)
+logger = new Log(lc.ALL,ll.LOG)
 
 class GenBank
   constructor: (@text) ->
@@ -34,7 +34,7 @@ class GenBank
     logger.exit()
     logger.exit()
 
-  @annotate: (sequence, start, end, color, name) ->
+  @annotate: (sequence, start, end, color, name, spanId, featureId) ->
     logger.enter()
     logger.d("Adding annotation to sequence: (#{start}..#{end})")
     if typeof(start) != "number"
@@ -61,7 +61,35 @@ class GenBank
     end = sequence[endix+1..]
     mid = sequence[startix..endix]
     logger.exit()
-    beg + "<span id='#{name}' style='background-color:#{color}' >" + mid + "</span>" + end
+    beg + "<span id='#{name}-#{spanId}' class='#{name}-#{featureId}' style='background-color:#{color}' >" + mid + "</span>" + end
+
+  @annotateFeature: (seq, feature, loc = feature.location, color = "") ->
+    color or= feature.parameters["/ApEinfo_fwdcolor"]
+    if loc.isComplement
+      color = feature.parameters["/ApEinfo_revcolor"]
+    name = feature.parameters["/label"]
+    for span in loc.ranges
+      if span.isComplement?
+        feature.uid += 10000
+        seq = GenBank.annotateFeature(seq, feature, span, color)
+      else
+        start = span[0]
+        end = span[1]
+        seq = GenBank.annotate(seq, start, end, color, name, feature.uid, feature.id)
+    seq
+
+  @findRangeById: (ranges, spanId) ->
+    if ranges.uid == spanId
+      return ranges
+    for range in ranges
+      r = GenBank.findRangeById(range, spanId)
+      return r if !!r
+    return null
+    
+  updateFeatureLength: (featId, spanId, newLength) ->
+    f = @getFeatures()[featId]
+    logger.d GenBank.findRangeById(f.location, spanId)
+
 
   getAnnotatedSequence: () ->
     logger.enter()
@@ -71,38 +99,10 @@ class GenBank
     logger.d("Looking through the features")
     logger.enter()
     for feature in features
-      color = feature.parameters["/ApEinfo_fwdcolor"]
-      name = feature.parameters["/label"]
-      logger.d("Feature: '#{name}' has been found")
-      l = feature.location
-      isComplement = l.match(/complement\((.*)\)/)
-      if isComplement
-        logger.d("This refers to the complement strand")
-        l = isComplement[1]
-        color = feature.parameters['/ApEinfo_revcolor']
-      isComplement = !!isComplement
-
-      isJoin = l.match(/join\((.*)\)/)
-      if isJoin
-        logger.d("This is a joint of multiple sequences")
-        l = isJoin[1]
-      isJoin = !!isJoin
-      if isJoin
-        for group in l.split(",")
-          m = group.match(/([0-9]+)\.\.([0-9]+)/)
-          if m
-            start = m[1]
-            end = m[2]
-            seq = GenBank.annotate(seq, start, end, color, name)
-      else
-        matches = l.match(/([0-9]+)\.\.([0-9]+)/)
-        if matches
-          start = matches[1]
-          end = matches[2]
-          seq = GenBank.annotate(seq, start, end, color, name)
-     logger.exit()
-     logger.exit()
-     seq
+      logger.l feature
+      seq = GenBank.annotateFeature(seq, feature)
+    logger.exit()
+    seq
 
   getGeneSequence: () ->
     logger.enter()
@@ -118,6 +118,27 @@ class GenBank
     logger.exit()
     @data.raw_genes = retval
 
+  @parseLocationData: (data) ->
+    logger.enter()
+    logger.d("Parsing Location Data")
+    isComplement = data.match(/^complement\((.*)\)$/)
+    comp = false
+    ranges = []
+    if !!isComplement
+      comp = true
+      data = isComplement[1]
+    isJoin = data.match(/^join\((.*)\)$/)
+    if !!isJoin
+      for r in isJoin[1].split(',')
+        ranges.push(GenBank.parseLocationData(r))
+    else
+      ranges.push((parseInt(a) - 1) for a in data.split('..'))
+    logger.exit()
+
+    retval =
+      isComplement: comp
+      ranges: ranges
+
   getFeatures: () ->
     logger.enter()
     logger.d("Getting features")
@@ -129,6 +150,9 @@ class GenBank
     currentFeature = ""
     components = ""
     parts = {}
+
+    id = 0
+
     logger.d("Looking at each feature")
     logger.enter()
     for line in @data.FEATURES.split("\n")[1..]
@@ -140,11 +164,15 @@ class GenBank
             currentFeature: currentFeature
             location: components
             parameters: parts
+            id: id
+            uid: id
+          id += 1
           retval.push(data)
           parts = {}
         p = line.trim().split(/[ ]+/)
         currentFeature = p[0]
         components = p[1..].join(" ")
+        components = GenBank.parseLocationData(components)
       else
         logger.d("Adding new component to the feature")
         s = line.trim().split("=")
@@ -155,11 +183,13 @@ class GenBank
         currentFeature: currentFeature
         location: components
         parameters: parts
+        id: id
+        uid: id
     logger.d("Here's your features sir!")
     logger.exit()
     @data.features = retval
 
-window.GorillaEditor = class
+class window.GorillaEditor
   constructor: (@editorId, @initialDocument) ->
     logger.d("Initializing GorillaEditor...")
     @file = new GenBank(@initialDocument)
@@ -194,9 +224,12 @@ window.GorillaEditor = class
       element.textContent = t[0...caretPosition-1] + t[caretPosition..]
       caretPosition -= 1
     else if pe.tagName == "SPAN"
+      featureId = parseInt(pe.className.split('-')[1])
+      spanId = parseInt(pe.id.split('-')[1])
       end = element.splitText(caretPosition)
       char = element.splitText(caretPosition-1)
       start = element
+      me.file.updateFeatureLength featureId, caretPosition
       pe.removeChild(char)
       pe.removeChild(end)
       pe.parentNode.insertBefore(char, pe.nextSibling)
