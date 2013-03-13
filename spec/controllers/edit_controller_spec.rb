@@ -116,7 +116,7 @@ ORIGIN
 
   describe "POST 'load' with file" do
     it "returns the javascript with doc set to file" do
-      post :load, format: :json, params: { :file => file_contents}
+      post :load, :file => file_contents, :format => :json
       response.should contain(file_contents)
     end
   end

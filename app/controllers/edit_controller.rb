@@ -2,32 +2,8 @@ require 'bio'
 require 'open-uri'
 
 class EditController < ApplicationController
-  def load
-      file = ""
-      if params[:file]
-        file = params[:file]
-      elsif params[:url]
-        open(params[:url],'r') do |file|
-          file << open(params[:url]).read
-        end
-      end
 
-      @file_contents = file
-      @isRestore = false
-      firstLine = file.readline()
-      @file_restore_contents = autosave[firstLine]
-      if @file_restore_contents != ""
-        @isRestore = true
-      end
-  end
-
-  def autosave
-  end
-end
-
-
-autosave = { "LOCUS       pGG001                  2559 bp ds-DNA   circular    UNK 01-JAN-1980" => file_contents }
-file_contents = <<-EOF
+  file_contents = <<-EOF
 LOCUS       pGG001                  2559 bp ds-DNA   circular    UNK 01-JAN-1980
 DEFINITION  .
 ACCESSION   <unknown id>
@@ -135,5 +111,35 @@ ORIGIN
      2401 cgtcactcca ccggtgctta ataaggatct ccaggcatca aataaaacga aaggctcagt
      2461 cgaaagactg ggcctttcgt tttatctgtt gtttgtcggt gaacgctctc tactagagtc
      2521 acactggctc accttcgggt gggcctttct gcgtttata
-//  
-EOF
+//
+  EOF
+
+  @@saved = { "LOCUS       pGG001                  2559 bp ds-DNA   circular    UNK 01-JAN-1980" => file_contents }
+
+  def load
+      file = ""
+      if params[:file]
+        file = params[:file]
+      elsif params[:url]
+        open(params[:url],'r') do |file|
+          file << open(params[:url]).read
+        end
+      end
+
+      @file_contents = file
+      @isRestore = false
+      firstLine = file.split("\n").first
+      @file_restore_contents = @@saved[firstLine]
+      if @file_restore_contents != ""
+        @isRestore = true
+      end
+  end
+
+  def autosave
+  end
+end
+
+
+
+
+
