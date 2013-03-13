@@ -1,0 +1,22 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Add better logging for inserting/deleting (and updating features)
+desc: This seems to be working only some of the time. More logging would help us get the editor working better
+type: :task
+component: gorilla
+release: Iteration 1
+reporter: Zachary Michael Bush <zach@zmbush.com>
+status: :unstarted
+disposition: 
+creation_time: 2013-03-13 08:52:17.324487 Z
+references: []
+
+id: 059910167afef95a0953af07f5f00578b646b4a6
+log_events: 
+- - 2013-03-13 08:52:21.594134 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - created
+  - ""
+- - 2013-03-13 08:54:14.608275 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - assigned to release Iteration 1 from unassigned
+  - ""
