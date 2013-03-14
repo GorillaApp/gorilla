@@ -116,7 +116,15 @@ ORIGIN
 
   describe "POST 'load' with file" do
     it "returns the javascript with doc set to file" do
-      post :load, :file => file_contents, :format => :json
+      get :load, :file => file_contents, :format => :json
+      response.should contain(file_contents)
+    end
+  end
+
+  describe "POST 'load' with file" do
+    it "returns the javascript with doc set to file" do
+      #"http://localhost:3000/test1.ape"
+      get :load, :url => "public/test1.ape", :format => :json
       response.should contain(file_contents)
     end
   end

@@ -117,23 +117,23 @@ ORIGIN
   @@saved = { "LOCUS       pGG001                  2559 bp ds-DNA   circular    UNK 01-JAN-1980" => file_contents }
 
   def load
-      file = ""
-      @Surl = request.env["SERVER_ADDR"]
-      if params[:file]
-        file = params[:file]
-      elsif params[:url]
-        open(params[:url],'r') do |file|
-          file << open(params[:url]).read
-        end
+    file = ""
+    @Surl = request.env["SERVER_ADDR"]
+    if params[:file]
+      file = params[:file]
+    elsif params[:url]
+      open(params[:url],'r') do |file|
+        file = open(params[:url]).read
       end
+    end
 
-      @file_contents = file
-      @isRestore = false
-      firstLine = file.split("\n").first
-      @file_restore_contents = @@saved[firstLine]
-      if @file_restore_contents != ""
-        @isRestore = true
-      end
+    @file_contents = file
+    @isRestore = false
+    firstLine = file.split("\n").first
+    @file_restore_contents = @@saved[firstLine]
+    if @file_restore_contents != ""
+      @isRestore = true
+    end
   end
 
 
