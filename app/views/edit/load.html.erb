@@ -2,6 +2,8 @@
 </div>
 <script type="text/javascript">
 doc = <%= @file_contents.to_json.html_safe %>;
+doc_restored = <%= @autosaved_file_contents %>; //Added doc_restored var
+//Does this file contain the logic for letting user know the autosaved file exists?
 editor = new GorillaEditor("#ed", doc);
 editor.startEditing();
 </script>

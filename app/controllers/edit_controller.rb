@@ -112,9 +112,14 @@ ORIGIN
      2521 acactggctc accttcgggt gggcctttct gcgtttata
 //  
 EOF
-# Need to check if this file is already in autosave model, grab first line as file signature
-@firstLine = @file_contents.split(/\r?\n/)[0] # Grabs first line
-@autosavedFile = Autosave.find_by_name(@firstLine) # Checks for existence in model
+  # Current implementation does not deal with user profiles
+  @first_line = @file_contents.split(/\r?\n/)[0] # Grabs first line
+  @autosaved_file = Autosave.find_by_name(@first_line) # Checks for existence in model
+  @autosaved_file_contents = nil
+  if !@file_contents_restored.nil?
+    @autosaved_file_contents = @autosaved_file.contents # Saving the file contents
+  end
+  
   end
 
   def autosave
