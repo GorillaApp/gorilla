@@ -113,13 +113,12 @@ ORIGIN
 //  
 EOF
   # Current implementation does not deal with user profiles
-  @first_line = @file_contents.split(/\r?\n/)[0] # Grabs first line
-  @autosaved_file = Autosave.find_by_name(@first_line) # Checks for existence in model
-  @autosaved_file_contents = nil
-  if !@file_contents_restored.nil?
-    @autosaved_file_contents = @autosaved_file.contents # Saving the file contents
-  end
-  
+  #@first_line = @file_contents.split(/\r?\n/)[0] # Grabs first line
+  #@autosaved_file = Autosave.find_by_name(@first_line) # Checks for existence in model
+  # @autosaved_file_contents = nil
+  # if !@file_contents_restored.nil?
+  #   @autosaved_file_contents = @autosaved_file.contents # Saving the file contents
+  # end
   end
 
   def autosave
