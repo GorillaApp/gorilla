@@ -118,6 +118,7 @@ ORIGIN
 
   def load
       file = ""
+      @Surl = request.env["SERVER_ADDR"]
       if params[:file]
         file = params[:file]
       elsif params[:url]
@@ -134,6 +135,8 @@ ORIGIN
         @isRestore = true
       end
   end
+
+
 
   def autosave
   end
