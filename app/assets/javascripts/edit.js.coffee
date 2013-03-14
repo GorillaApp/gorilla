@@ -127,6 +127,29 @@ class GenBank
     logger.exit()
     @data.raw_genes = retval
 
+  serializeGenes: () ->
+    count = 0
+    increment = 60
+    group_size = 10
+    offset = 9
+    serialized = ""
+    genes = @getGeneSequence()
+    num_iter = Math.ceil(genes.length / (count+increment))
+    for i in [0...num_iter] by 1
+        leading_num = i*increment + 1
+        num_digits = Math.floor(Math.log(leading_num) / Math.LN10) + 1
+        for spaces in [0...offset - num_digits] by 1
+            serialized += " "
+        serialized += leading_num.toString()
+        serialized += " "
+
+        for j in [0...increment/group_size] by 1
+            serialized += genes.substring(count, count + 10)
+            serialized += " "
+            count += 10
+        serialized += "\n"
+    return serialized
+
   @parseLocationData: (data) ->
     id = 0
     logger.enter()
