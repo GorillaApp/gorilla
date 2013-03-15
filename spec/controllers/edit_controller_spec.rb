@@ -9,9 +9,9 @@ describe EditController do
     end
   end
 
-  describe "GET 'autosave'" do
+  describe "POST 'autosave'" do
     it "returns http success" do
-      get 'autosave'
+      post 'autosave'
       response.should be_success
     end
   end
