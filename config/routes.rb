@@ -5,7 +5,7 @@ Gorilla::Application.routes.draw do
 
   get "edit/autosave"
 
-  root :to => "main#index"
+  root :to => "edit#load"
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
