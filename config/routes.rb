@@ -1,14 +1,14 @@
 Gorilla::Application.routes.draw do
 
- # match "edit/load" => 'edit#load', :via => :post
-
   get "testclient/client"
 
   get "main/index"
 
-  get "edit/load"
+  match "edit/load"
 
-  get "edit/autosave"
+  match "edit/autosave"
+
+  match "edit/delete"
 
   root :to => "main#index"
 
