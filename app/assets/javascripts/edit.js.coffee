@@ -21,16 +21,21 @@ String.prototype.padBy = (length) ->
 
 logger = new Log(lc.ALL,ll.DEBUG)
 
-class GenBank
+class window.GenBank
   constructor: (@text) ->
     logger.enter()
-    @textLines = @text.split("\n")
+    @newline = "\n"
+    if @text.indexOf("\r\n") != -1
+      @newline = "\r\n"
+    else if @text.indexOf("\r") != -1
+      @newline = "\r"
+    @textLines = @text.split(@newline)
     @data = {}
     sectionName = ""
     contents = ""
     logger.d("Looking at the lines")
-    logger.enter()
     for line in @textLines
+      logger.enter()
       if line[0] != " "
         if sectionName != ""
           logger.d("Found section #{sectionName}")
@@ -39,13 +44,23 @@ class GenBank
         lineParts = line.split(/[ ]+/)
         sectionName = lineParts[0]
         if lineParts.length > 1
-          contents = lineParts[1..].join(" ")
+          if sectionName != "LOCUS"
+            contents = lineParts[1..].join(" ")
+          else
+            contents =
+              name: lineParts[1]
+              length: lineParts[2] + " " + lineParts[3]
+              type: lineParts[4..5].join(" ")
+              division: lineParts[6]
+              date: lineParts[7]
+
+
       else if sectionName != ""
         if contents == ""
           contents = line
         else
-          contents += "\n" + line
-    logger.exit()
+          contents += @newline + line
+      logger.exit()
     logger.exit()
 
   @annotate: (sequence, start, end, color, name, spanId, featureId) ->
@@ -135,17 +150,20 @@ class GenBank
       logger.exit()
       return @data.raw_genes
     retval = ""
-    for line in @data.ORIGIN.split('\n')
+    for line in @data.ORIGIN.split(@newline)
       retval += line.split(/[ ]*[0-9]* /)[1..].join("")
     logger.d("Gene sequence found!")
     logger.exit()
     @data.raw_genes = retval
 
+  updateSequence: (seq) ->
+    @data.raw_genes = seq
+
   @serializeLocation: (loc) ->
     retval = ""
     for range in loc.ranges
       retval += "," if retval != ""
-      retval += "#{range.start}..#{range.end}"
+      retval += "#{range.start+1}..#{range.end+1}"
     if loc.ranges.length > 1
       retval = "join(#{retval})"
     if loc.strand == 1
@@ -153,19 +171,20 @@ class GenBank
     retval
 
   serialize: () ->
-    file = "LOCUS".padBy(12) + @data.LOCUS + "\n"
+    file = "LOCUS".padBy(12) + @data.LOCUS.name.padBy(13) + @data.LOCUS.length.padBy(11) + @data.LOCUS.type.padBy(16) + @data.LOCUS.division + " " + @data.LOCUS.date + @newline
+    # file = "LOCUS".padBy(12) + @data.LOCUS + @newline
     for own section,contents of @data
       if ["LOCUS", "FEATURES", "ORIGIN", "//", "raw_genes", "features"].indexOf(section) == -1
-        file += section.padBy(12) + contents + "\n"
+        file += section.padBy(12) + contents + @newline
     file += @serializeFeatures()
     file += @serializeGenes()
 
   serializeFeatures: () ->
-    features = "FEATURES             Location/Qualifiers\n"
+    features = "FEATURES             Location/Qualifiers" + @newline
     for feat in @getFeatures()
-      features += "     " + feat.currentFeature.padBy(16) + GenBank.serializeLocation(feat.location) + "\n"
+      features += "     " + feat.currentFeature.padBy(16) + GenBank.serializeLocation(feat.location) + @newline
       for own key, value of feat.parameters
-        features += "                     " + "#{key}=\"#{value}\" \n"
+        features += "                     " + "#{key}=\"#{value}\" " + @newline
     features
 
   serializeGenes: () ->
@@ -173,7 +192,7 @@ class GenBank
     increment = 60
     group_size = 10
     offset = 9
-    serialized = "ORIGIN\n"
+    serialized = "ORIGIN" + @newline
     genes = @getGeneSequence()
     num_iter = Math.ceil(genes.length / (count+increment))
     for i in [0...num_iter] by 1
@@ -188,8 +207,8 @@ class GenBank
             serialized += genes.substring(count, count + 10)
             serialized += " "
             count += 10
-        serialized += "\n"
-    return serialized + "// \n"
+        serialized += @newline
+    return serialized + "// " + @newline
 
   @parseLocationData: (data) ->
     id = 0
@@ -239,7 +258,7 @@ class GenBank
 
     logger.d("Looking at each feature")
     logger.enter()
-    for line in @data.FEATURES.split("\n")[1..]
+    for line in @data.FEATURES.split(@newline)[1..]
       if line.trim()[0] != "/"
         logger.d("This is the start of a new feature")
         if currentFeature != ""
@@ -367,3 +386,6 @@ class window.GorillaEditor
       l.collapse(true)
 
       sel.addRange l
+
+      @file.updateSequence($(me.editorId).text())
+      $('#gb').text(@file.serialize())
