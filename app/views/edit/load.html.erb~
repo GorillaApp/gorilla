@@ -1,0 +1,75 @@
+<%= stylesheet_link_tag "edit.css" %>
+
+
+<div id="ed">
+</div>
+
+<div id="ed2">
+</div>
+
+<button
+  type = "button"
+  id = "save"
+  value = "Save"
+  >
+</button>
+
+<div id="buttons">
+    <p>Buttons for debugging purposes</p>
+    <button type="button" id="autosave"> AUTOSAVE </button>
+    <button type="button" id="delete"> DELETE AUTOSAVE </button>
+</div>
+
+
+<script type="text/javascript">
+
+doc = <%= @file_contents.to_json.html_safe %>;
+doc_restored = <%= @file_restore_contents.to_json.html_safe %>;
+first_line = <%= @first_line.to_json.html_safe %>
+isRestore = <%= @isRestore.to_json %>;
+saveURL = <%= @saveURL.to_json.html_safe %>;
+
+editor = new GorillaEditor("#ed", doc);
+editor.startEditing();
+
+$('#save').click(function() {
+    json_request(saveURL, { file: doc }, function(data) { return save_successful(data); }, function(err) { alert('error occurred on request'); });
+    return false;
+});
+
+function json_request(page, dict, success, failure) {
+    $.ajax({
+        type: 'POST',
+        url: page,
+        data: JSON.stringify(dict),
+        contentType: "application/json",
+        dataType: "json",
+        success: success,
+        error: failure
+    });
+}
+
+function save_successful(data) {
+    json_request(localhost:3000/edit/delete, { file: first_line }, function(data) { return false; }, function(err) { alert('error occurred on request'); });
+
+}
+
+$("#buttons").hide();
+display_autosave(doc_restored);
+
+
+var file, time, user;
+
+file = editor.file.serialize();
+time = Date();
+user = 1;
+params = { genbank_file: file, current_time: time, id: first_line, user: user };
+TIMER = 10000;
+
+$(document).ready(function () {
+        // Configure to save every 5 seconds
+        window.setInterval(function() { json_request(params, function() {console.log("autosaved");}, function(err, err1, err2) { console.log(err2); } ); } , 5000);
+ });
+
+
+</script>
