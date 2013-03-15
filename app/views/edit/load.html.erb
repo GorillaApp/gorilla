@@ -19,7 +19,7 @@ editor = new GorillaEditor("#ed", doc);
 editor.startEditing();
 
 $('#save').click(function() {
-    json_request(saveURL, { file: doc }, function(data) { return handle_response(data); }, function(err) { alert('error occurred on request'); });
+    json_request(saveURL, { file: doc }, function(data) { return save_successful(data); }, function(err) { alert('error occurred on request'); });
     return false;
 });
 
@@ -33,6 +33,11 @@ function json_request(page, dict, success, failure) {
         success: success,
         error: failure
     });
+}
+
+function save_successful(data) {
+    json_request(localhost:3000/edit/delete, { file: first_line }, function(data) { return false; }, function(err) { alert('error occurred on request'); });
+
 }
 
 

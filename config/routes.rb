@@ -2,6 +2,8 @@ Gorilla::Application.routes.draw do
 
  # match "edit/load" => 'edit#load', :via => :post
 
+  get "testclient/client"
+
   get "main/index"
 
   get "edit/load"
