@@ -2,9 +2,11 @@
 </div>
 <script type="text/javascript">
 doc = <%= @file_contents.to_json.html_safe %>;
+<!--
 doc_restored = <%= @file_restore_contents.to_json.html_safe %>;
-isRestore = <%= @isRestore %>;
-saveURL = <%= @Surl.to_json.html_safe %>;
+isRestore = <%= @isRestore.to_json %>;
+saveURL = <%= @saveURL.to_json.html_safe %>;
+-->
 editor = new GorillaEditor("#ed", doc);
 editor.startEditing();
 </script>

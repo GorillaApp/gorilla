@@ -3,7 +3,29 @@ require 'open-uri'
 
 class EditController < ApplicationController
 
-  file_contents = <<-EOF
+  def load
+
+=begin
+    file = ""
+    @Surl = request.env["SERVER_ADDR"]
+    if params[:file]
+      file = params[:file]
+    elsif params[:url]
+      open(params[:url],'r') do |file|
+        file = open(params[:url]).read
+      end
+    end
+
+    @file_contents = file
+    @isRestore = false
+    firstLine = file.split("\n").first
+    @file_restore_contents = @@saved[firstLine]
+    if @file_restore_contents != ""
+      @isRestore = true
+    end
+=end
+
+  @file_contents = <<-EOF
 LOCUS       pGG001                  2559 bp ds-DNA   circular    UNK 01-JAN-1980
 DEFINITION  .
 ACCESSION   <unknown id>
@@ -112,28 +134,11 @@ ORIGIN
      2461 cgaaagactg ggcctttcgt tttatctgtt gtttgtcggt gaacgctctc tactagagtc
      2521 acactggctc accttcgggt gggcctttct gcgtttata
 //
-  EOF
+    EOF
+  #@file_restore_contents = ''
+  #@isRestore = false
+  #@saveURL = ''
 
-  @@saved = { "LOCUS       pGG001                  2559 bp ds-DNA   circular    UNK 01-JAN-1980" => file_contents }
-
-  def load
-    file = ""
-    @Surl = request.env["SERVER_ADDR"]
-    if params[:file]
-      file = params[:file]
-    elsif params[:url]
-      open(params[:url],'r') do |file|
-        file = open(params[:url]).read
-      end
-    end
-
-    @file_contents = file
-    @isRestore = false
-    firstLine = file.split("\n").first
-    @file_restore_contents = @@saved[firstLine]
-    if @file_restore_contents != ""
-      @isRestore = true
-    end
   end
 
 

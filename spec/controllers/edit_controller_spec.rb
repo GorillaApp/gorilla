@@ -114,18 +114,20 @@ ORIGIN
 //
   EOF
 
-  describe "POST 'load' with file" do
+  describe "GET 'load' with file" do
     it "returns the javascript with doc set to file" do
-      get :load, :file => file_contents, :format => :json
-      response.should contain(file_contents)
+      get :load, :file => file_contents
+      puts response.body
+      assert response.body.include? file_contents
     end
   end
 
-  describe "POST 'load' with file" do
+  describe "GET 'load' with file" do
     it "returns the javascript with doc set to file" do
       #"http://localhost:3000/test1.ape"
-      get :load, :url => "public/test1.ape", :format => :json
-      response.should contain(file_contents)
+      get :load, :url => "public/test1.ape"
+      puts response.body
+      assert response.body.include? file_contents
     end
   end
 

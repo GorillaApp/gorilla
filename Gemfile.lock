@@ -139,6 +139,7 @@ DEPENDENCIES
   rspec-rails
   sass-rails (~> 3.2.3)
   spork (~> 0.9.0.rc)
+  therubyracer
   thin
   uglifier (>= 1.0.3)
   watchr
