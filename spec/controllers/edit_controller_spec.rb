@@ -125,7 +125,7 @@ ORIGIN
   describe "GET 'load' with file" do
     it "returns the javascript with doc set to file" do
       #"http://localhost:3000/test1.ape"
-      get :load, :url => "public/test1.ape"
+      get 'load'#, :url => "public/test1.ape"
       puts response.body
       assert response.body.include? file_contents
     end

@@ -1,12 +1,39 @@
 <div id="ed">
 </div>
+<button
+  type = "button"
+  id = "save"
+  value = "Save"
+  >
+</button>
+
 <script type="text/javascript">
 doc = <%= @file_contents.to_json.html_safe %>;
-<!--
+
 doc_restored = <%= @file_restore_contents.to_json.html_safe %>;
+
 isRestore = <%= @isRestore.to_json %>;
 saveURL = <%= @saveURL.to_json.html_safe %>;
--->
+
 editor = new GorillaEditor("#ed", doc);
 editor.startEditing();
+
+$('#save').click(function() {
+    json_request(saveURL, { file: doc }, function(data) { return handle_response(data); }, function(err) { alert('error occurred on request'); });
+    return false;
+});
+
+function json_request(page, dict, success, failure) {
+    $.ajax({
+        type: 'POST',
+        url: page,
+        data: JSON.stringify(dict),
+        contentType: "application/json",
+        dataType: "json",
+        success: success,
+        error: failure
+    });
+}
+
+
 </script>
