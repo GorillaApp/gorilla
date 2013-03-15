@@ -1,7 +1,7 @@
 
-# contents -> genbank as a text file 
+# contents -> genbank as a text file
 # name -> key (ID)
-# save_date -> current time stamp 
+# save_date -> current time stamp
 # user -> none for now (iteration 1)
 
 class Autosave < ActiveRecord::Base
@@ -14,7 +14,7 @@ class Autosave < ActiveRecord::Base
   def self.find_autosaved_file(name)
   	autosaved_file_contents = nil
   	autosaved_file = Autosave.find_by_name(name)
-  	if !autosaved_file.nil?
+  	if ! autosaved_file.nil?
   		autosaved_file_contents = autosaved_file.contents
   	end
   	return autosaved_file_contents

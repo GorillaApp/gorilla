@@ -180,7 +180,7 @@ window.GorillaEditor = class
                 .html(@file.getAnnotatedSequence())
                 .bind('input', (target) -> me.textChanged(me, target))
     logger.d("Editor ready!")
-  
+
   textChanged: (me, target) ->
     sel = window.getSelection()
 

@@ -110,7 +110,7 @@ ORIGIN
      2401 cgtcactcca ccggtgctta ataaggatct ccaggcatca aataaaacga aaggctcagt
      2461 cgaaagactg ggcctttcgt tttatctgtt gtttgtcggt gaacgctctc tactagagtc
      2521 acactggctc accttcgggt gggcctttct gcgtttata
-//  
+//
 EOF
   # The view for load grabs the values of file_contents, first_line, and autosaved_file
   @first_line = @file_contents.split(/\r?\n/)[0]
@@ -124,9 +124,10 @@ EOF
     time = params[:current_time]
     user = params[:user] #  Current implementation does not include user profiles, all users have id 1
 
+
+    # save the file in the Autosave database
     Autosave.save_file(file, id, time, user)
 
-    #render :json => {:success => 1}
     render json: {success: 1}
   end
 
