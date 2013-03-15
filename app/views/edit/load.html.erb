@@ -1,39 +1,70 @@
+<%= stylesheet_link_tag "edit.css" %>
+
 <div id="ed">
-</div> 
+</div>
+<div id="ed2">
+</div>
 
 <button type="button" id="autosave"> AUTOSAVE </button>
+<button type="button" id="delete"> DELETE AUTOSAVE </button>
 
 <script type="text/javascript">
 doc = <%= @file_contents.to_json.html_safe %>;
-editor = new GorillaEditor("#ed", doc);
-editor.startEditing();
+first_line = <%= @first_line.to_json.html_safe %>
+doc_restored = <%= @autosaved_file_contents.to_json.html_safe %>
+display_autosave(doc_restored);
 
-
-function json_request(page, dict, success, failure) {
-
-	$.ajax({
-		type: "POST", 
-		url: page, 
-		data: JSON.stringify(dict),
-		dataType: "json",
-		success: success, 
-		error: failure
-
-	});
-}
-
-var file; 
+var file, time, user;
 
 file = editor.file.serialize();
-
-var time; 
-
 time = Date();
+user = 1
+params = { genbank_file: file, current_time: time, id: first_line, user: user };
+TIMER = 10000
 
-params = {genbank_file: file, current_time: time};
+//BUG HERE: I want this to repeatedly call json_request every 10 seconds however it only calls it once and freezes.
+//If you can get it working with setTimeout that's cool, I tried it but it went into a big recursive endless loop.
+setInterval(json_request("autosave", params, function(data) { alert("Autosave"); }, function(err) { alert("not working"); }), TIMER);
 
-$("#autosave").click(function() {
-	json_request("autosave", params, function(data) { alert("AUTOSAVE SUCCESSFUL"); }, function(data) { alert("ERROR"); });
+// Provides user with the option to see their autosaved file, if one exists
+//BUG HERE: Displays the files below one another. I tried making edits to edit.css to make the divs side-by-side.
+function display_autosave(autosave) {
+	if (autosave != null) {
+		var conf = confirm("An autosaved version of this file exists, would you like to see it?");
+		if (conf) {
+			editor = new GorillaEditor("#ed", doc);
+			editor.startEditing();
+			editor2 = new GorillaEditor("#ed2", doc_restored);
+			editor2.startEditing();
+		} else {
+			editor = new GorillaEditor("#ed", doc);
+			editor.startEditing();
+		}
+	} else {
+		editor = new GorillaEditor("#ed", doc);
+		editor.startEditing();
+	}
+}
+
+function json_request(page, dict, success, failure) {
+    $.ajax({
+        type: 'POST',
+        url: page,
+        data: JSON.stringify(dict),
+        contentType: "application/json",
+        dataType: "json",
+        success: success,
+        failure: failure
+    });
+}
+
+$('#autosave').click(function() {
+	json_request("autosave", params, function(data) { alert("AUTOSAVE SUCCESSFUL"); }, function(err) { alert("not working"); });
+});
+
+//For debugging purposes. Deletes the autosaved file from the model.
+$('#delete').click(function() {
+	json_request("delete", params, function(data) { alert("DELETE SUCCESSFUL"); }, function(err) { alert("not working"); });
 });
 
 </script>

@@ -2,12 +2,8 @@ require 'bio'
 
 class EditController < ApplicationController
   def load
-
-
-    print "TESTINGGGGGGG"
-
     @file_contents = <<-EOF
-LOCUS       pGG001                  2559 bp ds-DNA   circular    UNK 01-JAN-1980
+LOCUS       pGG002                  2559 bp ds-DNA   circular    UNK 01-JAN-1980
 DEFINITION  .
 ACCESSION   <unknown id>
 VERSION     <unknown id>
@@ -116,25 +112,29 @@ ORIGIN
      2521 acactggctc accttcgggt gggcctttct gcgtttata
 //  
 EOF
-  # Current implementation does not deal with user profiles
-  #@first_line = @file_contents.split(/\r?\n/)[0] # Grabs first line
-  #@autosaved_file = Autosave.find_by_name(@first_line) # Checks for existence in model
-  # @autosaved_file_contents = nil
-  # if !@file_contents_restored.nil?
-  #   @autosaved_file_contents = @autosaved_file.contents # Saving the file contents
-  # end
+  # The view for load grabs the values of file_contents, first_line, and autosaved_file
+  @first_line = @file_contents.split(/\r?\n/)[0]
+  @autosaved_file_contents = Autosave.find_autosaved_file(@first_line) # Will either be nil or the actual object
+
   end
 
   def autosave
-    
-    print "AUTOSAVE \n"
-    if params[:current_time] != nil
-      print "params"
-      print params[:current_time]
-    else
-      print "nil"
-    end
+    file = params[:genbank_file]
+    id = params[:id]
+    time = params[:current_time]
+    user = params[:user] #  Current implementation does not include user profiles, all users have id 1
 
+    Autosave.save_file(file, id, time, user)
+
+    #render :json => {:success => 1}
+    render json: {success: 1}
+  end
+
+  def delete
+    id = params[:id]
+    Autosave.delete_save(id)
+
+    render json: {success: 1}
   end
 
 end
