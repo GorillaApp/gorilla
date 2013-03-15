@@ -5,6 +5,20 @@
 
 #= require logging
 
+if !String.prototype.format
+  String.prototype.format = () ->
+    args = arguments
+    return this.replace /{(\d+)}/g, (match, number) ->
+        return if (typeof args[number] != 'undefined') then args[number] else match
+
+String.prototype.padBy = (length) ->
+  pad = length - this.length
+  retval = this
+  while pad > 0
+    retval = retval.concat(" ")
+    pad -= 1
+  retval
+
 logger = new Log(lc.ALL,ll.DEBUG)
 
 class GenBank
@@ -127,12 +141,39 @@ class GenBank
     logger.exit()
     @data.raw_genes = retval
 
+  @serializeLocation: (loc) ->
+    retval = ""
+    for range in loc.ranges
+      retval += "," if retval != ""
+      retval += "#{range.start}..#{range.end}"
+    if loc.ranges.length > 1
+      retval = "join(#{retval})"
+    if loc.strand == 1
+      retval = "complement(#{retval})"
+    retval
+
+  serialize: () ->
+    file = "LOCUS".padBy(12) + @data.LOCUS + "\n"
+    for own section,contents of @data
+      if ["LOCUS", "FEATURES", "ORIGIN", "//", "raw_genes", "features"].indexOf(section) == -1
+        file += section.padBy(12) + contents + "\n"
+    file += @serializeFeatures()
+    file += @serializeGenes()
+
+  serializeFeatures: () ->
+    features = "FEATURES             Location/Qualifiers\n"
+    for feat in @getFeatures()
+      features += "     " + feat.currentFeature.padBy(16) + GenBank.serializeLocation(feat.location) + "\n"
+      for own key, value of feat.parameters
+        features += "                     " + "#{key}=\"#{value}\" \n"
+    features
+
   serializeGenes: () ->
     count = 0
     increment = 60
     group_size = 10
     offset = 9
-    serialized = ""
+    serialized = "ORIGIN\n"
     genes = @getGeneSequence()
     num_iter = Math.ceil(genes.length / (count+increment))
     for i in [0...num_iter] by 1
@@ -148,7 +189,7 @@ class GenBank
             serialized += " "
             count += 10
         serialized += "\n"
-    return serialized
+    return serialized + "// \n"
 
   @parseLocationData: (data) ->
     id = 0
