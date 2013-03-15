@@ -1,7 +1,39 @@
 <div id="ed">
-</div>
+</div> 
+
+<button type="button" id="autosave"> AUTOSAVE </button>
+
 <script type="text/javascript">
 doc = <%= @file_contents.to_json.html_safe %>;
 editor = new GorillaEditor("#ed", doc);
 editor.startEditing();
+
+
+function json_request(page, dict, success, failure) {
+
+	$.ajax({
+		type: "POST", 
+		url: page, 
+		data: JSON.stringify(dict),
+		dataType: "json",
+		success: success, 
+		error: failure
+
+	});
+}
+
+var file; 
+
+file = editor.file.serialize();
+
+var time; 
+
+time = Date();
+
+params = {genbank_file: file, current_time: time};
+
+$("#autosave").click(function() {
+	json_request("autosave", params, function(data) { alert("AUTOSAVE SUCCESSFUL"); }, function(data) { alert("ERROR"); });
+});
+
 </script>

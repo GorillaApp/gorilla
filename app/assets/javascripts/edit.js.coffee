@@ -159,6 +159,10 @@ class GenBank
     logger.exit()
     @data.features = retval
 
+  # dummy function, will be implemented later
+  serialize: () -> @text
+
+
 window.GorillaEditor = class
   constructor: (@editorId, @initialDocument) ->
     logger.d("Initializing GorillaEditor...")

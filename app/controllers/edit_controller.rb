@@ -2,6 +2,10 @@ require 'bio'
 
 class EditController < ApplicationController
   def load
+
+
+    print "TESTINGGGGGGG"
+
     @file_contents = <<-EOF
 LOCUS       pGG001                  2559 bp ds-DNA   circular    UNK 01-JAN-1980
 DEFINITION  .
@@ -122,5 +126,15 @@ EOF
   end
 
   def autosave
+    
+    print "AUTOSAVE \n"
+    if params[:current_time] != nil
+      print "params"
+      print params[:current_time]
+    else
+      print "nil"
+    end
+
   end
+
 end

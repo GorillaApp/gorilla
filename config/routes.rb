@@ -3,7 +3,8 @@ Gorilla::Application.routes.draw do
 
   get "edit/load"
 
-  get "edit/autosave"
+  post "edit/autosave"
+
 
   root :to => "main#index"
 
