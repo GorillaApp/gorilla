@@ -159,6 +159,10 @@ class GenBank
     logger.exit()
     @data.features = retval
 
+  # dummy function, will be implemented later
+  serialize: () -> @text
+
+
 window.GorillaEditor = class
   constructor: (@editorId, @initialDocument) ->
     logger.d("Initializing GorillaEditor...")
@@ -176,7 +180,7 @@ window.GorillaEditor = class
                 .html(@file.getAnnotatedSequence())
                 .bind('input', (target) -> me.textChanged(me, target))
     logger.d("Editor ready!")
-  
+
   textChanged: (me, target) ->
     sel = window.getSelection()
 
