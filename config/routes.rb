@@ -1,9 +1,11 @@
 Gorilla::Application.routes.draw do
-  get "main/index"
+  match "main/index"
 
-  get "edit/load"
+  match "edit/load"
 
-  get "edit/autosave"
+  match "edit/autosave"
+
+  match "edit/delete"
 
   root :to => "edit#load"
 

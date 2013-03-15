@@ -309,7 +309,7 @@ class window.GorillaEditor
     @editorContents = $(@editorId).text()
 
     logger.d("Editor ready!")
-  
+
   textChanged: (me, target) ->
     me.previousContents = me.editorContents
     me.editorContents = $(me.editorId).text()

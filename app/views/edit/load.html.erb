@@ -1,9 +1,43 @@
+<%= stylesheet_link_tag "edit.css" %>
+
+
 <div id="ed">
 </div>
+
+<div id="ed2">
+</div>
+
+
+<div id="buttons">
+    <p>Buttons for debugging purposes</p>
+    <button type="button" id="autosave"> AUTOSAVE </button>
+    <button type="button" id="delete"> DELETE AUTOSAVE </button>
+</div>
+
 <script type="text/javascript">
+
 doc = <%= @file_contents.to_json.html_safe %>;
-editor = new GorillaEditor("#ed", doc);
-editor.startEditing();
+first_line = <%= @first_line.to_json.html_safe %>
+doc_restored = <%= @autosaved_file_contents.to_json.html_safe %>
+
+$("#buttons").hide();
+display_autosave(doc_restored);
+$("#buttons").show();
+
+
+var file, time, user;
+
+file = editor.file.serialize();
+time = Date();
+user = 1;
+params = { genbank_file: file, current_time: time, id: first_line, user: user };
+TIMER = 10000;
+
+$(document).ready(function () {
+        // Configure to save every 5 seconds
+        window.setInterval(function() { json_request(params, function() {console.log("autosaved");}, function(err, err1, err2) { console.log(err2); } ); } , 5000);
+ });
+
 </script>
 <pre id="gb">
 </pre>
