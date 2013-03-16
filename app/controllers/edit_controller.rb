@@ -6,20 +6,22 @@ class EditController < ApplicationController
   def load
 
     @file_restore_contents = ''
-    file = ""
+    file = ''
+    file_url = (params[:fileURL].nil? ? "" : params[:fileURL])
     @saveURL = params[:saveURL]
 
-    if params[:file]
+    if not params[:saveURL].blank?
+      @saveURL = params[:saveURL]
+    end
+    
+    if not params[:file].blank?
       file = params[:file]
-
-    elsif params[:fileURL]
-
-      f = open(params[:fileURL])
-      file = f.read
+    elsif not params[:fileURL].blank?
+      file = open(params[:fileURL]).read()
     end
 
     @file_contents = file
-    @first_line = file.split("\n").first
+    @first_line = file.split("\n").first()
 
     # The view for load grabs the values of file_contents, first_line, and autosaved_file
     @isRestore = false
@@ -49,7 +51,7 @@ class EditController < ApplicationController
     id = params[:id]
     Autosave.delete_save(id)
 
-    render json: {success: 1}
+    render json: {success: 1} 
   end
 
 end

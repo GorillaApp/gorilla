@@ -117,17 +117,14 @@ ORIGIN
   describe "GET 'load' with file" do
     it "returns the javascript with doc set to file" do
       get :load, :file => file_contents
-      puts response.body
-      assert response.body.include? file_contents
+      assigns[:file_contents] == file_contents
     end
   end
 
   describe "GET 'load' with file" do
     it "returns the javascript with doc set to file" do
-      #"http://localhost:3000/test1.ape"
-      get 'load'#, :url => "public/test1.ape"
-      puts response.body
-      assert response.body.include? file_contents
+      get 'load', :fileURL => "public/test1.ape"
+      assigns[:file_contents] == file_contents
     end
   end
 
