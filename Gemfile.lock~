@@ -60,6 +60,11 @@ GEM
     mime-types (1.21)
     multi_json (1.6.1)
     mysql2 (0.3.11)
+<<<<<<< HEAD
+    mysql2 (0.3.11-x86-mingw32)
+=======
+    nokogiri (1.5.6)
+>>>>>>> upstream/master
     pg (0.14.1)
     pg (0.14.1-x86-mingw32)
     polyglot (0.3.3)
@@ -100,6 +105,9 @@ GEM
       rspec-core (~> 2.12.0)
       rspec-expectations (~> 2.12.0)
       rspec-mocks (~> 2.12.0)
+    sanitize (2.0.3)
+      nokogiri (>= 1.4.4, < 1.6)
+      nokogiri (>= 1.4.4, < 1.6)
     sass (3.2.6)
     sass-rails (3.2.6)
       railties (~> 3.2.0)
@@ -141,9 +149,9 @@ DEPENDENCIES
   rack (= 1.4.1)
   rails (= 3.2.8)
   rspec-rails
+  sanitize
   sass-rails (~> 3.2.3)
   spork (~> 0.9.0.rc)
-  sprockets
   therubyracer
   thin
   uglifier (>= 1.0.3)
