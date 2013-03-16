@@ -4,7 +4,6 @@ gem 'rails', '3.2.8'
 gem 'rack', '1.4.1'
 gem 'thin'
 
-
 gem 'bio'
 
 # Bundle edge Rails instead:
@@ -29,6 +28,7 @@ group :development, :test do
   gem 'spork', '~> 0.9.0.rc'
   gem 'watchr'
   gem 'pg'
+  gem 'capybara'
 end
 
 group :production do

@@ -1,5 +1,11 @@
 require 'spec_helper'
 
 describe "edit/load.html.erb" do
-  pending "add some examples to (or delete) #{__FILE__}"
+  include Capybara::DSL
+
+  it 'should show load on the homepage' , :js => true do
+    visit '/'
+    
+    page.should have_content 'cgtctc'
+  end
 end
