@@ -6,6 +6,8 @@ gem 'thin'
 
 gem 'bio'
 
+gem 'nokogiri'
+
 gem 'sprockets'
 
 # Bundle edge Rails instead:
