@@ -20,3 +20,6 @@
 passenger-standalone
 
 .ditz-config
+
+*~
+.idea/
