@@ -1,10 +1,14 @@
 require 'spec_helper'
-require 'json'
 
-describe EditController do
+describe Autosave do
+  it "checks to see if find_autosaved_file correctly returns nil" do
+    result = Autosave.find_autosaved_file("Not a valid entry")
+    result.should eql(nil)
+  end
 
-  file_contents = <<-EOF
-LOCUS       pGG001                  2559 bp ds-DNA   circular    UNK 01-JAN-1980
+  it "checks to see if find_autosaved_file correctly returns the file" do
+    file_contents = <<-EOF
+LOCUS       pGG002                  2559 bp ds-DNA   circular    UNK 01-JAN-1980
 DEFINITION  .
 ACCESSION   <unknown id>
 VERSION     <unknown id>
@@ -112,34 +116,14 @@ ORIGIN
      2461 cgaaagactg ggcctttcgt tttatctgtt gtttgtcggt gaacgctctc tactagagtc
      2521 acactggctc accttcgggt gggcctttct gcgtttata
 //
-  EOF
-
-  describe "GET 'load' with file" do
-    it "returns the javascript with doc set to file" do
-      get :load, :file => file_contents
-      assigns[:file_contents] == file_contents
-    end
-  end
-
-  describe "GET 'load' with file" do
-    it "returns the javascript with doc set to file" do
-      get 'load', :fileURL => "public/test1.ape"
-      assigns[:file_contents] == file_contents
-    end
-  end
-
-  describe "GET 'load'" do
-    it "returns http success" do
-      get 'load'
-      response.should be_success
-    end
-  end
-
-  describe "POST 'autosave'" do
-    it "returns http success" do
-      post 'autosave'
-      response.should be_success
-    end
-  end
-
+EOF
+    first_line = file_contents.split(/\r?\n/)[0]
+    time = Time.now.to_s
+    user_id = 1
+    Autosave.save_file(file_contents, first_line, time, user_id)
+    result = Autosave.find_autosaved_file(first_line)
+    result.should_not be_nil
+ end
 end
+
+
