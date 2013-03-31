@@ -124,6 +124,7 @@ class window.GenBank
     newFeat
 
   advanceFeature: (featId, rangeId, amount) ->
+    logger.d("Advancing #{featId}-#{rangeId}")
     f = @getFeatures()[featId]
     r = f.location.ranges[rangeId]
     r.start += amount
@@ -306,11 +307,18 @@ class window.GorillaEditor
                 .attr('spellcheck','false')
                 .html(@file.getAnnotatedSequence())
                 .bind('input', (target) -> me.textChanged(me, target))
+                .keypress (e) ->
+                  if e.ctrlKey and e.which == 90
+                    console.log 'ctrl+z'
+                    e.preventDefault()
+                  
     @editorContents = $(@editorId).text()
-
+    @previousEditors = []
+    @nextEditors = []
     logger.d("Editor ready!")
 
   textChanged: (me, target) ->
+    me.previousEditors.push([me.editorContents, me.file])
     me.previousContents = me.editorContents
     me.editorContents = $(me.editorId).text()
 
@@ -349,10 +357,11 @@ class window.GorillaEditor
         idSplit = pe.id.split('-')
         featureId = parseInt(idSplit[1])
         spanId = parseInt(idSplit[2])
+
         end = element.splitText(caretPosition)
         char = element.splitText(caretPosition-1)
         start = element
-        newFeature = me.file.splitFeatureAt(featureId, spanId, caretPosition-1)
+
         node = pe
         while !!node
           if node.tagName == "SPAN"
@@ -361,9 +370,13 @@ class window.GorillaEditor
             rangeId = parseInt(spl[2])
             me.file.advanceFeature(featureId, rangeId, 1)
           node = node.nextSibling
+
+        newFeature = me.file.splitFeatureAt(featureId, spanId, caretPosition-1)
+        
         pe.removeChild(char)
         pe.removeChild(end)
         pe.parentNode.insertBefore(char, pe.nextSibling)
+
         newGuy = document.createElement("SPAN")
         newGuy.id = "#{newFeature.parameters['/label']}-#{newFeature.id}-#{newFeature.location.uid}"
         newGuy.className = "#{newFeature.parameters['/label']}-#{newFeature.id}"
