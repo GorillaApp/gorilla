@@ -3,7 +3,7 @@ title: Move undo/redo features to our end
 desc: The current way that contenteditable handles undo/redo doesn't seem to work with our mucking about with the dom
 type: :feature
 component: gorilla
-release: Iteration 1
+release: Iteration-2
 reporter: Zachary Michael Bush <zach@zmbush.com>
 status: :unstarted
 disposition: 
@@ -16,3 +16,15 @@ log_events:
   - Zachary Michael Bush <zach@zmbush.com>
   - created
   - Do we need to store a copy of the GenBank file with each undo/redo?
+- - 2013-03-31 04:50:24.455242 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - assigned to release Iteration-2 from Iteration 1
+  - We didn't have enough time to get this done
+- - 2013-03-31 04:52:21.741773 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - assigned to release Iteration 1 from Iteration-2
+  - ""
+- - 2013-03-31 04:52:35.155093 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - assigned to release Iteration-2 from Iteration 1
+  - ""
