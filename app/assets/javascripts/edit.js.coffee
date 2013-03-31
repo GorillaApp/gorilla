@@ -307,18 +307,27 @@ class window.GorillaEditor
                 .attr('spellcheck','false')
                 .html(@file.getAnnotatedSequence())
                 .bind('input', (target) -> me.textChanged(me, target))
-                .keypress (e) ->
-                  if e.ctrlKey and e.which == 90
-                    console.log 'ctrl+z'
-                    e.preventDefault()
-                  
+    $(document).on 'keypress', @editorId, (e) ->
+                 if e.which == 122 or e.which == 90
+                   e.preventDefault()
+                   me.undo(me)
     @editorContents = $(@editorId).text()
+    @editorHtml = $(@editorId).html()
     @previousEditors = []
     @nextEditors = []
     logger.d("Editor ready!")
 
+  undo: (me, target) ->
+    me.nextEditors.push([me.editorHtml, $.extend(true, {}, me.file)])
+    parts = me.previousEditors.pop()
+    me.editorHtml = parts[0]
+    me.editor = parts[1]
+
+    $(me.editorId).html(me.editorHtml)
+    me.editorContents = $(me.editorId).text()
+
   textChanged: (me, target) ->
-    me.previousEditors.push([me.editorContents, me.file])
+    me.previousEditors.push([me.editorHtml, $.extend(true, {}, me.file)])
     me.previousContents = me.editorContents
     me.editorContents = $(me.editorId).text()
 
@@ -399,6 +408,8 @@ class window.GorillaEditor
       l.collapse(true)
 
       sel.addRange l
+
+      me.editorHtml = $(me.editorId).html()
 
       @file.updateSequence($(me.editorId).text())
       $('#gb').text(@file.serialize())
