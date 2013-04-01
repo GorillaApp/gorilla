@@ -29,7 +29,7 @@ saveURL = <%= @saveURL.to_json.html_safe %>;
 $(document).ready(function () {
     var file, time, user;
 
-    file = editor.file.serialize();
+    file = main_editor.file.serialize();
     time = Date();
     user = 1;
     autosaveURI = '/edit/autosave'
@@ -43,21 +43,13 @@ $(document).ready(function () {
             function() {console.log("autosaved");}, 
             function(err, err1, err2) { console.log(err2); } 
         ); 
-    } , 5000);
+    } , 6000000000);
  });
 
 function show_main(usedDoc) {
     debug_editor = new GorillaEditor("#ed2");
     main_editor = new GorillaEditor("#ed", usedDoc, debug_editor);
     main_editor.startEditing();
-    $("#ed").css("width", "90%")
-            .css("marginLeft", "5%")
-            .css("marginRight", "5%")
-            .css("marginBottom", "2%");
-    $("#ed2").css("width", "90%")
-            .css("marginLeft", "5%")
-            .css("marginRight", "5%")
-            .css("marginBottom", "2%");
     $('#buttons').show();
     $('#ed2').show();
     $('#autosavechoice').hide();  
