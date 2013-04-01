@@ -292,9 +292,13 @@ class window.GenBank
     @data.features = retval
 
 class window.GorillaEditor
-  constructor: (@editorId, @initialDocument) ->
+  constructor: (@editorId, @initialDocument = '', @debugEditor = null) ->
     logger.d("Initializing GorillaEditor...")
-    @file = new GenBank(@initialDocument)
+    if @initialDocument != ''
+      @file = new GenBank(@initialDocument)
+      if @debugEditor != null
+        @debugEditor.file = new GenBank(@initialDocument)
+        @debugEditor.startEditing()
     logger.d("GorillaEditor ready!")
 
   startEditing: () ->
@@ -327,7 +331,6 @@ class window.GorillaEditor
     me.editorContents = $(me.editorId).text()
 
   textChanged: (me, target) ->
-    me.previousEditors.push([me.editorHtml, $.extend(true, {}, me.file)])
     me.previousContents = me.editorContents
     me.editorContents = $(me.editorId).text()
 
@@ -358,6 +361,8 @@ class window.GorillaEditor
           node = node.nextSibling
     else
       return if caretPosition == 0
+      me.previousEditors.push([me.editorHtml, $.extend(true, {}, me.file)])
+
       if "acgt".indexOf($(element).text()[caretPosition-1]) == -1
         t = element.textContent
         element.textContent = t[0...caretPosition-1] + t[caretPosition..]
@@ -397,6 +402,12 @@ class window.GorillaEditor
         caretPosition = 1
         ins = true
 
+        me.editorHtml = $(me.editorId).html()
+        if me.debugEditor != null
+          me.file.updateSequence($(me.editorId).text())
+          me.debugEditor.file = new GenBank(me.file.serialize())
+          me.debugEditor.startEditing()
+
       sel.removeAllRanges()
 
       elem = document.getElementById($(pe).attr('id'))
@@ -409,7 +420,4 @@ class window.GorillaEditor
 
       sel.addRange l
 
-      me.editorHtml = $(me.editorId).html()
-
-      @file.updateSequence($(me.editorId).text())
-      $('#gb').text(@file.serialize())
+      # $('#gb').text(@file.serialize())

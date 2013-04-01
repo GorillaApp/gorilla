@@ -47,14 +47,19 @@ $(document).ready(function () {
  });
 
 function show_main(usedDoc) {
-    main_editor = new GorillaEditor("#ed", usedDoc);
+    debug_editor = new GorillaEditor("#ed2");
+    main_editor = new GorillaEditor("#ed", usedDoc, debug_editor);
     main_editor.startEditing();
     $("#ed").css("width", "90%")
             .css("marginLeft", "5%")
             .css("marginRight", "5%")
             .css("marginBottom", "2%");
+    $("#ed2").css("width", "90%")
+            .css("marginLeft", "5%")
+            .css("marginRight", "5%")
+            .css("marginBottom", "2%");
     $('#buttons').show();
-    $('#ed2').hide();
+    $('#ed2').show();
     $('#autosavechoice').hide();  
 }
 
