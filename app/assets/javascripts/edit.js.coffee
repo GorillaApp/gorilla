@@ -124,6 +124,14 @@ class window.GenBank
     new: newFeat
     old: f
 
+  moveEndBy: (featId, rangeId, amount) ->
+    logger.d("Moving end of #{featId}-#{rangeId}")
+    f = @getFeatures()[featId]
+    r = GenBank.getRange(f.location, rangeId)
+    r.end += amount
+    if r.end < r.start
+      f.location.ranges.splice(GenBank.rangeIndex(f, rangeId), 1)
+
   advanceFeature: (featId, rangeId, amount) ->
     logger.d("Advancing #{featId}-#{rangeId}")
     f = @getFeatures()[featId]
@@ -326,13 +334,15 @@ class window.GorillaEditor
                 .css('font-family','monospace')
                 .attr('contenteditable','true')
                 .attr('spellcheck','false')
-                .attr('tabindex', '0')
                 .html(@file.getAnnotatedSequence())
+
     $(@editorId).find("*").andSelf().unbind('keypress').unbind('keydown').unbind('keyup')
+
     $(@editorId).bind('input', (event) -> me.textChanged(event))
                 .keypress((event) -> me.keyPressed(event))
                 .keydown((event) -> me.keyDown(event))
-                .keyup((event) -> me.keyDown(event))
+                .keyup((event) -> me.keyUp(event))
+
     @editorContents = $(@editorId).text()
     @editorHtml = $(@editorId).html()
     @previousEditors = []
@@ -351,6 +361,8 @@ class window.GorillaEditor
   deleteAtCursor: () ->
     sel = window.getSelection()
 
+    logger.l sel
+
     if sel.type == "Caret"
       loc = sel.getRangeAt(0)
 
@@ -361,7 +373,14 @@ class window.GorillaEditor
 
       element.deleteData(caretPosition-1, 1)
       
-      node = element
+      if pe.tagName == "SPAN"
+        spl = pe.id.split('-')
+        featureId = parseInt(spl[1])
+        rangeId = parseInt(spl[2])
+        @file.moveEndBy(featureId, rangeId, -1)
+        node = pe.nextSibling
+      else
+        node = element
       while !!node
         if node.tagName == "SPAN"
           spl = node.id.split('-')
@@ -370,14 +389,46 @@ class window.GorillaEditor
           @file.advanceFeature(featureId, rangeId, -1)
         node = node.nextSibling
 
+      @trackChanges()
 
+      sel.removeAllRanges()
+      
+      delme = null
+
+      l = document.createRange()
+      if caretPosition - 1 == 0
+        if element.tagName != "SPAN" and element.parentNode.id != $(@editorId).attr('id')
+          element = element.parentNode
+        if element.innerHTML?.length == 0
+          delme = element
+        element = element.previousSibling
+        if element.tagName == "SPAN"
+          element = element.childNodes[0]
+        caretPosition = element.length + 1
+      l.setStart(element, caretPosition-1)
+      l.collapse(true)
+
+      if delme != null
+        $(delme).remove()
+
+      sel.addRange l
     else
       logger.wtf "How Dare You"
 
+  trackChanges: ->
+    @previousEditors.push([@editorHtml, $.extend(true, {}, @file)])
+    @editorHtml = $(@editorId).html()
+    if @debugEditor != null
+      @file.updateSequence($(@editorId).text())
+      @debugEditor.file = new GenBank(@file.serialize())
+      @debugEditor.startEditing()
+
   keyDown: (event) ->
     if event.keyCode == 8
+      logger.l event
       logger.l "Backspace"
       event.preventDefault()
+      event.stopPropagation()
       @deleteAtCursor()
 
   keyUp: (event) ->
@@ -463,12 +514,7 @@ class window.GorillaEditor
             @file.advanceFeature(featureId, rangeId, 1)
           node = node.nextSibling
 
-        @previousEditors.push([@editorHtml, $.extend(true, {}, @file)])
-        @editorHtml = $(@editorId).html()
-        if @debugEditor != null
-          @file.updateSequence($(@editorId).text())
-          @debugEditor.file = new GenBank(@file.serialize())
-          @debugEditor.startEditing()
+        @trackChanges()
 
         sel.removeAllRanges()
 
