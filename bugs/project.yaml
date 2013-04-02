@@ -7,10 +7,23 @@ components:
 releases: 
 - !ditz.rubyforge.org,2008-03-06/release 
   name: Iteration 1
-  status: :unreleased
-  release_time: 
+  status: :released
+  release_time: 2013-03-31 04:51:20.167504 Z
   log_events: 
   - - 2013-03-13 08:53:49.648189 Z
     - Zachary Michael Bush <zach@zmbush.com>
     - created
     - Iteration one. Due Friday March 15
+  - - 2013-03-31 04:51:20.167527 Z
+    - Zachary Michael Bush <zach@zmbush.com>
+    - released
+    - WE DONE!
+- !ditz.rubyforge.org,2008-03-06/release 
+  name: Iteration-2
+  status: :unreleased
+  release_time: 
+  log_events: 
+  - - 2013-03-31 04:49:54.975236 Z
+    - Zachary Michael Bush <zach@zmbush.com>
+    - created
+    - Due Wednesday April 3rd
