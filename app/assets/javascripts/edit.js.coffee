@@ -19,7 +19,7 @@ String.prototype.padBy = (length) ->
     pad -= 1
   retval
 
-logger = new Log(lc.ALL,ll.LOG)
+logger = new Log(lc.ALL,ll.DEBUG)
 
 class window.GenBank
   constructor: (@text) ->
@@ -81,7 +81,6 @@ class window.GenBank
         startix = x
       if current == end
         endix = x
-        break
       if count
         current += 1
       if sequence[x] == ">"
@@ -89,6 +88,11 @@ class window.GenBank
     beg = sequence[...startix]
     end = sequence[endix+1..]
     mid = sequence[startix..endix]
+    console.log startix
+    console.log endix
+    console.log beg
+    console.log end
+    console.log mid
     logger.exit()
     beg + "<span id='#{name}-#{featureId}-#{spanId}' class='#{name}-#{featureId}' style='background-color:#{color}' >" + mid + "</span>" + end
 
@@ -228,9 +232,10 @@ class window.GenBank
   serializeFeatures: () ->
     features = "FEATURES             Location/Qualifiers" + @newline
     for feat in @getFeatures()
-      features += "     " + feat.currentFeature.padBy(16) + GenBank.serializeLocation(feat.location) + @newline
-      for own key, value of feat.parameters
-        features += "                     " + "#{key}=\"#{value}\" " + @newline
+      if feat.location.ranges.length > 0
+        features += "     " + feat.currentFeature.padBy(16) + GenBank.serializeLocation(feat.location) + @newline
+        for own key, value of feat.parameters
+          features += "                     " + "#{key}=\"#{value}\" " + @newline
     features
 
   serializeGenes: () ->
@@ -349,6 +354,7 @@ class window.GorillaEditor
   startEditing: () ->
     logger.d("Preparing Editor...")
     me = @
+    
     $(@editorId).css("width", "90%")
                 .css("marginLeft", "5%")
                 .css("marginRight", "5%")
@@ -370,16 +376,32 @@ class window.GorillaEditor
     @editorHtml = $(@editorId).html()
     @previousEditors = []
     @nextEditors = []
+    @previousFiles = []
+    @nextFiles = []
     logger.d("Editor ready!")
 
-  undo: (me, event) ->
-    me.nextEditors.push([me.editorHtml, $.extend(true, {}, me.file)])
-    parts = me.previousEditors.pop()
-    me.editorHtml = parts[0]
-    me.editor = parts[1]
+  undo: (event) ->
+    if @previousFiles.length > 0
+      @nextFiles.push($.extend(true, {}, @file))
+      @file = @previousFiles.pop()
+      $(@editorId).html(@file.getAnnotatedSequence())
+      @updateDebugEditor()
 
-    $(me.editorId).html(me.editorHtml)
-    me.editorContents = $(me.editorId).text()
+  redo: (event) ->
+    if @nextFiles.length > 0
+      @previousFiles.push($.extend(true, {}, @file))
+      @file = @nextFiles.pop()
+      $(@editorId).html(@file.getAnnotatedSequence())
+      @updateDebugEditor()
+      
+  trackChanges: ->
+    @previousFiles.push($.extend(true, {}, @file))
+
+  updateDebugEditor: ->
+    if @debugEditor != null
+      @file.updateSequence($(@editorId).text())
+      @debugEditor.file = new GenBank(@file.serialize())
+      @debugEditor.startEditing()
 
   deleteAtCursor: () ->
     sel = window.getSelection()
@@ -387,6 +409,8 @@ class window.GorillaEditor
     logger.l sel
 
     if sel.type == "Caret"
+      @trackChanges()
+
       loc = sel.getRangeAt(0)
 
       caretPosition = loc.startOffset
@@ -412,8 +436,6 @@ class window.GorillaEditor
           @file.advanceFeature(featureId, rangeId, -1)
         node = node.nextSibling
 
-      @trackChanges()
-
       sel.removeAllRanges()
       
       delme = null
@@ -435,16 +457,10 @@ class window.GorillaEditor
         $(delme).remove()
 
       sel.addRange l
+
+      @updateDebugEditor()
     else
       logger.wtf "How Dare You"
-
-  trackChanges: ->
-    @previousEditors.push([@editorHtml, $.extend(true, {}, @file)])
-    @editorHtml = $(@editorId).html()
-    if @debugEditor != null
-      @file.updateSequence($(@editorId).text())
-      @debugEditor.file = new GenBank(@file.serialize())
-      @debugEditor.startEditing()
 
   keyDown: (event) ->
     if event.keyCode == 8
@@ -453,6 +469,12 @@ class window.GorillaEditor
       event.preventDefault()
       event.stopPropagation()
       @deleteAtCursor()
+    else if event.ctrlKey
+      logger.l event
+      if event.keyCode == 90
+        @undo()
+      if event.keyCode == 89
+        @redo()
 
   keyUp: (event) ->
 
@@ -467,6 +489,8 @@ class window.GorillaEditor
       sel = window.getSelection()
 
       if sel.type == "Caret"
+        @trackChanges()
+
         loc = sel.getRangeAt(0)
 
         caretPosition = loc.startOffset
@@ -537,7 +561,7 @@ class window.GorillaEditor
             @file.advanceFeature(featureId, rangeId, 1)
           node = node.nextSibling
 
-        @trackChanges()
+        @updateDebugEditor()
 
         sel.removeAllRanges()
 
