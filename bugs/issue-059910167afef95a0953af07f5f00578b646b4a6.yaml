@@ -5,8 +5,8 @@ type: :task
 component: gorilla
 release: Iteration 1
 reporter: Zachary Michael Bush <zach@zmbush.com>
-status: :unstarted
-disposition: 
+status: :closed
+disposition: :fixed
 creation_time: 2013-03-13 08:52:17.324487 Z
 references: []
 
@@ -19,4 +19,12 @@ log_events:
 - - 2013-03-13 08:54:14.608275 Z
   - Zachary Michael Bush <zach@zmbush.com>
   - assigned to release Iteration 1 from unassigned
+  - ""
+- - 2013-03-17 04:56:36.610968 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - changed status from unstarted to in_progress
+  - ""
+- - 2013-03-17 04:57:31.670211 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - closed with disposition fixed
   - ""
