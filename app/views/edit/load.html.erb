@@ -29,12 +29,9 @@ saveURL = <%= @saveURL.to_json.html_safe %>;
 $(document).ready(function () {
     var file, time, user;
 
-    // file = main_editor.file.serialize();
     user = 1;
     autosaveURI = '/edit/autosave'
-    // params = { genbank_file: file, current_time: time, id: first_line, user: user };
     TIMER = 10000;
-    // Configure to save every 5 seconds
     window.setInterval(function() {
         file = main_editor.file.serialize();
         time = Date();
