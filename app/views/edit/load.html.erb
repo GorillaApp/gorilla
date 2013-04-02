@@ -28,22 +28,20 @@ saveURL = <%= @saveURL.to_json.html_safe %>;
 
 $(document).ready(function () {
     var file, time, user;
-
-    file = main_editor.file.serialize();
-    time = Date();
     user = 1;
     autosaveURI = '/edit/autosave'
-    params = { genbank_file: file, current_time: time, id: first_line, user: user };
     TIMER = 10000;
-    // Configure to save every 5 seconds
-    window.setInterval(function() { 
+    window.setInterval(function() {
+        file = main_editor.file.serialize();
+        time = Date();
+        params = { genbank_file: file, current_time: time, id: first_line, user: user };
         json_request(
             autosaveURI,
             params,
             function() {console.log("autosaved");}, 
             function(err, err1, err2) { console.log(err2); } 
         ); 
-    } , 6000000000);
+    } , TIMER);
  });
 
 function show_main(usedDoc) {
