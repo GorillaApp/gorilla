@@ -1,5 +1,7 @@
 Gorilla::Application.routes.draw do
 
+  devise_for :users
+
   get "testclient/client"
 
   get "main/index"
