@@ -8,7 +8,12 @@ class Autosave < ActiveRecord::Base
   attr_accessible :contents, :name, :save_date, :user_id
 
   def self.save_file(file_contents, name, save_date, user_id)
-  	Autosave.create(contents: file_contents, name: name, save_date: save_date, user_id: user_id)
+    autosaved_file = Autosave.find_by_name(name)
+    if ! autosaved_file.nil?
+      autosaved_file.update_attributes(contents: file_contents, save_date: save_date)
+    else
+      Autosave.create(contents: file_contents, name: name, save_date: save_date, user_id: user_id)
+    end
   end
 
   def self.find_autosaved_file(name)
