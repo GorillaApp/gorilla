@@ -324,24 +324,22 @@ class window.GorillaEditor
                 .css("marginBottom", "2%")
                 .css('word-wrap','break-word')
                 .css('font-family','monospace')
-                #.attr('contenteditable','true')
+                .attr('contenteditable','true')
                 .attr('spellcheck','false')
                 .attr('tabindex', '0')
                 .html(@file.getAnnotatedSequence())
-                .bind('input', (target) -> me.textChanged(target))
-                .keypress((target) -> me.keyPressed(target))
-    $(@editorId).on 'keypress', ".innerDiv", (e) ->
-                 console.log e
-                 if e.which == 122 or e.which == 90
-                   e.preventDefault()
-                   me.undo(me)
+    $(@editorId).find("*").andSelf().unbind('keypress').unbind('keydown').unbind('keyup')
+    $(@editorId).bind('input', (event) -> me.textChanged(event))
+                .keypress((event) -> me.keyPressed(event))
+                .keydown((event) -> me.keyDown(event))
+                .keyup((event) -> me.keyDown(event))
     @editorContents = $(@editorId).text()
     @editorHtml = $(@editorId).html()
     @previousEditors = []
     @nextEditors = []
     logger.d("Editor ready!")
 
-  undo: (me, target) ->
+  undo: (me, event) ->
     me.nextEditors.push([me.editorHtml, $.extend(true, {}, me.file)])
     parts = me.previousEditors.pop()
     me.editorHtml = parts[0]
@@ -350,10 +348,46 @@ class window.GorillaEditor
     $(me.editorId).html(me.editorHtml)
     me.editorContents = $(me.editorId).text()
 
-  keyPressed: (target) ->
+  deleteAtCursor: () ->
+    sel = window.getSelection()
+
+    if sel.type == "Caret"
+      loc = sel.getRangeAt(0)
+
+      caretPosition = loc.startOffset
+
+      element = loc.startContainer
+      pe = element.parentNode
+
+      element.deleteData(caretPosition-1, 1)
+      
+      node = element
+      while !!node
+        if node.tagName == "SPAN"
+          spl = node.id.split('-')
+          featureId = parseInt(spl[1])
+          rangeId = parseInt(spl[2])
+          @file.advanceFeature(featureId, rangeId, -1)
+        node = node.nextSibling
+
+
+    else
+      logger.wtf "How Dare You"
+
+  keyDown: (event) ->
+    if event.keyCode == 8
+      logger.l "Backspace"
+      event.preventDefault()
+      @deleteAtCursor()
+
+  keyUp: (event) ->
+
+  keyPressed: (event) ->
+    event.preventDefault()
+
     logger.enter()
 
-    char = String.fromCharCode(target.keyCode).toLowerCase()
+    char = String.fromCharCode(event.keyCode).toLowerCase()
     if "agtc".indexOf(char) != -1
       logger.d "ooh, exciting!"
       sel = window.getSelection()
@@ -372,6 +406,9 @@ class window.GorillaEditor
           featureId = parseInt(idSplit[1])
           spanId = parseInt(idSplit[2])
 
+          # We'll need this later
+          featureLength = element.length
+
           # Split the text inside the span
           end = element.splitText(caretPosition)
           start = element
@@ -384,22 +421,23 @@ class window.GorillaEditor
           tn.textContent = char
           pe.parentNode.insertBefore(tn, pe.nextSibling) # this is retarded
 
-          # Split feature apart
-          feat = @file.splitFeatureAt(featureId, spanId, caretPosition-1)
+          if caretPosition < featureLength
+            # Split feature apart
+            feat = @file.splitFeatureAt(featureId, spanId, caretPosition-1)
 
-          # Populate new span with appropriate information
-          newGuy = document.createElement("SPAN")
-          newGuy.id = "#{feat.new.parameters['/label']}-#{feat.new.id}-#{spanId}"
-          newGuy.className = "#{feat.new.parameters['/label']}-#{feat.new.id}"
-          newGuy.setAttribute("style", pe.getAttribute('style'))
-          newGuy.appendChild(end)
-          pe.parentNode.insertBefore(newGuy, tn.nextSibling)
+            # Populate new span with appropriate information
+            newGuy = document.createElement("SPAN")
+            newGuy.id = "#{feat.new.parameters['/label']}-#{feat.new.id}-#{spanId}"
+            newGuy.className = "#{feat.new.parameters['/label']}-#{feat.new.id}"
+            newGuy.setAttribute("style", pe.getAttribute('style'))
+            newGuy.appendChild(end)
+            pe.parentNode.insertBefore(newGuy, tn.nextSibling)
 
-          # Update successive ranges if there are more than one.
-          for range in feat.new.location.ranges[1..]
-            oldNode = document.getElementById("#{feat.new.parameters['/label']}-#{feat.old.id}-#{range.id}")
-            oldNode.id = "#{feat.new.parameters['/label']}-#{feat.new.id}-#{range.id}"
-            oldNode.className = "#{feat.new.parameters['/label']}-#{feat.new.id}"
+            # Update successive ranges if there are more than one.
+            for range in feat.new.location.ranges[1..]
+              oldNode = document.getElementById("#{feat.new.parameters['/label']}-#{feat.old.id}-#{range.id}")
+              oldNode.id = "#{feat.new.parameters['/label']}-#{feat.new.id}-#{range.id}"
+              oldNode.className = "#{feat.new.parameters['/label']}-#{feat.new.id}"
 
           element = tn
         else
@@ -420,7 +458,6 @@ class window.GorillaEditor
         while !!node
           if node.tagName == "SPAN"
             spl = node.id.split('-')
-            logger.d(spl)
             featureId = parseInt(spl[1])
             rangeId = parseInt(spl[2])
             @file.advanceFeature(featureId, rangeId, 1)
@@ -440,19 +477,13 @@ class window.GorillaEditor
         l.collapse(true)
 
         sel.addRange l
-
-          
       else
         logger.wtf "I don't know how to handle this responsibility!"
     logger.exit()
 
-  textChanged: (target) ->
-    # Tasks: 
-    #   - Determine which type of edit took place
-    #     - If Delete
-    #       - Figure out how much was deleted
-    #       - Check which node was there, and then move back all nodes 
-    #     - If Add
+  textChanged: (event) ->
+    logger.wtf "NOOOOOOOOOOOOOOOOOOOOOOOO"
+    return
     @previousContents = @editorContents
     @editorContents = $(@editorId).text()
 
