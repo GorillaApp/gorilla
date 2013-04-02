@@ -108,7 +108,30 @@ class window.GenBank
       r = GenBank.findRangeById(range, spanId)
       return r if !!r
     return null
-    
+
+  sortByStartIndex: (a, b) ->
+      if a.start == b.start
+          return 0
+      if a.start > b.start
+          return 1
+      else
+          return -1
+
+  splitRangeAt: (featId, rangeId, newLength) ->
+    f = @getFeatures()[featId]
+    r = GenBank.getRange(f.location, rangeId)
+
+    # push new range
+    f.location.ranges.push
+        start: newLength + 1
+        end: r.end
+        id: f.location.ranges.length
+
+    # update end point of current range
+    r.end = newLength
+    f.location.ranges.sort(@sortByStartIndex)
+    f
+
   splitFeatureAt: (featId, rangeId, newLength) ->
     f = @getFeatures()[featId]
     rangeIx = GenBank.rangeIndex(f, rangeId)
