@@ -1,5 +1,7 @@
 Gorilla::Application.routes.draw do
 
+  get "features/features"
+
   get "testclient/client"
 
   get "main/index"
