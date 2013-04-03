@@ -2,6 +2,8 @@ Gorilla::Application.routes.draw do
 
   post "feature/add"
 
+  get "feature/getAll"
+
   get "feature/", :to => "feature#feature"
 
   get "testclient/client"
