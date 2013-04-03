@@ -8,17 +8,14 @@ class Features < ActiveRecord::Base
   I_DONT_EVEN_KNOW_WHATS_GOING_ON_RIGHT_NOW = 5
 
   def self.add(params)
+    puts params[:name]
   	if Features.find_by_name(params[:name]) != nil
   		return NAME_EXISTS
   	elsif Features.find_by_sequence(params[:sequence]) != nil
   		return SEQUENCE_EXISTS
   	end
 
-  	@feature = features.create(params[:user_id],
-  							   params[:name],
-  							   params[:sequence],
-  							   params[:forward_color],
-  							   params[:reverse_color])
+  	@feature = Features.create(params.slice(:user_id, :name, :sequence, :forward_color, :reverse_color))
   	@feature.save
   	return SUCCESS
   end
@@ -34,21 +31,22 @@ class Features < ActiveRecord::Base
 
   def self.edit(params)
     #right now, this method always return success
-  	@feature = Features.find_by_name(params[:old_name])
-  	if params[:new_name] != nil
-  		@feature.name = params[:new_name]
+  	feature = Features.find_by_id(params[:id])
+
+  	if params[:name] != nil
+  		feature.name = params[:name]
   	end
   	if params[:sequence] != nil
-  		@geature.sequence = params[:sequence]
+  		feature.sequence = params[:sequence]
   	end
   	if params[:forward_color] != nil
-  		@feature.forward_color = params[:forward_color]
+  		feature.forward_color = params[:forward_color]
   	end
-  	if param[:reverse_color] != nil
-  		@feature.reverse_color = params[reverse_color]
+  	if params[:reverse_color] != nil
+  		feature.reverse_color = params[:reverse_color]
   	end
 
-  	@feature.save
+  	feature.save
   	return SUCCESS
   end
 
@@ -67,6 +65,5 @@ class Features < ActiveRecord::Base
     end
 
   end
-
-  end
+end
 
