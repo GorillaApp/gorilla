@@ -3,7 +3,7 @@ source 'http://rubygems.org'
 gem 'rails', '3.2.8'
 gem 'rack', '1.4.1'
 gem 'thin'
-
+gem 'jquery-ui-rails'
 gem 'bio'
 
 gem 'nokogiri'
