@@ -1,6 +1,8 @@
 class Features < ActiveRecord::Base
   attr_accessible :forward_color, :name, :reverse_color, :sequence, :user_id
 
+  belongs_to :user
+
   #Validation not working :-(
   #validates_format_of :forward_color, :with => /#\h{6}/, :message => "must be of the form #hhhhhh where h is a hex value"
   #validates_format_of :reverse_color, :with => /#\h{6}/, :message => "must be of the form #hhhhhh where h is a hex value"

@@ -12,3 +12,12 @@
  *= require_tree .
  *= require jquery.ui.dialog
  */
+
+
+#user_nav {
+    float: right;
+    background-color: #FFF8DC;
+    height: 5%;
+    width: 100%;
+    text-align: right;
+}

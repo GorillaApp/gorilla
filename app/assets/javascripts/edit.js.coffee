@@ -22,7 +22,7 @@ String.prototype.padBy = (length) ->
 logger = new Log(lc.ALL,ll.DEBUG)
 
 class window.GenBank
-  constructor: (@text) ->
+  constructor: (@text, @id = "default") ->
     logger.enter()
     @newline = "\n"
     if @text.indexOf("\r\n") != -1
@@ -63,7 +63,7 @@ class window.GenBank
       logger.exit()
     logger.exit()
 
-  @annotate: (sequence, start, end, color, name, spanId, featureId) ->
+  annotate: (sequence, start, end, color, name, spanId, featureId) ->
     logger.enter()
     logger.d("Adding annotation to sequence: (#{start}..#{end})")
     if typeof(start) != "number"
@@ -94,15 +94,15 @@ class window.GenBank
     console.log end
     console.log mid
     logger.exit()
-    beg + "<span id='#{name}-#{featureId}-#{spanId}' class='#{name}-#{featureId}' style='background-color:#{color}'>" + mid + "</span>" + end
+    beg + "<span id='#{name}-#{featureId}-#{spanId}-#{@id}' class='#{name}-#{featureId}' style='background-color:#{color}'>" + mid + "</span>" + end
 
-  @annotateFeature: (seq, feature) ->
+  annotateFeature: (seq, feature) ->
     color = feature.parameters["/ApEinfo_fwdcolor"]
     if feature.location.strand == 1
       color = feature.parameters["/ApEinfo_revcolor"]
     name = feature.parameters["/label"]
     for span in feature.location.ranges
-      seq = GenBank.annotate(seq, span.start, span.end, color, name, span.id, feature.id)
+      seq = @annotate(seq, span.start, span.end, color, name, span.id, feature.id)
     seq
 
   @findRangeById: (ranges, spanId) ->
@@ -188,7 +188,7 @@ class window.GenBank
     logger.enter()
     for feature in features
       logger.l feature
-      seq = GenBank.annotateFeature(seq, feature)
+      seq = @annotateFeature(seq, feature)
     logger.exit()
     seq
 
@@ -345,9 +345,9 @@ class window.GorillaEditor
   constructor: (@editorId, @initialDocument = '', @debugEditor = null) ->
     logger.d("Initializing GorillaEditor...")
     if @initialDocument != ''
-      @file = new GenBank(@initialDocument)
+      @file = new GenBank(@initialDocument, @editorId[1..])
       if @debugEditor != null
-        @debugEditor.file = new GenBank(@initialDocument)
+        @debugEditor.file = new GenBank(@initialDocument, @debugEditor.editorId[1..])
         @debugEditor.startEditing()
     logger.d("GorillaEditor ready!")
 
@@ -525,7 +525,7 @@ class window.GorillaEditor
 
             # Populate new span with appropriate information
             newGuy = document.createElement("SPAN")
-            newGuy.id = "#{feat.new.parameters['/label']}-#{feat.new.id}-#{spanId}"
+            newGuy.id = "#{feat.new.parameters['/label']}-#{feat.new.id}-#{spanId}-#{file.id}"
             newGuy.className = "#{feat.new.parameters['/label']}-#{feat.new.id}"
             newGuy.setAttribute("style", pe.getAttribute('style'))
             newGuy.appendChild(end)
