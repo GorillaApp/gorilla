@@ -1,6 +1,6 @@
-function json_request(uri, dict, success, failure) {
+function json_request(type, uri, dict, success, failure) {
     $.ajax({
-        type: 'POST',
+        type: type,
         url: uri,
         data: JSON.stringify(dict),
         contentType: "application/json",
@@ -9,3 +9,5 @@ function json_request(uri, dict, success, failure) {
         failure: failure
     });
 }
+
+
