@@ -1,7 +1,7 @@
 # Gorilla
 
 Gorilla is a rails/javascript re-implementation of the biological tool
-[ApE](ape). 
+[ApE][ape]. 
 
 # To Run Gorilla
 Once you have checked out the project, you'll need to run the following
@@ -37,4 +37,4 @@ To run the testing suite simply run
 $ rake test
 ```
 
-[ape]: http://biologylabs.utah.edu/jorgensen/wayned/ape/ "A Plasmid Editor"
+[ape] http://biologylabs.utah.edu/jorgensen/wayned/ape/ "A Plasmid Editor"
