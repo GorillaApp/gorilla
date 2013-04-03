@@ -23,3 +23,5 @@ passenger-standalone
 
 *~
 .idea/
+
+coverage

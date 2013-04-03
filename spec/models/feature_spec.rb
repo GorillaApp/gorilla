@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Features do
-
   it "tests that creation returns success when user does not exist"  do
     params = {:user_id => 1234, :forward_color => '#f54321', :reverse_color => '#f54321', :name => "erika", :sequence => "aaccg"}
     result = Features.add(params)

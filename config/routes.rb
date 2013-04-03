@@ -4,6 +4,8 @@ Gorilla::Application.routes.draw do
 
   get "feature/", :to => "feature#feature"
 
+  get "feature/getAll"
+
   get "testclient/client"
 
   get "main/index"
@@ -14,7 +16,7 @@ Gorilla::Application.routes.draw do
 
   match "edit/delete"
 
-  root :to => "edit#load"
+  root :to => "testclient#client"
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
