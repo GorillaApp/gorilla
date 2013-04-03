@@ -12,8 +12,6 @@ class Features < ActiveRecord::Base
   UNEXPECTED_EXCEPTION = 5
 
   def self.add(params)
-    puts params[:forward_color]
-    puts params[:reverse_color]
    	@feature = Features.create(params.slice(:user_id, :name, :sequence, :forward_color, :reverse_color))
   	@feature.save!
   	return SUCCESS

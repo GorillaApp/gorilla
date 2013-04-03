@@ -21,8 +21,6 @@ describe Features do
     params = {:user_id => 12345, :forward_color => '#f54321', :reverse_color => '#f54321', :name => "erika", :sequence => "aaccg"}
     Features.add(params)
     feat = Features.find_by_name("erika")
-    puts feat.name
-    puts feat.id
     params2 = {:id => feat.id, :forward_color => '#f54321', :reverse_color => '#f54321', :name => "erika", :sequence => "aaaaaaaaaaaaaaaaaccg"}
     result = Features.edit(params2)
     result.should == 1
