@@ -10,6 +10,7 @@ gem 'jscolor-rails'
 gem 'nokogiri'
 
 gem 'sprockets'
+gem 'devise'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'

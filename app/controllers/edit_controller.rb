@@ -3,6 +3,8 @@ require 'open-uri'
 
 class EditController < ApplicationController
 
+
+
   def load
 
     @file_restore_contents = ''
@@ -13,7 +15,7 @@ class EditController < ApplicationController
     if not params[:saveURL].blank?
       @saveURL = params[:saveURL]
     end
-    
+
     if not params[:file].blank?
       file = params[:file]
     elsif not params[:fileURL].blank?
@@ -49,7 +51,7 @@ class EditController < ApplicationController
     id = params[:id]
     Autosave.delete_save(id)
 
-    render json: {success: 1} 
+    render json: {success: 1}
   end
 
 end
