@@ -26,9 +26,15 @@ describe Features do
     result.should == 1
   end
 
-  # it "tests the getAll feature" do
-  #   params = {:user_id => 12345, :forward_color => "#f54321", :reverse_color => "#f54321", :name => "erika", :sequence => "aaccg"}
-
-  # end
+   #it "tests the getAll feature" do
+   #  params = {:user_id => 12345, :forward_color => "#f54321", :reverse_color => "#f54321", :name => "erika", :sequence => "aaccg"}
+   #  params2 = {:user_id => 12345, :forward_color => '#f54321', :reverse_color => '#f54321', :name => "erika", :sequence => "aaaaaaaaaaaaaaaaaccg"}
+   #  Features.add(params);
+   #  Features.add(params2);
+   #  params3 = {:user_id => 12345}
+   #  result = Features.get(params3)
+   #  puts result
+   #
+   #end
 
 end
