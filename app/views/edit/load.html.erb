@@ -4,6 +4,33 @@
 <div id="ed2">
 </div>
 
+<div id="featuredialog" title="Add Feature Dialog">
+  <center>
+    <form action = "/feature/add/" method = "POST">
+      
+      <div> Sequence: 
+        <textarea id="sequence" 
+                  type="text" 
+                  name="sequence" 
+                  col="150" 
+                  rows= "4">
+        </textarea>
+      </div>
+      <div> Name: <input id="name" name="name" type="text">
+      </div>
+      <div> UserID: <input id="user_id" name="user_id" type="text" value="1">
+      </div>
+      <script type="text/javascript" src="jscolor.js"></script>
+      <div> Forward Color: <input class="color" value="66ff00" id="forward_color" name="forward_color"> </div>
+      <div> Reverse Color: <input class="color" value="ff5500"  id="reverse_color" name="reverse_color"> </div>
+      <input id="Button" type="submit" value="Add feature">
+      
+
+    </form>
+  </center>
+
+</div>
+ 
 <div id="autosavechoice">
     <p>Please choose which version you would like to use.</p>
     <button type = "button" id = "opened"> Opened Version </button>
@@ -12,7 +39,8 @@
 
 <div id="buttons">
     <p>Buttons for debugging purposes</p>
-    <button type = "button" id = "save"> Save </button>
+    <button type="button" id="addfeature">Add Feature</button>
+    <button type="button" id = "save"> Save </button>
     <button type="button" id="autosave"> Autosave </button>
     <button type="button" id="delete"> Delete Autosave </button>
 </div>
@@ -44,10 +72,9 @@ function show_main(usedDoc) {
     window.setInterval(function() {
         var file, time, user, autosaveURI, params;
         file = main_editor.file.serialize();
-        time = Date();
         user = 1;
         autosaveURI = '/edit/autosave'
-        params = { genbank_file: file, current_time: time, id: first_line, user: user };
+        params = { genbank_file: file, id: first_line, user: user };
         json_request(
             autosaveURI,
             params,
@@ -92,9 +119,8 @@ $('#save').click(function() {
 $('#autosave').click(function() {
     var file, time, user, params;
     file = main_editor.file.serialize();
-    time = Date();
     user = 1;
-    params = { genbank_file: file, current_time: time, id: first_line, user: user };
+    params = { genbank_file: file, id: first_line, user: user };
     json_request(
         "/edit/autosave", 
         params, 

@@ -4,8 +4,8 @@ class CreateFeatures < ActiveRecord::Migration
       t.integer :user_id
       t.string :name
       t.string :sequence
-      t.integer :forward_color
-      t.integer :reverse_color
+      t.string :forward_color
+      t.string :reverse_color
 
       t.timestamps
     end

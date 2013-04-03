@@ -4,7 +4,7 @@ class FeatureController < ApplicationController
   NAME_EXISTS = 2
   SEQUENCE_EXISTS = 3
   DOES_NOT_EXIST = 4
-  I_DONT_EVEN_KNOW_WHATS_GOING_ON_RIGHT_NOW = 5
+  UNEXPECTED_EXCEPTION = 5
 
 	def add
     #no matter what happens, the result is returned as an error code
