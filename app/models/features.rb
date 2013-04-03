@@ -3,7 +3,14 @@ class Features < ActiveRecord::Base
 
   belongs_to :user
 
-  #Validation not working :-(
+  validates :user_id, :presence => true
+  validates :name, :presence => true
+  validates :sequence, :presence => true
+  validates :forward_color, :presence => true
+  validates :reverse_color, :presence => true
+
+
+  #Validations not working :-(
   #validates_format_of :forward_color, :with => /#\h{6}/, :message => "must be of the form #hhhhhh where h is a hex value"
   #validates_format_of :reverse_color, :with => /#\h{6}/, :message => "must be of the form #hhhhhh where h is a hex value"
 
@@ -64,7 +71,7 @@ class Features < ActiveRecord::Base
     if feat == nil
       return DOES_NOT_EXIST
     else
-      return feat
+      return {:id => feat.id, :name => feat.name, :sequence => feat.sequence, :forward_color => feat.forward_color, :reverse_color => feat.reverse_color}
     end
 
   end

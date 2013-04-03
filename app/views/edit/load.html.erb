@@ -5,21 +5,13 @@
 </div>
 
 <div id="featuredialog" title="Add Feature">
-<script type="text/javascript"> user = <%= current_user.id %>; </script>
   <center>
     <form action = "/feature/add/" method = "POST">     
-      <div> Sequence: 
-        <textarea id="sequence" 
-                  type="text" 
-                  name="sequence" 
-                  col="150" 
-                  rows= "4">
-        </textarea>
-      </div>
+      <div> Sequence: <textarea id="sequence" type="text" name="sequence" col="150" rows= "4"></textarea></div>
       <div> Name: <input id="name" name="name" type="text"> </div>
-      <div> UserID: <input type = "hidden" id="user_id" name="user_id" type="text" value=user> </div>
+      <input type = "hidden" id="user_id" name="user_id" type="text" value="<%= current_user.id %>" >
       <div> Forward Color: <input class="color" value="66ff00" id="forward_color" name="forward_color"> </div>
-      <div> Reverse Color: <input class="color" value="ff5500"  id="reverse_color" name="reverse_color"> </div>
+      <div> Reverse Color: <input class="color" value="ff5500" id="reverse_color" name="reverse_color"> </div>
       <input id="Button" type="submit" value="Add feature">
     </form>
   </center>
@@ -56,6 +48,7 @@ first_line = <%= @first_line.to_json.html_safe %>;
 isRestore = <%= @isRestore.to_json %>;
 saveURL = <%= @saveURL.to_json.html_safe %>;
 allFeatures = null;
+ user = <%= current_user.id %>;
 
 
 $(document).ready(function () {
