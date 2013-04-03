@@ -66,6 +66,7 @@ GEM
     jquery-ui-rails (4.0.2)
       jquery-rails
       railties (>= 3.1.0)
+    jscolor-rails (1.4.0.1)
     json (1.7.7)
     konacha (2.5.1)
       actionpack (>= 3.1, < 5)
@@ -175,6 +176,7 @@ DEPENDENCIES
   coffee-rails (~> 3.2.1)
   jquery-rails
   jquery-ui-rails
+  jscolor-rails
   konacha
   mysql2
   nokogiri
