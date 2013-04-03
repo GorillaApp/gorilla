@@ -27,7 +27,10 @@ class EditController < ApplicationController
 
     # The view for load grabs the values of file_contents, first_line, and autosaved_file
     @isRestore = false
-    @file_restore_contents = Autosave.find_autosaved_file(@first_line)
+
+    id = params[:id]
+    @file_restore_contents = Autosave.find_autosaved_file(@first_line, id)
+
     if @file_restore_contents != nil
       @isRestore = true
     end
