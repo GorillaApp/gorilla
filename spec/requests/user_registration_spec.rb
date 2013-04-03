@@ -51,3 +51,14 @@ describe "invalid user sign in " do
   end
 
 end
+
+describe "access testclient/client without authentication" do
+
+  it "checks to see that users get redirected to the sign in page when they attempt to access the testclient without authentication" do
+
+    visit "/"
+
+    page.should have_content("You need to sign in or sign up before continuing.")
+  end
+end
+
