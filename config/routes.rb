@@ -1,10 +1,17 @@
 Gorilla::Application.routes.draw do
 
+  devise_for :users
+  # devise_for :users do
+  #   get '/users/sign_out' => 'devise/sessions#destroy'
+  # end
+
   post "feature/add"
 
   get "feature/getAll"
 
   get "feature/", :to => "feature#feature"
+
+  get "feature/getAll"
 
   get "testclient/client"
 
@@ -16,7 +23,8 @@ Gorilla::Application.routes.draw do
 
   match "edit/delete"
 
-  root :to => "edit#load"
+  root :to => "testclient#client"
+
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

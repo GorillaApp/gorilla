@@ -11,8 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-
-ActiveRecord::Schema.define(:version => 20130328182513) do
+ActiveRecord::Schema.define(:version => 20130402194012) do
 
   create_table "autosaves", :force => true do |t|
     t.string   "name"
@@ -27,8 +26,8 @@ ActiveRecord::Schema.define(:version => 20130328182513) do
     t.integer  "user_id"
     t.string   "name"
     t.string   "sequence"
-    t.integer  "forward_color"
-    t.integer  "reverse_color"
+    t.string   "forward_color"
+    t.string   "reverse_color"
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
   end

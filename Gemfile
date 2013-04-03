@@ -5,10 +5,12 @@ gem 'rack', '1.4.1'
 gem 'thin'
 gem 'jquery-ui-rails'
 gem 'bio'
+gem 'jscolor-rails'
 
 gem 'nokogiri'
 
 gem 'sprockets'
+gem 'devise'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
@@ -33,6 +35,8 @@ group :development, :test do
   gem 'watchr'
   gem 'pg'
   gem 'capybara'
+  gem 'konacha'
+  gem 'simplecov'
 end
 
 group :production do

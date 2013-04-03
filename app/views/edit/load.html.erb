@@ -17,8 +17,6 @@
       </div>
       <div> Name: <input id="name" name="name" type="text"> </div>
       <div> UserID: <input id="user_id" name="user_id" type="text" value="1"> </div>
-
-      <script type="text/javascript" src="jscolor.js"></script>
       <div> Forward Color: <input class="color" value="66ff00" id="forward_color" name="forward_color"> </div>
       <div> Reverse Color: <input class="color" value="ff5500"  id="reverse_color" name="reverse_color"> </div>
       <input id="Button" type="submit" value="Add feature">
@@ -64,7 +62,8 @@ $(document).ready(function () {
  });
 
 function show_main(usedDoc) {
-    main_editor = new GorillaEditor("#ed", usedDoc);
+    debug_editor = new GorillaEditor("#ed2");
+    main_editor = new GorillaEditor("#ed", usedDoc, debug_editor);
     main_editor.startEditing();
     $("#ed").css("width", "90%")
             .css("marginLeft", "5%")
@@ -149,5 +148,6 @@ $('#delete').click(function() {
 });
 
 </script>
+
 <pre id="gb">
 </pre>
