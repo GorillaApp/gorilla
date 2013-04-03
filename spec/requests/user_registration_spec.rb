@@ -31,3 +31,23 @@ describe "user sign in" do
         page.should have_content("Signed in successfully.")
   end
 end
+
+describe "invalid user sign in " do
+
+  it "checks to see that attempting to login with invalid credentials will not work" do
+
+    visit "/users/sign_in"
+
+    user = User.create(:email => "jzhang621@gmail.com",
+                  :password => "password1")
+
+    fill_in "Email",          :with => "jzhang621@gmail.com"
+    fill_in "user_password",  :with => "password"
+
+    click_button "Sign in"
+
+    page.should have_content("Invalid email or password.")
+
+  end
+
+end
