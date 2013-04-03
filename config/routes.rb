@@ -4,6 +4,8 @@ Gorilla::Application.routes.draw do
 
   get "feature/", :to => "feature#feature"
 
+  get "feature/getAll"
+
   get "testclient/client"
 
   get "main/index"

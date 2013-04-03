@@ -105,5 +105,5 @@ describe 'GenBank editor', ->
 describe "Gorilla Editor", ->
   it 'should be able to start editing', ->
     $('body').html('<div id="ed"></div>')
-    ge = new GorillaEditor("#ed", testFile)
+    ge = new GorillaEditor("#ed", testFile2)
     ge.startEditing()
