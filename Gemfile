@@ -34,6 +34,7 @@ group :development, :test do
   gem 'pg'
   gem 'capybara'
   gem 'konacha'
+  gem 'simplecov'
 end
 
 group :production do
