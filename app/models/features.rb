@@ -52,6 +52,8 @@ class Features < ActiveRecord::Base
   def self.getAll(params)
     #returns an array of all features that match the user_id
   	allFeat =  Features.all(:conditions => ["user_id = ?", (params[:user_id])])
+
+
     return allFeat
   end
 
