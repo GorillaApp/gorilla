@@ -37,12 +37,10 @@ class EditController < ApplicationController
   def autosave
     file = params[:genbank_file]
     id = params[:id]
-    time = params[:current_time]
     user = params[:user] #  Current implementation does not include user profiles, all users have id 1
 
-
     # save the file in the Autosave database
-    Autosave.save_file(file, id, time, user)
+    Autosave.save_file(file, id, user)
 
     render json: {success: 1}
   end
