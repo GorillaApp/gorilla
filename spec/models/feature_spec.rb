@@ -28,7 +28,7 @@ describe Features do
   end
 
   it "tests that edit always return success" do
-    
+
     params = {:user_id => 12345, :forward_color => '#f54321', :reverse_color => '#f54321', :name => "erika", :sequence => "aaccg"}
     Features.add(params)
     feat = Features.find_by_name("erika")
@@ -43,7 +43,7 @@ describe Features do
     Features.add(params)
     Features.add(params2)
     params3 = {:user_id => 12345}
-    puts Features.getAll(params3)
+    # puts Features.getAll(params3)
    end
 
 end
