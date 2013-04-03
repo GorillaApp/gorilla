@@ -1,5 +1,9 @@
 Gorilla::Application.routes.draw do
 
+  post "feature/add"
+
+  get "feature/", :to => "feature#feature"
+
   get "testclient/client"
 
   get "main/index"
