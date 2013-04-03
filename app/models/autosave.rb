@@ -8,7 +8,7 @@ class Autosave < ActiveRecord::Base
   attr_accessible :contents, :name, :user_id
 
   def self.save_file(file_contents, name, user_id)
-    autosaved_file = Autosave.find_by_name(name)
+    autosaved_file = Autosave.find_by_name_and_user_id(name, user_id)
     if ! autosaved_file.nil?
       autosaved_file.update_attributes(contents: file_contents)
     else
@@ -16,9 +16,10 @@ class Autosave < ActiveRecord::Base
     end
   end
 
-  def self.find_autosaved_file(name)
+  def self.find_autosaved_file(name, user_id)
+
   	autosaved_file_contents = nil
-  	autosaved_file = Autosave.find_by_name(name)
+  	autosaved_file = Autosave.find_by_name_and_user_id(name, user_id)
   	if ! autosaved_file.nil?
   		autosaved_file_contents = autosaved_file.contents
   	end
