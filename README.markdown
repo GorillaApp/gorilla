@@ -37,4 +37,4 @@ To run the testing suite simply run
 $ rake test
 ```
 
-[ape] http://biologylabs.utah.edu/jorgensen/wayned/ape/ "A Plasmid Editor"
+[ape]: http://biologylabs.utah.edu/jorgensen/wayned/ape/ "A Plasmid Editor"
