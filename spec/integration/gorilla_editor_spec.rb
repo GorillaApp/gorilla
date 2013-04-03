@@ -2,11 +2,26 @@ require 'spec_helper'
 
 describe 'GorillaEditor', :js => true do
   include Capybara::DSL
+  
+  describe 'logged in user' do
+    before (:each) do
+      visit '/'
 
-  it 'should load a simple file' do
-    visit '/testclient/client'
+      find("#user_nav").click_link "Sign up"
 
-    fill_in :file, :with => <<-EOF
+      fill_in :user_email, with: "test@test.com"
+      fill_in :user_password, with: "password"
+      fill_in :user_password_confirmation, with: "password"
+
+      click_button "Sign up"
+
+      page.should have_content "Signed in as test@test.com"
+    end
+
+    it 'should load a simple file' do
+      visit '/testclient/client'
+
+      fill_in :file, :with => <<-EOF
 LOCUS pGG001 20 bp ds-DNA circular UNK 01-JAN-1980
 FEATURES             Location/Qualifiers
      misc_feature    complement(1..10)
@@ -18,7 +33,12 @@ FEATURES             Location/Qualifiers
 ORIGIN
         1 cgtctctgac cagaccaata
 //
-EOF
-    click_button "Process"
+  EOF
+      click_button "Process"
+
+      page.should have_content "cgtctctgaccagaccaata"
+
+      find('#ColE1-0-0-ed').should have_content "cgtctctgac"
+    end
   end
 end
