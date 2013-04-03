@@ -81,7 +81,6 @@ class window.GenBank
         startix = x
       if current == end
         endix = x
-        break
       if count
         current += 1
       if sequence[x] == ">"
@@ -89,8 +88,13 @@ class window.GenBank
     beg = sequence[...startix]
     end = sequence[endix+1..]
     mid = sequence[startix..endix]
+    console.log startix
+    console.log endix
+    console.log beg
+    console.log end
+    console.log mid
     logger.exit()
-    beg + "<span id='#{name}-#{featureId}-#{spanId}' class='#{name}-#{featureId}' style='background-color:#{color}' >" + mid + "</span>" + end
+    beg + "<span id='#{name}-#{featureId}-#{spanId}' class='#{name}-#{featureId}' style='background-color:#{color}'>" + mid + "</span>" + end
 
   @annotateFeature: (seq, feature) ->
     color = feature.parameters["/ApEinfo_fwdcolor"]
@@ -108,26 +112,72 @@ class window.GenBank
       r = GenBank.findRangeById(range, spanId)
       return r if !!r
     return null
-    
+
+  sortByStartIndex: (a, b) ->
+      if a.start == b.start
+          return 0
+      if a.start > b.start
+          return 1
+      else
+          return -1
+
+  splitRangeAt: (featId, rangeId, newLength) ->
+    f = @getFeatures()[featId]
+    r = GenBank.getRange(f.location, rangeId)
+
+    # push new range
+    f.location.ranges.push
+        start: newLength + 1
+        end: r.end
+        id: f.location.ranges.length
+
+    # update end point of current range
+    r.end = newLength
+    f.location.ranges.sort(@sortByStartIndex)
+    f
+
   splitFeatureAt: (featId, rangeId, newLength) ->
     f = @getFeatures()[featId]
+    rangeIx = GenBank.rangeIndex(f, rangeId)
     newFeat = $.extend(true, {}, f)
     newFeat.id = @getFeatures().length
-    newFeat.location.ranges[rangeId].start += newLength + 1
-    newFeat.location.ranges = newFeat.location.ranges[rangeId..]
+    newFeat.location.ranges[rangeIx].start += newLength + 1
+    newFeat.location.ranges = newFeat.location.ranges[rangeIx..]
     @getFeatures().push(newFeat)
-
-    r = f.location.ranges[rangeId]
+    r = f.location.ranges[rangeIx]
     r.end = r.start + newLength
-    f.location.ranges = f.location.ranges[..rangeId]
+    f.location.ranges = f.location.ranges[..rangeIx]
 
-    newFeat
+    new: newFeat
+    old: f
+
+  moveEndBy: (featId, rangeId, amount) ->
+    logger.d("Moving end of #{featId}-#{rangeId}")
+    f = @getFeatures()[featId]
+    r = GenBank.getRange(f.location, rangeId)
+    r.end += amount
+    if r.end < r.start
+      f.location.ranges.splice(GenBank.rangeIndex(f, rangeId), 1)
 
   advanceFeature: (featId, rangeId, amount) ->
+    logger.d("Advancing #{featId}-#{rangeId}")
     f = @getFeatures()[featId]
-    r = f.location.ranges[rangeId]
+    r = GenBank.getRange(f.location, rangeId)
     r.start += amount
     r.end += amount
+
+  @rangeIndex: (feature, id) ->
+    i = 0
+    for range in feature.location.ranges
+      if range.id == id
+        return i
+      i += 1
+
+  @getRange: (location, id) ->
+    for range in location.ranges
+      if range.id == id
+        return range
+    return null
 
   getAnnotatedSequence: () ->
     logger.enter()
@@ -182,9 +232,10 @@ class window.GenBank
   serializeFeatures: () ->
     features = "FEATURES             Location/Qualifiers" + @newline
     for feat in @getFeatures()
-      features += "     " + feat.currentFeature.padBy(16) + GenBank.serializeLocation(feat.location) + @newline
-      for own key, value of feat.parameters
-        features += "                     " + "#{key}=\"#{value}\" " + @newline
+      if feat.location.ranges.length > 0
+        features += "     " + feat.currentFeature.padBy(16) + GenBank.serializeLocation(feat.location) + @newline
+        for own key, value of feat.parameters
+          features += "                     " + "#{key}=\"#{value}\" " + @newline
     features
 
   serializeGenes: () ->
@@ -291,101 +342,237 @@ class window.GenBank
     @data.features = retval
 
 class window.GorillaEditor
-  constructor: (@editorId, @initialDocument) ->
+  constructor: (@editorId, @initialDocument = '', @debugEditor = null) ->
     logger.d("Initializing GorillaEditor...")
-    @file = new GenBank(@initialDocument)
+    if @initialDocument != ''
+      @file = new GenBank(@initialDocument)
+      if @debugEditor != null
+        @debugEditor.file = new GenBank(@initialDocument)
+        @debugEditor.startEditing()
     logger.d("GorillaEditor ready!")
 
   startEditing: () ->
     logger.d("Preparing Editor...")
     me = @
-    $(@editorId).css('width','100%')
+    
+    $(@editorId).css("width", "90%")
+                .css("marginLeft", "5%")
+                .css("marginRight", "5%")
+                .css("marginBottom", "2%")
                 .css('word-wrap','break-word')
                 .css('font-family','monospace')
                 .attr('contenteditable','true')
                 .attr('spellcheck','false')
                 .html(@file.getAnnotatedSequence())
-                .bind('input', (target) -> me.textChanged(me, target))
-    @editorContents = $(@editorId).text()
 
+    $(@editorId).find("*").andSelf().unbind('keypress').unbind('keydown').unbind('keyup')
+
+    $(@editorId).bind('input', (event) -> me.textChanged(event))
+                .keypress((event) -> me.keyPressed(event))
+                .keydown((event) -> me.keyDown(event))
+                .keyup((event) -> me.keyUp(event))
+
+    @editorContents = $(@editorId).text()
+    @editorHtml = $(@editorId).html()
+    @previousEditors = []
+    @nextEditors = []
+    @previousFiles = []
+    @nextFiles = []
     logger.d("Editor ready!")
 
-  textChanged: (me, target) ->
-    me.previousContents = me.editorContents
-    me.editorContents = $(me.editorId).text()
+  undo: (event) ->
+    if @previousFiles.length > 0
+      @nextFiles.push($.extend(true, {}, @file))
+      @file = @previousFiles.pop()
+      $(@editorId).html(@file.getAnnotatedSequence())
+      @updateDebugEditor()
 
+  redo: (event) ->
+    if @nextFiles.length > 0
+      @previousFiles.push($.extend(true, {}, @file))
+      @file = @nextFiles.pop()
+      $(@editorId).html(@file.getAnnotatedSequence())
+      @updateDebugEditor()
+      
+  trackChanges: ->
+    @previousFiles.push($.extend(true, {}, @file))
+
+  updateDebugEditor: ->
+    if @debugEditor != null
+      @file.updateSequence($(@editorId).text())
+      @debugEditor.file = new GenBank(@file.serialize())
+      @debugEditor.startEditing()
+
+  deleteAtCursor: () ->
     sel = window.getSelection()
 
-    loc = sel.getRangeAt(0)
+    logger.l sel
 
-    caretPosition = loc.startOffset
+    if sel.type == "Caret"
+      @trackChanges()
 
-    element = loc.startContainer
-    pe = element.parentNode
+      loc = sel.getRangeAt(0)
 
-    if me.previousContents.length > me.editorContents.length
-      difference = me.editorContents.length - me.previousContents.length
-      node = pe
-      if node.tagName == "SPAN"
-        spl = node.id.split('-')
-        fid = parseInt(spl[1])
-        rid = parseInt(spl[2])
-        me.file.getFeatures()[fid].end += difference
+      caretPosition = loc.startOffset
+
+      element = loc.startContainer
+      pe = element.parentNode
+
+      element.deleteData(caretPosition-1, 1)
+      
+      if pe.tagName == "SPAN"
+        spl = pe.id.split('-')
+        featureId = parseInt(spl[1])
+        rangeId = parseInt(spl[2])
+        @file.moveEndBy(featureId, rangeId, -1)
+        node = pe.nextSibling
+      else
+        node = element
       while !!node
-          if node.tagName == "SPAN"
-            logger.l("spanning #{node.id}")
-            spl = node.id.split('-')
-            featureId = parseInt(spl[1])
-            rangeId = parseInt(spl[2])
-            me.file.advanceFeature(featureId, rangeId, difference)
-          node = node.nextSibling
+        if node.tagName == "SPAN"
+          spl = node.id.split('-')
+          featureId = parseInt(spl[1])
+          rangeId = parseInt(spl[2])
+          @file.advanceFeature(featureId, rangeId, -1)
+        node = node.nextSibling
+
+      sel.removeAllRanges()
+      
+      delme = null
+
+      l = document.createRange()
+      if caretPosition - 1 == 0
+        if element.tagName != "SPAN" and element.parentNode.id != $(@editorId).attr('id')
+          element = element.parentNode
+        if element.innerHTML?.length == 0
+          delme = element
+        element = element.previousSibling
+        if element.tagName == "SPAN"
+          element = element.childNodes[0]
+        caretPosition = element.length + 1
+      l.setStart(element, caretPosition-1)
+      l.collapse(true)
+
+      if delme != null
+        $(delme).remove()
+
+      sel.addRange l
+
+      @updateDebugEditor()
     else
-      return if caretPosition == 0
-      if "acgt".indexOf($(element).text()[caretPosition-1]) == -1
-        t = element.textContent
-        element.textContent = t[0...caretPosition-1] + t[caretPosition..]
-        caretPosition -= 1
-      else if pe.tagName == "SPAN"
-        idSplit = pe.id.split('-')
-        featureId = parseInt(idSplit[1])
-        spanId = parseInt(idSplit[2])
-        end = element.splitText(caretPosition)
-        char = element.splitText(caretPosition-1)
-        start = element
-        newFeature = me.file.splitFeatureAt(featureId, spanId, caretPosition-1)
-        node = pe
+      logger.wtf "How Dare You"
+
+  keyDown: (event) ->
+    if event.keyCode == 8
+      logger.l event
+      logger.l "Backspace"
+      event.preventDefault()
+      event.stopPropagation()
+      @deleteAtCursor()
+    else if event.ctrlKey
+      logger.l event
+      if event.keyCode == 90
+        @undo()
+      if event.keyCode == 89
+        @redo()
+
+  keyUp: (event) ->
+
+  keyPressed: (event) ->
+    event.preventDefault()
+
+    logger.enter()
+
+    char = String.fromCharCode(event.keyCode).toLowerCase()
+    if "agtc".indexOf(char) != -1
+      logger.d "ooh, exciting!"
+      sel = window.getSelection()
+
+      if sel.type == "Caret"
+        @trackChanges()
+
+        loc = sel.getRangeAt(0)
+
+        caretPosition = loc.startOffset
+
+        element = loc.startContainer
+        pe = element.parentNode
+
+        if pe.tagName == "SPAN"
+          # Parse feature information from span ID
+          idSplit = pe.id.split('-')
+          featureId = parseInt(idSplit[1])
+          spanId = parseInt(idSplit[2])
+
+          # We'll need this later
+          featureLength = element.length
+
+          # Split the text inside the span
+          end = element.splitText(caretPosition)
+          start = element
+
+          # Remove end from parent element
+          pe.removeChild(end)
+
+          # Add the char as a new text node after the parent element
+          tn = document.createTextNode()
+          tn.textContent = char
+          pe.parentNode.insertBefore(tn, pe.nextSibling) # this is retarded
+
+          if caretPosition < featureLength
+            # Split feature apart
+            feat = @file.splitFeatureAt(featureId, spanId, caretPosition-1)
+
+            # Populate new span with appropriate information
+            newGuy = document.createElement("SPAN")
+            newGuy.id = "#{feat.new.parameters['/label']}-#{feat.new.id}-#{spanId}"
+            newGuy.className = "#{feat.new.parameters['/label']}-#{feat.new.id}"
+            newGuy.setAttribute("style", pe.getAttribute('style'))
+            newGuy.appendChild(end)
+            pe.parentNode.insertBefore(newGuy, tn.nextSibling)
+
+            # Update successive ranges if there are more than one.
+            for range in feat.new.location.ranges[1..]
+              oldNode = document.getElementById("#{feat.new.parameters['/label']}-#{feat.old.id}-#{range.id}")
+              oldNode.id = "#{feat.new.parameters['/label']}-#{feat.new.id}-#{range.id}"
+              oldNode.className = "#{feat.new.parameters['/label']}-#{feat.new.id}"
+
+          element = tn
+        else
+          end = element.splitText(caretPosition)
+          start = element
+
+          pe.removeChild(end)
+
+          tn = document.createTextNode()
+          tn.textContent = char
+
+          pe.insertBefore(tn, start.nextSibling)
+          pe.insertBefore(end, tn.nextSibling)
+         
+          element = tn
+
+        node = element
         while !!node
           if node.tagName == "SPAN"
             spl = node.id.split('-')
             featureId = parseInt(spl[1])
             rangeId = parseInt(spl[2])
-            me.file.advanceFeature(featureId, rangeId, 1)
+            @file.advanceFeature(featureId, rangeId, 1)
           node = node.nextSibling
-        pe.removeChild(char)
-        pe.removeChild(end)
-        pe.parentNode.insertBefore(char, pe.nextSibling)
-        newGuy = document.createElement("SPAN")
-        newGuy.id = "#{newFeature.parameters['/label']}-#{newFeature.id}-#{newFeature.location.uid}"
-        newGuy.className = "#{newFeature.parameters['/label']}-#{newFeature.id}"
-        newGuy.setAttribute("id", pe.getAttribute('id') + "-")
-        newGuy.setAttribute("style", pe.getAttribute('style'))
-        newGuy.appendChild(end)
-        pe.parentNode.insertBefore(newGuy, char.nextSibling)
-        element = newGuy
-        caretPosition = 1
-        ins = true
 
-      sel.removeAllRanges()
+        @updateDebugEditor()
 
-      elem = document.getElementById($(pe).attr('id'))
-      l = document.createRange()
-      if ins
-        l.setStartBefore(element)
+        sel.removeAllRanges()
+
+        l = document.createRange()
+        l.setStartAfter(element)
+        l.collapse(true)
+
+        sel.addRange l
       else
-        l.setStart(element, caretPosition)
-      l.collapse(true)
+        logger.wtf "I don't know how to handle this responsibility!"
+    logger.exit()
 
-      sel.addRange l
-
-      @file.updateSequence($(me.editorId).text())
-      $('#gb').text(@file.serialize())
+  textChanged: (event) ->
+    logger.wtf "NOOOOOOOOOOOOOOOOOOOOOOOO"

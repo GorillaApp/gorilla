@@ -5,6 +5,7 @@ gem 'rack', '1.4.1'
 gem 'thin'
 gem 'jquery-ui-rails'
 gem 'bio'
+gem 'jscolor-rails'
 
 gem 'nokogiri'
 
@@ -33,6 +34,8 @@ group :development, :test do
   gem 'watchr'
   gem 'pg'
   gem 'capybara'
+  gem 'konacha'
+  gem 'simplecov'
 end
 
 group :production do
