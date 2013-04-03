@@ -33,6 +33,7 @@ group :development, :test do
   gem 'watchr'
   gem 'pg'
   gem 'capybara'
+  gem 'konacha'
 end
 
 group :production do
