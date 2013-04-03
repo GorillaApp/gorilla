@@ -94,7 +94,7 @@ class window.GenBank
     console.log end
     console.log mid
     logger.exit()
-    beg + "<span id='#{name}-#{featureId}-#{spanId}' class='#{name}-#{featureId}' style='background-color:#{color}' >" + mid + "</span>" + end
+    beg + "<span id='#{name}-#{featureId}-#{spanId}' class='#{name}-#{featureId}' style='background-color:#{color}'>" + mid + "</span>" + end
 
   @annotateFeature: (seq, feature) ->
     color = feature.parameters["/ApEinfo_fwdcolor"]

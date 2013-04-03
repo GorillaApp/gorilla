@@ -66,7 +66,7 @@ describe 'GenBank editor', ->
   it 'should annotate a simple file correctly', ->
     file = new GenBank(testFile2)
     features = file.getAnnotatedSequence()
-    features.should.contain "<span id='ColE1-0-0' class='ColE1-0' style='background-color:#7f7f7f' >cgtctctgac</span>cagaccaata"
+    features.should.contain "<span id='ColE1-0-0' class='ColE1-0' style='background-color:#7f7f7f'>cgtctctgac</span>cagaccaata"
 
   describe "locations", ->
     it 'should serialize a location correctly', ->
@@ -104,4 +104,6 @@ describe 'GenBank editor', ->
 
 describe "Gorilla Editor", ->
   it 'should be able to start editing', ->
-    
+    $('body').html('<div id="ed"></div>')
+    ge = new GorillaEditor("#ed", testFile)
+    ge.startEditing()
