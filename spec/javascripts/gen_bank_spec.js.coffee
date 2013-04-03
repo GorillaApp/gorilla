@@ -101,9 +101,3 @@ describe 'GenBank editor', ->
         d = GenBank.parseLocationData(location)
         newLocation = GenBank.serializeLocation(d)
         newLocation.should.equal location
-
-describe "Gorilla Editor", ->
-  it 'should be able to start editing', ->
-    $('body').html('<div id="ed"></div>')
-    ge = new GorillaEditor("#ed", testFile2)
-    ge.startEditing()
