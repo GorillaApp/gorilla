@@ -1,6 +1,7 @@
 class TestclientController < ApplicationController
-  def client
 
+    before_filter :authenticate_user!
+      def client
 
-  end
+      end
 end

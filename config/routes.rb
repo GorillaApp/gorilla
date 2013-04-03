@@ -15,8 +15,8 @@ Gorilla::Application.routes.draw do
 
   match "edit/delete"
 
-  root :to => "edit#load"
-  #root :to => "home#index"
+  root to: "testclient#client"
+
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
