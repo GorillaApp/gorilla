@@ -45,10 +45,9 @@ function show_main(usedDoc) {
     window.setInterval(function() {
         var file, time, user, autosaveURI, params;
         file = main_editor.file.serialize();
-        time = Date();
         user = 1;
         autosaveURI = '/edit/autosave'
-        params = { genbank_file: file, current_time: time, id: first_line, user: user };
+        params = { genbank_file: file, id: first_line, user: user };
         json_request(
             autosaveURI,
             params,
@@ -93,9 +92,8 @@ $('#save').click(function() {
 $('#autosave').click(function() {
     var file, time, user, params;
     file = main_editor.file.serialize();
-    time = Date();
     user = 1;
-    params = { genbank_file: file, current_time: time, id: first_line, user: user };
+    params = { genbank_file: file, id: first_line, user: user };
     json_request(
         "/edit/autosave", 
         params, 
