@@ -1,5 +1,5 @@
-//= require edit
-//= require jquery
+#= require edit
+#= require jquery
 
 testFile = """LOCUS       pGG001                  2559 bp ds-DNA   circular    UNK 01-JAN-1980
 DEFINITION  .
