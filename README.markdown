@@ -32,9 +32,9 @@ specify the URL of a GenBank/ApE file that can be loaded.
 
 The following file can be used in the URL field for quick testing:
 
-...
+```
 public/test1.ape
-...
+```
 
 # Testing
 To run the testing suite simply run
