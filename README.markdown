@@ -30,6 +30,12 @@ Once you log in to the website, you will be taken to a page where you can
 either enter the contents of a GenBank/ApE file in a text box, or you can
 specify the URL of a GenBank/ApE file that can be loaded. 
 
+The following file can be used in the URL field for quick testing:
+
+...
+public/test1.ape
+...
+
 # Testing
 To run the testing suite simply run
 
