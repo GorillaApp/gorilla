@@ -13,8 +13,36 @@ window.handle_autosave = (editor_selector, autosave_selector) ->
       $(autosave_selector).css("width", "45%")
                           .css("float", "left")
 
-      $(".editor_labels").show()
+      $(".editor_label").show()
       $("#autosavechoice").show()
+      $('#opened').click ->
+        isRestore = false
+        begin_editing(editor_selector, autosave_selector)
+      $('#autosaved').click ->
+        doc = doc_restored
+        isRestore = false
+        begin_editing(editor_selector, autosave_selector)
       return
   isRestore = false
   begin_editing(editor_selector, autosave_selector)
+
+window.autosave_file = (file) ->
+  $.post "/edit/autosave",
+         genbank_file: file.serialize()
+         id: first_line
+         user: user,
+         (-> notify('Autosave Successful'))
+
+window.delete_autosave = () ->
+  $.post "/edit/delete",
+         id: first_line,
+         (-> notify("Delete Successful"))
+
+window.start_autosaving = (editor) ->
+  $('#autosave').click ->
+    autosave_file(editor.file)
+
+  $('#deleteAutosave').click ->
+    delete_autosave()
+
+  window.setInterval (-> autosave_file(editor.file)), 10000

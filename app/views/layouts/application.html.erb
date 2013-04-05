@@ -7,23 +7,27 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
-	<div id="user_nav">
-		<% if user_signed_in? %>
-      Signed in as <%= current_user.email %>. Not you?
-      <%= link_to "Sign out", destroy_user_session_path, 
-                              method: "DELETE",
-                              id: :top_nav_sign_out %>
-		<% else %>
-		  <%= link_to "Sign up", new_user_registration_path,
-                             id: :top_nav_sign_up %> or 
-      <%= link_to "Sign in", new_user_session_path,
-                             id: :top_nav_sign_in %>
-		<% end %>
-
-		<p class="notice"><%= notice %></p>
-		<p class="alert"><%= alert %></p>
-	</div>
-  <%= yield %>
+  <header>
+    <h3>Gorilla</h3>
+    <div id="header_links">
+      <%= yield :links %>
+    </div>
+  </header>
+  <article>
+    <%= yield %>
+  </article>
+  <% if user_signed_in? %>
+    <footer>
+      <div id="user_nav">
+        Signed in as: <%= current_user.email %>.
+        <%= link_to "Sign out", destroy_user_session_path, 
+                                method: "DELETE",
+                                id: :top_nav_sign_out %>
+        <p class="notice"><%= notice %></p>
+        <p class="alert"><%= alert %></p>
+      </div>
+    </footer>
+  <% end %>
 </body>
 </html>
 

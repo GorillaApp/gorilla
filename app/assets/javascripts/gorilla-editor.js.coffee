@@ -182,7 +182,7 @@ class window.GorillaEditor
 
             # Populate new span with appropriate information
             newGuy = document.createElement("SPAN")
-            newGuy.id = "#{feat.new.parameters['/label']}-#{feat.new.id}-#{spanId}-#{file.id}"
+            newGuy.id = "#{feat.new.parameters['/label']}-#{feat.new.id}-#{spanId}-#{@file.id}"
             newGuy.className = "#{feat.new.parameters['/label']}-#{feat.new.id}"
             newGuy.setAttribute("style", pe.getAttribute('style'))
             newGuy.appendChild(end)
