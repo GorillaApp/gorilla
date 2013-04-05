@@ -15,3 +15,5 @@
 //= require_tree .
 //= require jquery.ui.dialog
 //= require jscolor
+
+logger = new Log(lc.ALL,ll.DEBUG)
