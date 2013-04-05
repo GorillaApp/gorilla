@@ -1,19 +1,12 @@
-<html>
 <div id="firstPage">
-  <center>
-    <form action = "/edit/load/" method = "GET">
-      <div>File: <textarea id="file" type="text" name="file" col="25" rows= "25">
-      </textarea>
-  	  </div>
-      <div> fileURL: <input id="fileURL" type="text" name="fileURL"> </div>
-      <div> saveURL: <input id="saveURL" type="text" name="saveURL"> </div>
-      <input id="Button" type="submit" value="Process">
-
-    </form>
-  </center>
+  <%= form_tag("/edit/load/", method: "GET") do %>
+    <h2>Enter File Information</h2>
+    <%= label_tag :file, "Copy the contents of a GenBank file:" %><br>
+    <%= text_area_tag :file, "", size: "80x10" %><br>
+    <%= label_tag :fileURL, "Or, enter the url of where to find the file:" %><br>
+    <%= text_field_tag(:fileURL) %><br>
+    <%= label_tag :saveURL, "Enter a url to send the save request to:" %><br>
+    <%= text_field_tag(:saveURL) %><br>
+    <%= submit_tag("Open File") %>
+  <% end %>
 </div>
-
-<script type="text/javascript">
-
-</script>
-</html>
