@@ -299,8 +299,8 @@ class window.GenBank
     id = 0
 
     logger.d("Looking at each feature")
-    logger.enter()
     for line in @data.FEATURES.split(@newline)[1..]
+      logger.enter()
       if line.trim()[0] != "/"
         logger.d("This is the start of a new feature")
         if currentFeature != ""
@@ -321,7 +321,7 @@ class window.GenBank
         logger.d("Adding new component to the feature")
         s = line.trim().split("=")
         parts[s[0]] = s[1][1..-2]
-    logger.exit()
+      logger.exit()
     if parts != {}
       retval.push
         currentFeature: currentFeature

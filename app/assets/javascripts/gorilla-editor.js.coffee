@@ -19,6 +19,8 @@ class window.GorillaEditor
                 .css('font-family','monospace')
                 .html(@file.getAnnotatedSequence())
 
+    logger.d("Ready to view")
+
   startEditing: () ->
     logger.d("Preparing Editor to be edited")
     me = @
