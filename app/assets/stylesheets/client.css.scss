@@ -1,0 +1,16 @@
+#load_file_form {
+  width: 665px;
+  margin: 0px auto;
+
+  .row {
+    clear: both;
+
+    INPUT {
+      float: right;
+    }
+  }
+}
+
+#fileURL, #saveURL {
+  width: 370px;
+}

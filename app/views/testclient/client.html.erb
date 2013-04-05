@@ -1,12 +1,18 @@
-<div id="firstPage">
+<div id="load_file_form">
   <%= form_tag("/edit/load/", method: "GET") do %>
     <h2>Enter File Information</h2>
     <%= label_tag :file, "Copy the contents of a GenBank file:" %><br>
     <%= text_area_tag :file, "", size: "80x10" %><br>
-    <%= label_tag :fileURL, "Or, enter the url of where to find the file:" %><br>
-    <%= text_field_tag(:fileURL) %><br>
-    <%= label_tag :saveURL, "Enter a url to send the save request to:" %><br>
-    <%= text_field_tag(:saveURL) %><br>
-    <%= submit_tag("Open File") %>
+    <div class="row">
+      <%= label_tag :fileURL, "Or, enter the url of where to find the file:" %>
+      <%= text_field_tag(:fileURL) %><br>
+    </div>
+    <div class="row">
+      <%= label_tag :saveURL, "Enter a url to send the save request to:" %>
+      <%= text_field_tag(:saveURL) %><br>
+    </div>
+    <div class="row">
+      <%= submit_tag("Open File") %>
+    </div>
   <% end %>
 </div>
