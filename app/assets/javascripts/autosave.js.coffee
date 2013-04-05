@@ -1,5 +1,9 @@
 window.handle_autosave = (editor_selector, autosave_selector) ->
-  if doc_restored != null and doc != doc_restored
+  d = new GenBank(doc)
+  dr = new GenBank(doc_restored)
+
+  if doc_restored != null and d.getAnnotatedSequence() != dr.getAnnotatedSequence()
+
     recover_autosave = confirm("You may have closed this file without saving. Would you like to recover your changes?")
 
     if recover_autosave
@@ -8,22 +12,17 @@ window.handle_autosave = (editor_selector, autosave_selector) ->
       autosave_editor = new GorillaEditor(autosave_selector, doc_restored)
       autosave_editor.viewFile()
 
-      $(editor_selector).css("width", "45%")
-                        .css("float", "left")
-      $(autosave_selector).css("width", "45%")
-                          .css("float", "left")
-
       $(".editor_label").show()
       $("#autosavechoice").show()
       $('#opened').click ->
-        isRestore = false
+        window.isRestore = false
         begin_editing(editor_selector, autosave_selector)
       $('#autosaved').click ->
-        doc = doc_restored
-        isRestore = false
+        window.doc = window.doc_restored
+        window.isRestore = false
         begin_editing(editor_selector, autosave_selector)
       return
-  isRestore = false
+  window.isRestore = false
   begin_editing(editor_selector, autosave_selector)
 
 window.autosave_file = (file) ->

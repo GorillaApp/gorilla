@@ -13,6 +13,12 @@
       <%= yield :links %>
     </div>
   </header>
+  <% if notice %>
+    <div class="notification notice" ><%= notice %></div>
+  <% end %>
+  <% if alert %>
+    <div class="notification alert"><%= alert %></div>
+  <% end %>
   <article>
     <%= yield %>
   </article>
@@ -23,8 +29,6 @@
         <%= link_to "Sign out", destroy_user_session_path, 
                                 method: "DELETE",
                                 id: :top_nav_sign_out %>
-        <p class="notice"><%= notice %></p>
-        <p class="alert"><%= alert %></p>
       </div>
     </footer>
   <% end %>

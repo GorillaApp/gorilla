@@ -11,13 +11,8 @@ class window.GorillaEditor
   viewFile: () ->
     logger.d("Preparing Editor to be viewed")
 
-    $(@editorId).css("width", "90%")
-                .css("marginLeft", "5%")
-                .css("marginRight", "5%")
-                .css("marginBottom", "2%")
-                .css('word-wrap','break-word')
-                .css('font-family','monospace')
-                .html(@file.getAnnotatedSequence())
+    $(@editorId).html(@file.getAnnotatedSequence())
+                .addClass('gorilla-editor viewing')
 
     logger.d("Ready to view")
 
@@ -29,6 +24,8 @@ class window.GorillaEditor
     
     $(@editorId).attr('contenteditable','true')
                 .attr('spellcheck','false')
+                .removeClass('viewing')
+                .addClass('editing')
 
     $(@editorId).find("*").andSelf().unbind('keypress').unbind('keydown').unbind('keyup')
 

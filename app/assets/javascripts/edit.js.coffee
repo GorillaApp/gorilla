@@ -6,14 +6,15 @@
 window.begin_editing = (editor_selector, autosave_selector) ->
   $('#autosavechoice').hide()
 
-  if isRestore
-    handle_autosave(editor_selector, autosave_selector)
-
-  window.main_editor = new GorillaEditor(editor_selector, doc)
-
-  start_autosaving(main_editor)
   bind_features()
 
-  main_editor.startEditing()
+  if window.isRestore
+    handle_autosave(editor_selector, autosave_selector)
+  else
+    $(autosave_selector).hide()
+    # window.debug_editor = new GorillaEditor(autosave_selector)
+    window.main_editor = new GorillaEditor(editor_selector, doc)
 
-  $('#addFeature')
+    start_autosaving(main_editor)
+
+    main_editor.startEditing()

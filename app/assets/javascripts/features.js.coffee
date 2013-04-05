@@ -1,6 +1,7 @@
-populateTbl = ->
+populateTbl = (features) ->
   table=document.getElementById("featuresTbl")
-  feat = allFeatures[i]
+
+  table.innerHTML = ""
 
   row=table.insertRow(-1)
 
@@ -18,7 +19,7 @@ populateTbl = ->
   cell5.innerHTML = "Reverse Color"
   cell6.innerHTML = "Delete?"
 
-  for feat in allFeatures
+  for feat in features
     row=table.insertRow(-1)
 
     cell1=row.insertCell(0)
@@ -45,11 +46,12 @@ window.bind_features = ->
       effect: "drop"
       duration: 1000
 
-  $('#newFeature').click ->
+  $('#addFeature').click ->
     $('#featuredialog').dialog("open")
 
   $('#allfeaturesdialog').dialog
     autoOpen: false
+    width: 600
     show:
       effect: "slide"
       duration: 1000
@@ -58,11 +60,11 @@ window.bind_features = ->
       duration: 1000
 
   $('#listFeatures').click ->
-    if allFeatures == null
+    if window.allFeatures == null
       $.get "/feature/getAll", {user_id: user}, (data) ->
-        allFeatures = data.features
-        populateTbl()
-        $('#allfeaturedialog').dialog("open")
+        window.allFeatures = data.features
+        populateTbl(window.allFeatures)
+        $('#allfeaturesdialog').dialog("open")
     else
-      populateTbl
-      $('#allfeaturedialog').dialog("open")
+      populateTbl(window.allFeatures)
+      $('#allfeaturesdialog').dialog("open")
