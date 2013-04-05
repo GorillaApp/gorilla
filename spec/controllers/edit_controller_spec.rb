@@ -114,6 +114,16 @@ ORIGIN
 //
   EOF
 
+  before(:all) do
+    User.create!(email: "edit-controller-test@test.com",
+                 password: "password",
+                 password_confirmation: "password")
+  end
+
+  before(:each) do
+    sign_in User.find_by_email("edit-controller-test@test.com")
+  end
+
   describe "GET 'load' with file" do
     it "returns the javascript with doc set to file" do
       get :load, :file => file_contents
