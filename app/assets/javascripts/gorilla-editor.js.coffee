@@ -8,19 +8,25 @@ class window.GorillaEditor
         @debugEditor.startEditing()
     logger.d("GorillaEditor ready!")
 
-  startEditing: () ->
-    logger.d("Preparing Editor...")
-    me = @
-    
+  viewFile: () ->
+    logger.d("Preparing Editor to be viewed")
+
     $(@editorId).css("width", "90%")
                 .css("marginLeft", "5%")
                 .css("marginRight", "5%")
                 .css("marginBottom", "2%")
                 .css('word-wrap','break-word')
                 .css('font-family','monospace')
-                .attr('contenteditable','true')
-                .attr('spellcheck','false')
                 .html(@file.getAnnotatedSequence())
+
+  startEditing: () ->
+    logger.d("Preparing Editor to be edited")
+    me = @
+
+    @viewFile()
+    
+    $(@editorId).attr('contenteditable','true')
+                .attr('spellcheck','false')
 
     $(@editorId).find("*").andSelf().unbind('keypress').unbind('keydown').unbind('keyup')
 
