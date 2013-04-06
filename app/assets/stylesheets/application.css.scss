@@ -46,14 +46,18 @@ body {
     top: 20px;
     padding: 5px;
     border: 2px solid #000000;
-
+    display: none;
   }
 
-  .notification.alert {
+  .notification#error {
+    background-color: red;
+  }
+
+  .notification#alert {
     background-color: yellow;
   }
 
-  .notification.notice {
+  .notification#notice {
     background-color: green;
   }
 

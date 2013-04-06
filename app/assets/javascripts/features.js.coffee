@@ -41,6 +41,9 @@ populateTable = (features) ->
 
   $("#features-table").html(tableData)
 
+reset_features_form = ->
+  $('feature-form').each -> $(this).reset()
+
 window.setup_features = ->
   $('#featuredialog').dialog
     autoOpen: false
@@ -86,6 +89,7 @@ window.bind_features = ->
              ->
                notify("Save Successful")
                $("#featuredialog").dialog("close")
+               reset_features_form()
 
   $('#addFeature').unbind('click').click ->
     $('#featuredialog').dialog("open")

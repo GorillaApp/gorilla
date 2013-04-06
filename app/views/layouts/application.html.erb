@@ -13,12 +13,8 @@
       <%= yield :links %>
     </div>
   </header>
-  <% if notice %>
-    <div class="notification notice" ><%= notice %></div>
-  <% end %>
-  <% if alert %>
-    <div class="notification alert"><%= alert %></div>
-  <% end %>
+  <div class="notification" id="notice" ><%= notice %></div>
+  <div class="notification" id="alert"><%= alert %></div>
   <article>
     <%= yield %>
   </article>
