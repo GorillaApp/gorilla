@@ -4,6 +4,6 @@ module ApplicationHelper
   end
 
   def development?
-    not @is_production
+    not production?
   end
 end
