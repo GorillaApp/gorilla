@@ -1,4 +1,6 @@
-#= require edit
+#= require gorilla-editor
+#= require genbank
+#= require logging
 #= require jquery
 
 testFile = """LOCUS       pGG001                  2559 bp ds-DNA   circular    UNK 01-JAN-1980
@@ -13,6 +15,8 @@ ORIGIN
         1 cgtctctgac cagaccaata
 //
 """
+
+window.logger = new Log(lc.all, ll.WARNING)
 
 describe "Gorilla Editor", ->
   it 'should be able to start editing', ->

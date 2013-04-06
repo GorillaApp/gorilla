@@ -1,7 +1,11 @@
-# Gorilla
+# Gorilla [![Build Status](https://travis-ci.org/GorillaApp/gorilla.png?branch=master)](https://travis-ci.org/GorillaApp/gorilla)
 
 Gorilla is a rails/javascript re-implementation of the biological tool
 [ApE][ape]. 
+
+# To use the production Gorilla server
+You can find gorilla here: [gorilla.zmbush.com](gorilla.zmbush.com)
+
 
 # To Run Gorilla
 Once you have checked out the project, you'll need to run the following
@@ -29,6 +33,12 @@ http://localhost:3000/
 Once you log in to the website, you will be taken to a page where you can
 either enter the contents of a GenBank/ApE file in a text box, or you can
 specify the URL of a GenBank/ApE file that can be loaded. 
+
+The following file can be used in the URL field for quick testing:
+
+```
+http://www.zmbush.com/test1.ape
+```
 
 # Testing
 To run the testing suite simply run

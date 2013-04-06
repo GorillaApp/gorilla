@@ -1,0 +1,126 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or vendor/assets/stylesheets of plugins, if any, can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the top of the
+ * compiled file, but it's generally better to create a new file per style scope.
+ *
+ *= require reset
+ *= require_self
+ *= require_tree .
+ *= require jquery.ui.dialog
+ */
+
+@mixin radius($topleft, $topright: $topleft, $bottomright: $topleft, $bottomleft: $topleft) {
+  -moz-border-radius-topleft:     $topleft;
+  -moz-border-radius-topright:    $topright;
+  -moz-border-radius-bottomright: $bottomright;
+  -moz-border-radius-bottomleft:  $bottomleft;
+  -webkit-border-radius:          $topleft $topright $bottomright $bottomleft;
+  border-radius:                  $topleft $topright $bottomright $bottomleft;
+}
+
+body {
+  font-family: sans-serif;
+  background-image: image-url('paper_fibers.png');
+  background-color: #F0F0F0;
+
+  .development {
+    background-color: red !important;
+
+    A {
+      color: black !important;
+    }
+  }
+
+  .notification {
+    z-index: 100000000;
+    position: fixed;
+    width: 400px;
+    left: 50%;
+    margin-left: -200px;
+    text-align: center;
+    top: 20px;
+    padding: 5px;
+    border: 2px solid #000000;
+
+  }
+
+  .notification.alert {
+    background-color: yellow;
+  }
+
+  .notification.notice {
+    background-color: green;
+  }
+
+  H1 {
+    font-size: 50px;
+  }
+
+  H2 {
+    font-size: 40px;
+  }
+
+  H3 {
+    font-size: 30px;
+  }
+
+  H4 {
+    font-size: 20px;
+  }
+
+  HEADER {
+    background-color: rgba(0, 204, 0, 1);
+    position: fixed;
+    z-index: 10000;
+    left: 1%;
+    width: 98%;
+    margin: 0px auto;
+    height: 30px;
+    border-bottom: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+
+    @include radius(0px, 0px, 20px, 20px);
+
+    H3 {
+      padding-left: 20px;
+      float: left;
+    }
+
+    #header_links {
+      float: right;
+      padding-right: 20px;
+      padding-top: 5px;
+
+      A {
+        color: black;
+        text-decoration: none;
+        font-weight: bold;
+      }
+
+      A:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  FOOTER {
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    z-index: 10000;
+    background-color: gray;
+  }
+
+  ARTICLE {
+    position: relative;
+    top: 55px;
+    width: auto;
+    margin: 0px auto;
+  }
+}
