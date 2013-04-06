@@ -1,21 +1,22 @@
 require 'spec_helper'
 
-describe 'GorillaEditor', :js => true do
+describe "Load a file", :js => true do
   include Capybara::DSL
   
-  describe 'logged in user' do
+  context "while user is logged in" do
     before (:each) do
       visit '/'
 
       find("#users_form").click_link "Sign up"
 
-      fill_in :user_email, with: "test@test.com"
-      fill_in :user_password, with: "password"
-      fill_in :user_password_confirmation, with: "password"
+      @user = FactoryGirl.attributes_for(:user)
+      fill_in :user_email, with: @user[:email]
+      fill_in :user_password, with: @user[:password]
+      fill_in :user_password_confirmation, with: @user[:password_confirmation]
 
       click_button "Sign up"
 
-      page.should have_content "Signed in as: test@test.com"
+      page.should have_content "Signed in as: #{@user[:email]}"
       page.should have_content "Welcome!"
     end
 

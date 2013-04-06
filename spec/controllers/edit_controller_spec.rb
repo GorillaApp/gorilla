@@ -2,7 +2,6 @@ require 'spec_helper'
 require 'json'
 
 describe EditController do
-
   file_contents = <<-EOF
 LOCUS       pGG001                  2559 bp ds-DNA   circular    UNK 01-JAN-1980
 DEFINITION  .
@@ -114,14 +113,10 @@ ORIGIN
 //
   EOF
 
-  before(:all) do
-    User.create!(email: "edit-controller-test@test.com",
-                 password: "password",
-                 password_confirmation: "password")
-  end
-
   before(:each) do
-    sign_in User.find_by_email("edit-controller-test@test.com")
+    @request.env["devise.mapping"] = Devise.mappings[:user]
+    @user = FactoryGirl.create(:user)
+    sign_in @user
   end
 
   describe "GET 'load' with file" do
