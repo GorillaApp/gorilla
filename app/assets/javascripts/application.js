@@ -16,7 +16,7 @@
 //= require jquery.ui.dialog
 //= require jscolor
 
-logger = new Log(lc.ALL,ll.DEBUG)
+logger = new Log(lc.ALL,ll.LOG)
 
 $(document).ready(function(){
   register_notifications()

@@ -13,24 +13,26 @@
 <div id="main_editor"></div>
 <div id="autosaved_editor"></div>
 
-<div id="featuredialog" title="Add Feature">
-  <center>
-    <form action = "/feature/add/" method = "POST">
-      <div> Sequence: <textarea id="sequence" type="text" name="sequence" col="150" rows= "4"></textarea></div>
-      <div> Name: <input id="name" name="name" type="text"> </div>
-      <input type = "hidden" id="user_id" name="user_id" type="text" value="<%= current_user.id %>" >
-      <div> Forward Color: <input class="color" value="66ff00" id="forward_color" name="forward_color"> </div>
-      <div> Reverse Color: <input class="color" value="ff5500" id="reverse_color" name="reverse_color"> </div>
-      <input id="Button" type="submit" value="Add feature">
-    </form>
-  </center>
-
+<div id="featuredialog" class='feature' title="Add Feature">
+  <%= form_tag "#", method: "GET", id: 'feature-form' do %>
+    <div class='issues'></div>
+    <%= label_tag(:sequence, "Sequence: ") %>
+    <%= text_area_tag(:sequence, "", size:"50x4") %>
+    <%= label_tag(:name, "Name: ") %>
+    <%= text_field_tag(:name) %><br />
+    <%= label_tag(:forward_color, "Forward Color: ") %>
+    <%= text_field_tag(:forward_color, "66FF00", 
+                       :class => 'color') %><br />
+    <%= label_tag(:reverse_color, "Reverse Color: ") %>
+    <%= text_field_tag(:reverse_color, "FF5500", 
+                       :class => 'color') %><br />
+    <%= hidden_field_tag(:user_id, current_user.id) %>
+    <%= submit_tag("Save Feature") %>
+  <% end %>
 </div>
 
-<div id="allfeaturesdialog" title="All Features">
-  <center>
-    <table id="featuresTbl"></table>
-  </center>
+<div id="allfeaturesdialog" class='features' title="All Features">
+  <div id="features-table"></div>
 </div>
 
 <div id="autosavechoice">
@@ -46,7 +48,7 @@ first_line = <%= @first_line.to_json.html_safe %>;
 isRestore = <%= @isRestore.to_json %>;
 saveURL = <%= @saveURL.to_json.html_safe %>;
 allFeatures = null;
-user = <%= current_user.id %>;
+user = <%= (current_user.nil? ? -1 : current_user.id) %>;
 
 $(document).ready(function () {
   begin_editing("#main_editor", "#autosaved_editor");

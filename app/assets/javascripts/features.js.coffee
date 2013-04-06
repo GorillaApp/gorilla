@@ -1,53 +1,56 @@
-populateTbl = (features) ->
-  table=document.getElementById("featuresTbl")
+populateTable = (features) ->
+  tableData = """
+  <table>
+    <thead>
+      <th>
+        <td>Name</td>
+        <td>Sequence</td>
+        <td>Color</td>
+        <td>Reverse Color</td>
+        <td></td>
+      </th>
+    </thead>
+    <tbody>
+  """
 
-  table.innerHTML = ""
+  for feat,i in features
+    tableData += """
+      <tr>
+        <td>#{i+1}</td>
+        <td>#{feat.name}</td>
+        <td>#{feat.sequence}</td>
+        <td style="background-color:##{feat.forward_color}">
+          #{feat.forward_color}
+        </td>
+        <td style="background-color:##{feat.reverse_color}">
+          #{feat.reverse_color}
+        </td>
+        <td>
+          <a style="color:red;text-decoration:none" 
+             data-id="#{feat.id}"
+             data-user-id="#{user}"
+             href="#">X</a>
+        </td>
+      </tr>
+    """
 
-  row=table.insertRow(-1)
+  tableData += """
+    </tbody>
+  </table>
+  """
 
-  cell1=row.insertCell(0)
-  cell2=row.insertCell(1)
-  cell3=row.insertCell(2)
-  cell4=row.insertCell(3)
-  cell5=row.insertCell(4)
-  cell6=row.insertCell(5)
+  $("#features-table").html(tableData)
 
-  cell1.innerHTML = "ID"
-  cell2.innerHTML = "Name"
-  cell3.innerHTML = "Sequence"
-  cell4.innerHTML = "Forward Color"
-  cell5.innerHTML = "Reverse Color"
-  cell6.innerHTML = "Delete?"
-
-  for feat in features
-    row=table.insertRow(-1)
-
-    cell1=row.insertCell(0)
-    cell2=row.insertCell(1)
-    cell3=row.insertCell(2)
-    cell4=row.insertCell(3)
-    cell5=row.insertCell(4)
-    cell6=row.insertCell(5)
-
-    cell1.innerHTML = feat.id
-    cell2.innerHTML = feat.name
-    cell3.innerHTML = feat.sequence
-    cell4.innerHTML = feat.forward_color
-    cell5.innerHTML = feat.reverse_color
-    cell6.innerHTML = "<a href='/feature/remove?id="+feat.id+"&user_id="+user+"'>Delete Feature</a>"
-
-window.bind_features = ->
+window.setup_features = ->
   $('#featuredialog').dialog
     autoOpen: false
+    width: 523
     show:
       effect: "slide"
       duration: 1000
     hide:
       effect: "drop"
       duration: 1000
-
-  $('#addFeature').click ->
-    $('#featuredialog').dialog("open")
 
   $('#allfeaturesdialog').dialog
     autoOpen: false
@@ -59,12 +62,39 @@ window.bind_features = ->
       effect: "drop"
       duration: 1000
 
-  $('#listFeatures').click ->
-    if window.allFeatures == null
-      $.get "/feature/getAll", {user_id: user}, (data) ->
-        window.allFeatures = data.features
-        populateTbl(window.allFeatures)
-        $('#allfeaturesdialog').dialog("open")
-    else
-      populateTbl(window.allFeatures)
+window.bind_features = ->
+  $('#feature-form').unbind('submit').submit (event) ->
+    event.preventDefault()
+    
+    $('.issues').hide()
+
+    formData = $(this).serializeArray()
+
+    save = true
+
+    for datum in formData
+      if datum.value == ""
+        $('.issues').text('You must fill in all items').show()
+        save = false
+      else if datum.name == "sequence" and ! /^[actg]*$/.test(datum.value)
+        $('.issues').text('Sequence may only contain actg').show()
+        save = false
+
+    if save
+      $.post "/feature/add",
+             $(this).serialize(),
+             ->
+               notify("Save Successful")
+               $("#featuredialog").dialog("close")
+
+  $('#addFeature').unbind('click').click ->
+    $('#featuredialog').dialog("open")
+
+  $('#listFeatures').unbind('click').click ->
+    if window.allFeatures != null
+      populateTable(window.allFeatures)
+      $('#allfeaturesdialog').dialog("open")
+    $.get "/feature/getAll", {user_id: user}, (data) ->
+      window.allFeatures = data.features
+      populateTable(window.allFeatures)
       $('#allfeaturesdialog').dialog("open")
