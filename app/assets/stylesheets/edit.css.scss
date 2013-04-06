@@ -2,13 +2,25 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+.gorilla-editor {
+    float: left;
 
-#ed {
-    float: left;
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-bottom: 2%;
+    font-family: monospace;
+    word-wrap: break-word;
+    line-height: 16px;
 }
-#ed2 {
-    float: left;
+
+.gorilla-editor.viewing {
+  width: 40%;
 }
-#buttons {
-    float: left;
+
+.gorilla-editor.editing {
+  width: 90%;
+}
+
+#autosavechoice {
+  clear: both;
 }
