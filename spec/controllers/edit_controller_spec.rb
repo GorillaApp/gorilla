@@ -2,7 +2,6 @@ require 'spec_helper'
 require 'json'
 
 describe EditController do
-
   file_contents = <<-EOF
 LOCUS       pGG001                  2559 bp ds-DNA   circular    UNK 01-JAN-1980
 DEFINITION  .
@@ -113,6 +112,12 @@ ORIGIN
      2521 acactggctc accttcgggt gggcctttct gcgtttata
 //
   EOF
+
+  before(:each) do
+    @request.env["devise.mapping"] = Devise.mappings[:user]
+    @user = FactoryGirl.create(:user)
+    sign_in @user
+  end
 
   describe "GET 'load' with file" do
     it "returns the javascript with doc set to file" do

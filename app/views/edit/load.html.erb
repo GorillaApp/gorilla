@@ -1,8 +1,17 @@
-<div id="ed">
-</div>
+<%= content_for :links do %>
+  <%= link_to "Add a feature", "#", id: :addFeature %>
+  | <%= link_to "List of Features", "#", id: :listFeatures %>
+  | <%= link_to "Save", "#", id: :save %>
+  <% if development? %>
+    <span class="development">
+      | <%= link_to "Autosave", "#", id: :autosave %>
+      | <%= link_to "Delete Autosave", "#", id: :deleteAutosave %>
+    </span>
+  <% end %>
+<% end %>
 
-<div id="ed2">
-</div>
+<div id="main_editor"></div>
+<div id="autosaved_editor"></div>
 
 <div id="featuredialog" title="Add Feature">
   <center>
@@ -30,118 +39,16 @@
     <button type="button" id="autosaved"> Autosaved Version </button>
 </div>
 
-<div id="buttons">
-    <p>Buttons for debugging purposes</p>
-    <button type="button" id="addfeature">Add Feature</button>
-    <button type="button" id="allfeatures">All Features</button>
-    <button type="button" id="save"> Save </button>
-    <button type="button" id="autosave"> Autosave </button>
-    <button type="button" id="delete"> Delete Autosave </button>
-</div>
-
 <script type="text/javascript" >
-
-
 doc = <%= @file_contents.to_json.html_safe %>;
 doc_restored = <%= @file_restore_contents.to_json.html_safe %>;
 first_line = <%= @first_line.to_json.html_safe %>;
 isRestore = <%= @isRestore.to_json %>;
 saveURL = <%= @saveURL.to_json.html_safe %>;
 allFeatures = null;
- user = <%= current_user.id %>;
-
+user = <%= current_user.id %>;
 
 $(document).ready(function () {
-
- });
-
-function show_main(usedDoc) {
-    debug_editor = new GorillaEditor("#ed2");
-    main_editor = new GorillaEditor("#ed", usedDoc, debug_editor);
-    main_editor.startEditing();
-    $("#ed").css("width", "90%")
-            .css("marginLeft", "5%")
-            .css("marginRight", "5%")
-            .css("marginBottom", "2%");
-    $('#buttons').show();
-    $('#ed2').hide();
-    $('#autosavechoice').hide();
-    TIMER = 10000;
-    window.setInterval(function() {
-        var file, time, autosaveURI, params;
-        file = main_editor.file.serialize();
-        autosaveURI = '/edit/autosave'
-        params = { genbank_file: file, id: first_line, user: user };
-        json_request(
-            'POST',
-            autosaveURI,
-            params,
-            function() {console.log("autosaved");},
-            function(err, err1, err2) { console.log(err2); }
-        );
-    } , TIMER);
-}
-
-display_autosave(doc_restored);
-
-$('#opened').click(function() {
-    show_main(doc);
+  begin_editing("#main_editor", "#autosaved_editor");
 });
-
-$('#autosaved').click(function() {
-    show_main(doc_restored);
-});
-
-
-function save_successful(data) {
-    var params = { id: first_line };
-    json_request(
-        'POST',
-        "/edit/delete",
-        params,
-        function(data) { return false; },
-        function(err) { alert('Save not successful.'); }
-    );
-}
-
-$('#save').click(function() {
-    json_request(
-        'POST',
-        saveURL,
-        params,
-        function(data) { return save_successful(data); },
-        function(err) { alert('error occurred on request'); }
-    );
-    return false;
-});
-
-//For debugging purposes. Autosaves the current file manually
-$('#autosave').click(function() {
-    var file, time, params;
-    file = main_editor.file.serialize();
-    params = { genbank_file: file, id: first_line, user: user };
-    json_request(
-        'POST',
-        "/edit/autosave",
-        params,
-        function(data) { alert("AUTOSAVE SUCCESSFUL"); },
-        function(err) { alert("not working"); }
-    );
-});
-
-//For debugging purposes. Deletes the autosaved file from the model.
-$('#delete').click(function() {
-    var params = { id: first_line };
-    json_request(
-        'POST',
-        "/edit/delete",
-        params,
-        function(data) { alert("DELETE SUCCESSFUL"); },
-        function(err) { alert("not working"); }
-    );
-});
-
 </script>
-
-<pre id="gb">
-</pre>
