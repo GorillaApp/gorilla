@@ -1,0 +1,18 @@
+.features > table, th, td {
+  borders: 1px solid black;
+}
+
+.features {
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  td {
+    padding: 5px;
+  }
+
+  DIV {
+    margin: 0px auto;
+  }
+}

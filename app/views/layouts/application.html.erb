@@ -13,14 +13,17 @@
       <%= yield :links %>
     </div>
   </header>
-  <% if notice %>
-    <div class="notification notice" ><%= notice %></div>
-  <% end %>
-  <% if alert %>
-    <div class="notification alert"><%= alert %></div>
-  <% end %>
+  <div class="notification">
+    <% if notice %>
+      <div data-order="0" class="success"><%= notice %></div>
+    <% end %>
+    <% if alert %>
+      <div data-order="0" class="warning"><%= alert %></div>
+    <% end %>
+  </div>
   <article>
     <%= yield %>
+    <div style="clear:both"></div>
   </article>
   <% if user_signed_in? %>
     <footer>
