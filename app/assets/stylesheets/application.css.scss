@@ -88,18 +88,21 @@ body {
     }
   }
 
-  FOOTER {
+  #user_nav {
     position: fixed;
     bottom: 0px;
     right: 0px;
     z-index: 10000;
-    background-color: gray;
+    background-color: white;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
   }
 
   ARTICLE {
     position: relative;
     top: 55px;
-    width: auto;
+    width: 90%;
     margin: 0px auto;
+    padding-bottom: 40px;
   }
 }

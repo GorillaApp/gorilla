@@ -10,6 +10,12 @@
   <% end %>
 <% end %>
 
+<div id="autosavechoice">
+    <p>Please choose which version you would like to use.</p>
+    <button type = "button" id = "opened"> Opened Version </button>
+    <button type="button" id="autosaved"> Autosaved Version </button>
+</div>
+
 <div id="main_editor"></div>
 <div id="autosaved_editor"></div>
 
@@ -35,11 +41,6 @@
   <div id="features-table"></div>
 </div>
 
-<div id="autosavechoice">
-    <p>Please choose which version you would like to use.</p>
-    <button type = "button" id = "opened"> Opened Version </button>
-    <button type="button" id="autosaved"> Autosaved Version </button>
-</div>
 
 <script type="text/javascript" >
 doc = <%= @file_contents.to_json.html_safe %>;

@@ -4,18 +4,18 @@
 #
 
 window.begin_editing = (editor_selector, autosave_selector) ->
-  $('#autosavechoice').hide()
-
   setup_features()
 
   if window.isRestore
-    handle_autosave(editor_selector, autosave_selector)
+    Autosave.handle(editor_selector, autosave_selector, ->
+      begin_editing(editor_selector, autosave_selector))
   else
     $(autosave_selector).hide()
-    # window.debug_editor = new GorillaEditor(autosave_selector)
-    window.main_editor = new GorillaEditor(editor_selector, doc)
 
-    start_autosaving(main_editor)
+    window.debug_editor = new GorillaEditor(autosave_selector)
+    window.main_editor = new GorillaEditor(editor_selector, doc, debug_editor)
+
+    Autosave.start(main_editor)
 
     bind_features()
 

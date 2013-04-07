@@ -7,6 +7,7 @@
   top: 30px;
   padding: 5px;
   border: 2px solid #000000;
+  border-top: none;
   display: none;
 
 }
@@ -15,12 +16,13 @@
   background-color: red;
 }
 
-.notification DIV.alert {
+.notification DIV.warning {
   background-color: yellow;
 }
 
-.notification DIV.notice {
-  background-color: green;
+.notification DIV.success {
+  //background-color: #0ACF00;
+  background-color: #ffffff;
 }
 
 .notification DIV.status {

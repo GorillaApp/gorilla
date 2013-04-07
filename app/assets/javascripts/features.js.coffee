@@ -87,7 +87,7 @@ window.bind_features = ->
       $.post "/feature/add",
              $(this).serialize(),
              ->
-               notify("Save Successful")
+               notify("Successfully saved feature", "success")
                $("#featuredialog").dialog("close")
                reset_features_form()
 

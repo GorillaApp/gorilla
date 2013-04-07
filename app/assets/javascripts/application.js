@@ -20,4 +20,6 @@ logger = new Log(lc.ALL,ll.LOG)
 
 $(document).ready(function(){
   register_notifications()
+
+  $('#user_nav').registerSlideHide(30)
 });
