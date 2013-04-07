@@ -38,6 +38,7 @@ group :development, :test do
   gem 'konacha'
   gem 'simplecov'
   gem 'factory_girl_rails'
+  gem 'capybara-webkit'
 end
 
 group :production do

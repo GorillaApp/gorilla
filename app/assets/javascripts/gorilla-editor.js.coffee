@@ -44,7 +44,7 @@ class window.GorillaEditor
 
   undo: (event) ->
     if @previousFiles.length > 0
-      Autosave.request()
+      Autosave.request(this)
       @nextFiles.push($.extend(true, {}, @file))
       @file = @previousFiles.pop()
       $(@editorId).html(@file.getAnnotatedSequence())
@@ -52,14 +52,14 @@ class window.GorillaEditor
 
   redo: (event) ->
     if @nextFiles.length > 0
-      Autosave.request()
+      Autosave.request(this)
       @previousFiles.push($.extend(true, {}, @file))
       @file = @nextFiles.pop()
       $(@editorId).html(@file.getAnnotatedSequence())
       @updateDebugEditor()
       
   trackChanges: ->
-    Autosave.request()
+    Autosave.request(this)
     @previousFiles.push($.extend(true, {}, @file))
 
   updateDebugEditor: ->
