@@ -5,22 +5,15 @@
 .gorilla-editor {
     float: left;
 
-    margin-left: 5%;
-    margin-right: 5%;
-    margin-bottom: 2%;
     font-family: monospace;
     word-wrap: break-word;
     line-height: 16px;
 }
 
 .gorilla-editor.viewing {
-  width: 40%;
+  width: 50%;
 }
 
 .gorilla-editor.editing {
-  width: 90%;
-}
-
-#autosavechoice {
-  clear: both;
+  width: 100%;
 }
