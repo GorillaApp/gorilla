@@ -76,14 +76,13 @@ class window.GenBank
         current += 1
       if sequence[x] == ">"
         count = true
+    if current == start
+      startix = x
+    if current == end
+      endix = x
     beg = sequence[...startix]
     end = sequence[endix+1..]
     mid = sequence[startix..endix]
-    console.log startix
-    console.log endix
-    console.log beg
-    console.log end
-    console.log mid
     logger.exit()
     beg + "<span id='#{name}-#{featureId}-#{spanId}-#{@id}' class='#{name}-#{featureId}' style='background-color:#{color}'>" + mid + "</span>" + end
 
@@ -178,7 +177,6 @@ class window.GenBank
     logger.d("Looking through the features")
     logger.enter()
     for feature in features
-      logger.l feature
       seq = @annotateFeature(seq, feature)
     logger.exit()
     seq

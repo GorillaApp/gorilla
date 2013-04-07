@@ -76,4 +76,3 @@ class Features < ActiveRecord::Base
 
   end
 end
-
