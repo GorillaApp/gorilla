@@ -1,7 +1,7 @@
 require 'faker'
 
 FactoryGirl.define do
-  factory :feature, :class => Features do
+  factory :feature, :class => Feature do
     user_id 1234
     forward_color "#F54321"
     reverse_color "#F12345"
@@ -9,7 +9,7 @@ FactoryGirl.define do
     name { Faker::Name.first_name }
   end
 
-  factory :feature2, :class => Features do
+  factory :feature2, :class => Feature do
     user_id 1234
     forward_color "#F54321"
     reverse_color "#F12345"
