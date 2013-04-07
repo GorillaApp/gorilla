@@ -1,11 +1,11 @@
 require 'spec_helper'
 require 'support/editor_helper'
 
-describe "Load a file", :js => true do
+describe "A user", :js => true do
   include Capybara::DSL
   include GorillaHelper
   
-  context "while user is logged in" do
+  context "that is logged" do
     before (:each) do
       visit '/'
 
@@ -22,7 +22,7 @@ describe "Load a file", :js => true do
       page.should have_content "Welcome!"
     end
 
-    it 'should load a simple file' do
+    it 'should be able to load a simple file' do
       visit '/testclient/client'
 
       find('#file').set <<-EOF
@@ -45,7 +45,7 @@ EOF
       find('#ColE1-0-0-main_editor').should have_content "cgtctctgac"
     end
 
-    context 'with a file open' do
+    context 'and opens a file' do
       before(:each) do
         visit '/testclient/client'
 
@@ -77,21 +77,69 @@ EOF
         find(:xpath, "//span[@id='ColE1-0-0-main_editor']/following-sibling::*").should have_content 'a'
       end
 
+      it 'should be able to insert a, c, t, and g' do
+        set_cursor_at('ColE1-0-0-main_editor', 3)
+
+        type('actg')
+        
+        find('#ColE1-1-0-main_editor').should have_content 'ctctgac'
+        find('#ColE1-0-0-main_editor').should have_content 'cgt'
+
+        page.should have_content 'cgtactgctctgac'
+      end
+
+      it 'should not be able to enter any other characters' do
+        set_cursor_at('ColE1-0-0-main_editor', 5)
+
+        type('abcdefghijklmnopqrstuvwxyz')
+        
+        page.should have_content 'cgtctacgtctgac'
+      end
+
       it 'should be able to backspace text' do
         set_cursor_at('ColE1-0-0-main_editor', 5)
-        backspace()
-        backspace()
-        backspace()
+        type(:backspace)
+        type(:backspace)
+        type(:backspace)
         find("#ColE1-0-0-main_editor").should have_content "cgctgac"
       end
 
       it 'should autosave after editing' do
         set_cursor_at('ColE1-0-0-main_editor', 5)
-        type('a')
-        type('g')
+
+        type('ag')
+
         find('#main_editor').should have_content "cgtctagctgac"
 
         page.should have_content "Autosave Successful"
+      end
+
+      it 'should be able to undo' do
+        set_cursor_at('ColE1-0-0-main_editor', 0)
+
+        type('t')
+
+        page.should have_content "tcgtctctgaccagaccaata"
+
+        type(:undo)
+
+        page.should have_content "cgtctctgaccagaccaata"
+      end
+
+      it 'should be able to redo' do
+        set_cursor_at('ColE1-0-0-main_editor', 0)
+
+        type('t')
+
+        page.should have_content "tcgtctctgaccagaccaata"
+
+        type(:undo)
+
+        page.should have_content "cgtctctgaccagaccaata"
+
+        type(:redo)
+
+        page.should have_content "tcgtctctgaccagaccaata"
       end
     end
   end

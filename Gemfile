@@ -1,11 +1,11 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.2.8'
-gem 'rack', '1.4.1'
-gem 'thin'
-gem 'jquery-ui-rails'
 gem 'bio'
+gem 'jquery-ui-rails'
 gem 'jscolor-rails'
+gem 'rack', '1.4.1'
+gem 'rails', '3.2.8'
+gem 'thin'
 
 gem 'nokogiri'
 
@@ -30,15 +30,16 @@ end
 gem 'jquery-rails'
 
 group :development, :test do
+  gem 'capybara'
+  gem 'capybara-webkit'
+  gem 'factory_girl_rails'
+  gem 'faker'
+  gem 'konacha'
+  gem 'pg'
   gem 'rspec-rails'
+  gem 'simplecov'
   gem 'spork', '~> 0.9.0.rc'
   gem 'watchr'
-  gem 'pg'
-  gem 'capybara'
-  gem 'konacha'
-  gem 'simplecov'
-  gem 'factory_girl_rails'
-  gem 'capybara-webkit'
 end
 
 group :production do

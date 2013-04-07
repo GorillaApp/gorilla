@@ -1,8 +1,8 @@
-include ActionDispatch::TestProcess
+require 'faker'
 
 FactoryGirl.define do
   factory :user, :class => User do
-    sequence(:email) { |n| "test#{n}@test.com" }
+    email { Faker::Internet.email }
     password "password"
     password_confirmation "password"
   end

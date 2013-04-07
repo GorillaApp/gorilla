@@ -1,13 +1,17 @@
 require 'spec_helper'
 
 describe Features do
-  it "tests that creation returns success when user does not exist"  do
-    params = {:user_id => 1234, :forward_color => '#f54321', :reverse_color => '#f54321', :name => "erika", :sequence => "aaccg"}
+  it "has a valid factory" do
+    FactoryGirl.create(:feature).should be_valid
+  end
+
+  it "should be able to be added even when user doesn't exist"  do
+    params = FactoryGirl.attributes_for(:feature)
     result = Features.add(params)
     result.should == 1
   end
 
-  it "tests that remove returns success"  do
+  it "should return success when removing features"  do
     params = {:user_id => 1234, :forward_color => '#f54321', :reverse_color => '#f54321', :name => "erika", :sequence => "aaccg"}
     Features.add(params)
     feat = Features.find_by_name("erika")
@@ -28,7 +32,6 @@ describe Features do
   end
 
   it "tests that edit always return success" do
-
     params = {:user_id => 12345, :forward_color => '#f54321', :reverse_color => '#f54321', :name => "erika", :sequence => "aaccg"}
     Features.add(params)
     feat = Features.find_by_name("erika")

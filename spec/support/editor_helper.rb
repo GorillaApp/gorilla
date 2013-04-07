@@ -13,18 +13,29 @@ module GorillaHelper
     SCRIPT
   end
 
-  def type(character, type = :keypress)
-    type_code(character.ord, type)
+  def type(thing)
+    if thing.kind_of? Symbol
+      case thing
+      when :backspace
+        _type_raw(8, :keydown)
+      when :undo
+        _type_raw(90, :keydown, true)
+      when :redo
+        _type_raw(89, :keydown, true)
+      end
+    elsif thing.kind_of? Integer
+      _type_raw(thing, type, ctrl)
+    elsif thing.kind_of? String
+      thing.each_char do |char|
+        _type_raw(char.ord)
+      end
+    end
   end
 
-  def type_code(code, type = :keypress)
+  def _type_raw(code, type = :keypress, ctrl=false)
     page.driver.execute_script <<-SCRIPT
-      event = $.Event('#{type.to_s}',{keyCode:#{code}});
+      event = $.Event('#{type.to_s}',{keyCode:#{code},ctrlKey:#{ctrl}});
       $('#main_editor').trigger(event);
     SCRIPT
-  end
-
-  def backspace
-    type_code(8, :keydown)
   end
 end
