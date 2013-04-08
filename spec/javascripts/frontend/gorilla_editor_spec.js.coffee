@@ -19,6 +19,7 @@ ORIGIN
 
 window.logger = new Log(lc.all, ll.WARNING)
 
+###
 describe "Gorilla Editor", ->
   beforeEach ->
     $('body').html('<div id="ed"></div>')
@@ -54,3 +55,4 @@ describe "Gorilla Editor", ->
       document.getElementById('ColE1-0-0-ed').nextSibling
                                              .wholeText.should.equal("gattaca")
       $('#ColE1-1-0-ed').text().should.equal("ctctgac")
+###
