@@ -11,6 +11,7 @@ gem 'nokogiri'
 
 gem 'sprockets'
 gem 'devise'
+gem 'pg'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
@@ -35,15 +36,10 @@ group :development, :test do
   gem 'factory_girl_rails'
   gem 'faker'
   gem 'konacha'
-  gem 'pg'
   gem 'rspec-rails'
   gem 'simplecov'
   gem 'spork', '~> 0.9.0.rc'
   gem 'watchr'
-end
-
-group :production do
-  gem 'mysql2'
 end
 
 # To use ActiveModel has_secure_password
