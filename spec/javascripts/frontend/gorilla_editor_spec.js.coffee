@@ -32,12 +32,6 @@ describe "Gorilla Editor", ->
       $('#ed').text().should.equal("cgtctctgaccagaccaata")
       $('#ColE1-0-0-ed').text().should.equal("cgtctctgac")
 
-    it 'should not allow insertion', ->
-      $('#ColE1-0-0-ed').text().should.equal("cgtctctgac")
-      Mouse.setCursorAt('ColE1-0-0-ed', 3)
-      Keyboard.type('gattaca')
-      $('#ColE1-0-0-ed').text().should.equal("cgtctctgac")
-
   context "while editing", ->
     beforeEach ->
       @ge.startEditing()
