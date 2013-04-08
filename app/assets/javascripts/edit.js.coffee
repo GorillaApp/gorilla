@@ -4,11 +4,14 @@
 #
 
 window.begin_editing = (editor_selector, autosave_selector) ->
+  console.groupCollapsed("Preparing to edit a file")
   setup_features()
 
   if window.isRestore
+    console.groupCollapsed("An autosaved version exists")
     Autosave.handle(editor_selector, autosave_selector, ->
       begin_editing(editor_selector, autosave_selector))
+    console.groupEnd()
   else
     $(autosave_selector).hide()
 
@@ -20,3 +23,4 @@ window.begin_editing = (editor_selector, autosave_selector) ->
     bind_features()
 
     main_editor.startEditing()
+  console.groupEnd()
