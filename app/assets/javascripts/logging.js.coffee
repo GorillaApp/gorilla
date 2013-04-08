@@ -14,7 +14,7 @@ window.ll =
 class window.Log
   constructor: (@flags, @minLevel) ->
     @pre = ""
-    @indentor = "  "
+    @indentor = ""
     @entryAnnounced = true
     @exitAnnounced = true
 
