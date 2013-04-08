@@ -2,24 +2,26 @@
 
 class window.GorillaEditor
   constructor: (@editorId, @initialDocument = '', @debugEditor = null) ->
-    logger.d("Initializing GorillaEditor...")
+    console.groupCollapsed("Initializing GorillaEditor: #{editorId}")
     if @initialDocument != ''
       @file = new GenBank(@initialDocument, @editorId[1..])
       if @debugEditor != null
         @debugEditor.file = new GenBank(@initialDocument, @debugEditor.editorId[1..])
         @debugEditor.startEditing()
-    logger.d("GorillaEditor ready!")
+    console.log("GorillaEditor ready!")
+    console.groupEnd()
 
   viewFile: () ->
-    logger.d("Preparing Editor to be viewed")
+    console.groupCollapsed("Preparing Editor to be viewed")
 
     $(@editorId).html(@file.getAnnotatedSequence())
                 .addClass('gorilla-editor viewing')
 
-    logger.d("Ready to view")
+    console.log("Ready to view")
+    console.groupEnd()
 
   startEditing: () ->
-    logger.d("Preparing Editor to be edited")
+    console.groupCollapsed("Preparing Editor to be edited")
     me = @
 
     @viewFile()
@@ -42,7 +44,8 @@ class window.GorillaEditor
     @nextEditors = []
     @previousFiles = []
     @nextFiles = []
-    logger.d("Editor ready!")
+    console.log("Editor ready!")
+    console.groupEnd()
 
   undo: (event) ->
     if @previousFiles.length > 0
@@ -73,7 +76,7 @@ class window.GorillaEditor
   deleteAtCursor: () ->
     sel = window.getSelection()
 
-    logger.l sel
+    console.log sel
 
     if sel.isCollapsed
       @trackChanges()
@@ -127,17 +130,16 @@ class window.GorillaEditor
 
       @updateDebugEditor()
     else
-      logger.wtf "How Dare You"
+      console.error "How Dare You"
 
   keyDown: (event) ->
     if event.keyCode == 8
-      logger.l event
-      logger.l "Backspace"
+      console.log(event,"Backspace")
       event.preventDefault()
       event.stopPropagation()
       @deleteAtCursor()
     else if event.ctrlKey
-      logger.l event
+      console.log(event)
       if event.keyCode == 90
         @undo()
       if event.keyCode == 89
@@ -148,12 +150,12 @@ class window.GorillaEditor
   keyPressed: (event) ->
     event.preventDefault()
 
-    logger.enter()
-
     code = if event.keyCode then event.keyCode else event.which
     char = String.fromCharCode(code).toLowerCase()
+    console.groupCollapsed("Handling Key: ", char)
+
     if "agtc".indexOf(char) != -1
-      logger.d "ooh, exciting!"
+      console.log("ooh, exciting!")
       sel = window.getSelection()
 
       if sel.isCollapsed
@@ -237,8 +239,9 @@ class window.GorillaEditor
 
         sel.addRange l
       else
-        logger.wtf "I don't know how to handle this responsibility!"
-    logger.exit()
+        console.error "I don't know how to handle this responsibility"
+
+    console.groupEnd()
 
   textChanged: (event) ->
-    logger.wtf "NOOOOOOOOOOOOOOOOOOOOOOOO"
+    console.error "textChanged was fired"

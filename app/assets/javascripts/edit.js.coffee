@@ -12,8 +12,8 @@ window.begin_editing = (editor_selector, autosave_selector) ->
   else
     $(autosave_selector).hide()
 
-    window.debug_editor = new GorillaEditor(autosave_selector)
-    window.main_editor = new GorillaEditor(editor_selector, doc, debug_editor)
+    #window.debug_editor = new GorillaEditor(autosave_selector)
+    window.main_editor = new GorillaEditor(editor_selector, doc)
 
     Autosave.start(main_editor)
 
