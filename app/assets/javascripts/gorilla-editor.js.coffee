@@ -1,3 +1,5 @@
+#= require autosave
+
 class window.GorillaEditor
   constructor: (@editorId, @initialDocument = '', @debugEditor = null) ->
     logger.d("Initializing GorillaEditor...")

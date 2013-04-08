@@ -13,7 +13,7 @@ module GorillaHelper
     SCRIPT
   end
 
-  def type(thing)
+  def type(thing, type=:keypress, ctrl=false)
     if thing.kind_of? Symbol
       case thing
       when :backspace
@@ -27,7 +27,7 @@ module GorillaHelper
       _type_raw(thing, type, ctrl)
     elsif thing.kind_of? String
       thing.each_char do |char|
-        _type_raw(char.ord)
+        _type_raw(char.ord, type, ctrl)
       end
     end
   end
