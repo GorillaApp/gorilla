@@ -1,9 +1,13 @@
 
 class window.Autosave
   @SHOULD_AUTOSAVE: false
+  @TIMEOUT_ID: -1
 
-  @request: () ->
+  @request: (editor) ->
     Autosave.SHOULD_AUTOSAVE = true
+    if Autosave.TIMEOUT_ID != -1
+      clearTimeout(Autosave.TIMEOUT_ID)
+    Autosave.TIMEOUT_ID = setTimeout (-> Autosave.save(editor.file)), 1000
 
   @handle: (editor_selector, autosave_selector, callback) ->
     $("#autosavechoice").hide()
