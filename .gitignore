@@ -23,3 +23,6 @@ passenger-standalone
 
 *~
 .idea/
+
+coverage
+public/assets/

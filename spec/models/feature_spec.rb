@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Features do
-
   it "tests that creation returns success when user does not exist"  do
     params = {:user_id => 1234, :forward_color => '#f54321', :reverse_color => '#f54321', :name => "erika", :sequence => "aaccg"}
     result = Features.add(params)
@@ -16,8 +15,20 @@ describe Features do
     result.should == 1
   end
 
+  it "should be able to remove a feature from the database" do
+    #depends on the add functionality working correctly
+    params = {:user_id => 1234, :forward_color => '#f54321', :reverse_color => '#f54321', :name => "erika", :sequence => "aaccg"}
+    Features.add(params)
+    feat = Features.find_by_name("erika")
+    ID = feat.id
+    params2 = {:id => ID}
+    Features.remove(params2)
+    result = Features.find_by_name("erika")
+    result.should == nil
+  end
+
   it "tests that edit always return success" do
-    
+
     params = {:user_id => 12345, :forward_color => '#f54321', :reverse_color => '#f54321', :name => "erika", :sequence => "aaccg"}
     Features.add(params)
     feat = Features.find_by_name("erika")

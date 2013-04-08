@@ -118,7 +118,7 @@ describe Autosave do
         first_line = file_contents.split("\n").first()  # This is the "id" for this file
         user_id = 1
         Autosave.save_file(file_contents, first_line, user_id)    # Saving file
-        result = Autosave.find_by_name(first_line)  # Grabbing the autosave object to ensure fields were updated
+        result = Autosave.find_by_name_and_user_id(first_line, user_id)  # Grabbing the autosave object to ensure fields were updated
         result.contents.should eql(file_contents)
         result.name.should eql(first_line)
         result.user_id.should eql(user_id)
@@ -131,20 +131,21 @@ describe Autosave do
 
         new_file_contents = file_contents + "a"     # Modifying the file
         Autosave.save_file(new_file_contents, first_line, user_id)
-        result_object = Autosave.find_by_name(first_line)   # Grabbing the autosave object to ensure file_contents were updated on second save
+        result_object = Autosave.find_by_name_and_user_id(first_line, user_id)   # Grabbing the autosave object to ensure file_contents were updated on second save
         result_object.contents.should eql(new_file_contents)
     end
-    
+
     it "checks to see if find_autosaved_file correctly returns nil" do
-        result = Autosave.find_autosaved_file("Not a valid entry")
+        user_id = 1
+        result = Autosave.find_autosaved_file("Not a valid entry", user_id)
         result.should be_nil
     end
 
-    it "checks to see if find_autosaved_file correctly returns the file" do
+    it "checks to see if find_autosaved_file correctly returns the file and is not nil" do
         first_line = file_contents.split("\n").first()
         user_id = 1
         Autosave.save_file(file_contents, first_line, user_id)    # Saving file
-        result = Autosave.find_autosaved_file(first_line)
+        result = Autosave.find_autosaved_file(first_line, user_id)
         result.should_not be_nil    # Ensuring file contents are found (not nil)
     end
 
@@ -152,7 +153,7 @@ describe Autosave do
         first_line = file_contents.split("\n").first()
         user_id = 1
         Autosave.save_file(file_contents, first_line, user_id)    # Saving file
-        result = Autosave.find_autosaved_file(first_line)   # Result should == the saved file contents
+        result = Autosave.find_autosaved_file(first_line, user_id)   # Result should == the saved file contents
         result.should eql(file_contents)
     end
 
@@ -161,7 +162,7 @@ describe Autosave do
         user_id = 1
         Autosave.save_file(file_contents, first_line, user_id)    # Saving file
         Autosave.delete_save(first_line)   # Deleting save
-        result = Autosave.find_autosaved_file(first_line)
+        result = Autosave.find_autosaved_file(first_line, user_id)
         result.should be_nil
     end
 

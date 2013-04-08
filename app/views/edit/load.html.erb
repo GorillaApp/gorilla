@@ -1,145 +1,57 @@
-<div id="ed">
-</div>
+<%= content_for :links do %>
+  <%= link_to "Add a feature", "#", id: :addFeature %>
+  | <%= link_to "List of Features", "#", id: :listFeatures %>
+  | <%= link_to "Save", "#", id: :save %>
+  <% if development? %>
+    <span class="development">
+      | <%= link_to "Autosave", "#", id: :autosave %>
+      | <%= link_to "Delete Autosave", "#", id: :deleteAutosave %>
+    </span>
+  <% end %>
+<% end %>
 
-<div id="ed2">
-</div>
-
-<div id="featuredialog" title="Add Feature Dialog">
-  <center>
-    <form action = "/feature/add/" method = "POST">
-      
-      <div> Sequence: 
-        <textarea id="sequence" 
-                  type="text" 
-                  name="sequence" 
-                  col="150" 
-                  rows= "4">
-        </textarea>
-      </div>
-      <div> Name: <input id="name" name="name" type="text">
-      </div>
-      <div> UserID: <input id="user_id" name="user_id" type="text" value="1">
-      </div>
-      <script type="text/javascript" src="jscolor.js"></script>
-      <div> Forward Color: <input class="color" value="66ff00" id="forward_color" name="forward_color"> </div>
-      <div> Reverse Color: <input class="color" value="ff5500"  id="reverse_color" name="reverse_color"> </div>
-      <input id="Button" type="submit" value="Add feature">
-      
-
-    </form>
-  </center>
-
-</div>
- 
 <div id="autosavechoice">
     <p>Please choose which version you would like to use.</p>
     <button type = "button" id = "opened"> Opened Version </button>
     <button type="button" id="autosaved"> Autosaved Version </button>
 </div>
 
-<div id="buttons">
-    <p>Buttons for debugging purposes</p>
-    <button type="button" id="addfeature">Add Feature</button>
-    <button type="button" id = "save"> Save </button>
-    <button type="button" id="autosave"> Autosave </button>
-    <button type="button" id="delete"> Delete Autosave </button>
+<div id="main_editor"></div>
+<div id="autosaved_editor"></div>
+
+<div id="featuredialog" class='feature' title="Add Feature">
+  <%= form_tag "#", method: "GET", id: 'feature-form' do %>
+    <div class='issues'></div>
+    <%= label_tag(:sequence, "Sequence: ") %>
+    <%= text_area_tag(:sequence, "", size:"50x4") %>
+    <%= label_tag(:name, "Name: ") %>
+    <%= text_field_tag(:name) %><br />
+    <%= label_tag(:forward_color, "Forward Color: ") %>
+    <%= text_field_tag(:forward_color, "66FF00", 
+                       :class => 'color') %><br />
+    <%= label_tag(:reverse_color, "Reverse Color: ") %>
+    <%= text_field_tag(:reverse_color, "FF5500", 
+                       :class => 'color') %><br />
+    <%= hidden_field_tag(:user_id, current_user.id) %>
+    <%= submit_tag("Save Feature") %>
+  <% end %>
 </div>
 
+<div id="allfeaturesdialog" class='features' title="All Features">
+  <div id="features-table"></div>
+</div>
+
+
 <script type="text/javascript" >
-
-
 doc = <%= @file_contents.to_json.html_safe %>;
 doc_restored = <%= @file_restore_contents.to_json.html_safe %>;
 first_line = <%= @first_line.to_json.html_safe %>;
 isRestore = <%= @isRestore.to_json %>;
 saveURL = <%= @saveURL.to_json.html_safe %>;
+allFeatures = null;
+user = <%= (current_user.nil? ? -1 : current_user.id) %>;
 
 $(document).ready(function () {
-
- });
-
-function show_main(usedDoc) {
-    main_editor = new GorillaEditor("#ed", usedDoc);
-    main_editor.startEditing();
-    $("#ed").css("width", "90%")
-            .css("marginLeft", "5%")
-            .css("marginRight", "5%")
-            .css("marginBottom", "2%");
-    $('#buttons').show();
-    $('#ed2').hide();
-    $('#autosavechoice').hide();
-    TIMER = 10000;
-    window.setInterval(function() {
-        var file, time, user, autosaveURI, params;
-        file = main_editor.file.serialize();
-        user = 1;
-        autosaveURI = '/edit/autosave'
-        params = { genbank_file: file, id: first_line, user: user };
-        json_request(
-            autosaveURI,
-            params,
-            function() {console.log("autosaved");}, 
-            function(err, err1, err2) { console.log(err2); } 
-        ); 
-    } , TIMER);
-}
-
-display_autosave(doc_restored);
-
-$('#opened').click(function() {
-    show_main(doc);
+  begin_editing("#main_editor", "#autosaved_editor");
 });
-
-$('#autosaved').click(function() {
-    show_main(doc_restored);       
-});
-
-
-function save_successful(data) {
-    var params = { id: first_line };
-    json_request(
-        "/edit/delete", 
-        params, 
-        function(data) { return false; }, 
-        function(err) { alert('Save not successful.'); }
-    );
-}
-
-$('#save').click(function() {
-    json_request(
-        saveURL, 
-        params, 
-        function(data) { return save_successful(data); }, 
-        function(err) { alert('error occurred on request'); }
-    );
-    return false;
-});
-
-//For debugging purposes. Autosaves the current file manually
-$('#autosave').click(function() {
-    var file, time, user, params;
-    file = main_editor.file.serialize();
-    user = 1;
-    params = { genbank_file: file, id: first_line, user: user };
-    json_request(
-        "/edit/autosave", 
-        params, 
-        function(data) { alert("AUTOSAVE SUCCESSFUL"); }, 
-        function(err) { alert("not working"); }
-    );
-});
-
-//For debugging purposes. Deletes the autosaved file from the model.
-$('#delete').click(function() {
-    var params = { id: first_line };
-    json_request(
-        "/edit/delete", 
-        params,
-        function(data) { alert("DELETE SUCCESSFUL"); }, 
-        function(err) { alert("not working"); }
-    );
-});
-
 </script>
-<pre id="gb">
-</pre>

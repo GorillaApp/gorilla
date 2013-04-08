@@ -14,3 +14,12 @@
 //= require jquery_ujs
 //= require_tree .
 //= require jquery.ui.dialog
+//= require jscolor
+
+logger = new Log(lc.ALL,ll.LOG)
+
+$(document).ready(function(){
+  register_notifications()
+
+  $('#user_nav').registerSlideHide(30)
+});

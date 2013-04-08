@@ -1,0 +1,61 @@
+
+class window.Autosave
+  @SHOULD_AUTOSAVE: false
+
+  @request: () ->
+    Autosave.SHOULD_AUTOSAVE = true
+
+  @handle: (editor_selector, autosave_selector, callback) ->
+    $("#autosavechoice").hide()
+    d = new GenBank(doc)
+    dr = new GenBank(doc_restored)
+
+    if doc_restored != null and d.getAnnotatedSequence() != dr.getAnnotatedSequence()
+
+      recover_autosave = confirm("You may have closed this file without saving. Would you like to recover your changes?")
+
+      if recover_autosave
+        main_editor = new GorillaEditor(editor_selector, doc)
+        main_editor.viewFile()
+        autosave_editor = new GorillaEditor(autosave_selector, doc_restored)
+        autosave_editor.viewFile()
+
+        $(".editor_label").show()
+        $("#autosavechoice").show()
+        $('#opened').click ->
+          window.isRestore = false
+          callback()
+        $('#autosaved').click ->
+          window.doc = window.doc_restored
+          window.isRestore = false
+          callback()
+        return
+    window.isRestore = false
+    callback()
+
+  @save: (file) ->
+    if Autosave.SHOULD_AUTOSAVE
+      $.post "/edit/autosave",
+             genbank_file: file.serialize()
+             id: first_line
+             user: user,
+             ->
+               notify('Autosave Successful', 'status', 1000)
+               Autosave.SHOULD_AUTOSAVE = false
+
+  @delete: () ->
+    $.post "/edit/delete",
+           id: first_line,
+           (-> notify("Delete Successful", 'status', 1000))
+
+  @start: (editor) ->
+    $("#autosavechoice").hide()
+
+    $('#autosave').click ->
+      Autosave.request()
+      Autosave.save(editor.file)
+
+    $('#deleteAutosave').click ->
+      Autosave.delete()
+
+    window.setInterval (-> Autosave.save(editor.file)), 10000

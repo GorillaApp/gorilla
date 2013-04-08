@@ -1,0 +1,36 @@
+.notification DIV {
+  z-index: 100000000;
+  position: fixed;
+  width: 400px;
+  right: 30px;
+  text-align: center;
+  top: 30px;
+  padding: 5px;
+  border: 2px solid #000000;
+  border-top: none;
+  display: none;
+
+}
+
+.notification DIV.error{
+  background-color: red;
+}
+
+.notification DIV.warning {
+  background-color: yellow;
+}
+
+.notification DIV.success {
+  //background-color: #0ACF00;
+  background-color: #ffffff;
+}
+
+.notification DIV.status {
+  background-color: #aaaaaa;
+  top: auto;
+  right: auto;
+  left: 0px;
+  bottom: 0px;
+  border: none;
+  width: auto;
+}

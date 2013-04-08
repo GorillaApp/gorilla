@@ -22,7 +22,7 @@ class window.Log
     if !@entryAnnounced
       @entryAnnounced = true
       for i in [0...@indentor.length]
-        console.log(@pre + "\\")
+        #console.log(@pre + "\\")
         @pre += @indentor[i]
 
   enter: () ->
@@ -33,7 +33,7 @@ class window.Log
       @exitAnnounced = true
       for i in [0...@indentor.length]
         @pre = @pre[...-1]
-        console.log(@pre + "/")
+        #console.log(@pre + "/")
 
   exit: () ->
     @exitAnnounced = !@entryAnnounced
