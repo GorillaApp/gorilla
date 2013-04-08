@@ -5,8 +5,8 @@ type: :feature
 component: gorilla
 release: Iteration-2
 reporter: Zachary Michael Bush <zach@zmbush.com>
-status: :unstarted
-disposition: 
+status: :closed
+disposition: :fixed
 creation_time: 2013-03-13 08:57:31.233249 Z
 references: []
 
@@ -28,3 +28,7 @@ log_events:
   - Zachary Michael Bush <zach@zmbush.com>
   - assigned to release Iteration-2 from Iteration 1
   - ""
+- - 2013-04-08 23:29:47.366320 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - closed with disposition fixed
+  - Got the code working on our end

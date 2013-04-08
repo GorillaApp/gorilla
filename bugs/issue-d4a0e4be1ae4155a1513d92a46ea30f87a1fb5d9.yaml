@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Recover Password
+desc: ""
+type: :bugfix
+component: users
+release: iteration-3
+reporter: Zachary Michael Bush <zach@zmbush.com>
+status: :unstarted
+disposition: 
+creation_time: 2013-04-08 23:45:11.481708 Z
+references: []
+
+id: d4a0e4be1ae4155a1513d92a46ea30f87a1fb5d9
+log_events: 
+- - 2013-04-08 23:45:12.612241 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - created
+  - ""

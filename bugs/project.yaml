@@ -4,6 +4,14 @@ version: "0.5"
 components: 
 - !ditz.rubyforge.org,2008-03-06/component 
   name: gorilla
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: autosave
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: features
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: users
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: editor
 releases: 
 - !ditz.rubyforge.org,2008-03-06/release 
   name: Iteration 1
@@ -20,10 +28,32 @@ releases:
     - WE DONE!
 - !ditz.rubyforge.org,2008-03-06/release 
   name: Iteration-2
-  status: :unreleased
-  release_time: 
+  status: :released
+  release_time: 2013-04-08 23:30:07.811910 Z
   log_events: 
   - - 2013-03-31 04:49:54.975236 Z
     - Zachary Michael Bush <zach@zmbush.com>
     - created
     - Due Wednesday April 3rd
+  - - 2013-04-08 23:30:07.811933 Z
+    - Zachary Michael Bush <zach@zmbush.com>
+    - released
+    - ""
+- !ditz.rubyforge.org,2008-03-06/release 
+  name: iteration-3
+  status: :unreleased
+  release_time: 
+  log_events: 
+  - - 2013-04-08 23:30:47.265564 Z
+    - Zachary Michael Bush <zach@zmbush.com>
+    - created
+    - Due on Friday April, 19
+- !ditz.rubyforge.org,2008-03-06/release 
+  name: iteration-4
+  status: :unreleased
+  release_time: 
+  log_events: 
+  - - 2013-04-08 23:38:29.287507 Z
+    - Zachary Michael Bush <zach@zmbush.com>
+    - created
+    - Due Friday May, 3

@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Highlight based on library
+desc: ""
+type: :feature
+component: features
+release: iteration-3
+reporter: Zachary Michael Bush <zach@zmbush.com>
+status: :unstarted
+disposition: 
+creation_time: 2013-04-08 23:44:40.847994 Z
+references: []
+
+id: 4d28de79a32e009fa7e378e8782766484c8eb882
+log_events: 
+- - 2013-04-08 23:44:41.827067 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - created
+  - ""
