@@ -5,7 +5,7 @@ type: :feature
 component: editor
 release: iteration-3
 reporter: Zachary Michael Bush <zach@zmbush.com>
-status: :unstarted
+status: :in_progress
 disposition: 
 creation_time: 2013-04-08 23:47:07.701635 Z
 references: []
@@ -15,4 +15,8 @@ log_events:
 - - 2013-04-08 23:47:10.252659 Z
   - Zachary Michael Bush <zach@zmbush.com>
   - created
+  - ""
+- - 2013-04-09 02:47:41.109587 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - changed status from unstarted to in_progress
   - ""
