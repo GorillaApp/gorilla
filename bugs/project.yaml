@@ -10,6 +10,8 @@ components:
   name: users
 - !ditz.rubyforge.org,2008-03-06/component 
   name: editor
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: gorilla
 releases: 
 - !ditz.rubyforge.org,2008-03-06/release 
   name: Iteration 1
