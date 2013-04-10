@@ -1,0 +1,25 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Moving Selected Tag
+desc: |-
+  When selecting a tag, you can click and drag it. This is handled by contenteditable.
+  
+  We should handle this ourselves.
+type: :bugfix
+component: editor
+release: iteration-3
+reporter: Zachary Michael Bush <zach@zmbush.com>
+status: :closed
+disposition: :fixed
+creation_time: 2013-04-10 04:40:06.662712 Z
+references: []
+
+id: 6b27338b5f8c48dccc9aef52a91a5cf55428c704
+log_events: 
+- - 2013-04-10 04:40:08.720952 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - created
+  - ""
+- - 2013-04-10 04:40:50.394027 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - closed with disposition fixed
+  - Disabled the behavior
