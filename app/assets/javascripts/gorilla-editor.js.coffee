@@ -31,12 +31,23 @@ class window.GorillaEditor
                 .removeClass('viewing')
                 .addClass('editing')
 
-    $(@editorId).find("*").andSelf().unbind('keypress').unbind('keydown').unbind('keyup')
+    $(@editorId).find("*").andSelf()
+                .unbind('keypress')
+                .unbind('keydown')
+                .unbind('keyup')
+                .unbind('dragenter')
+                .unbind('dragleave')
+                .unbind('dragover')
+                .unbind('drop')
 
     $(@editorId).bind('input', (event) -> me.textChanged(event))
                 .keypress((event) -> me.keyPressed(event))
                 .keydown((event) -> me.keyDown(event))
                 .keyup((event) -> me.keyUp(event))
+                .bind('dragenter', (event) -> event.preventDefault())
+                .bind('dragleave', (event) -> event.preventDefault())
+                .bind('dragover', (event) -> event.preventDefault())
+                .bind('drop', (event) -> event.preventDefault())
 
     @editorContents = $(@editorId).text()
     @editorHtml = $(@editorId).html()
@@ -65,15 +76,15 @@ class window.GorillaEditor
       
   trackChanges: ->
     Autosave.request(this)
+    @file.updateSequence($(@editorId).text())
     @previousFiles.push($.extend(true, {}, @file))
 
   updateDebugEditor: ->
     if @debugEditor != null
-      @file.updateSequence($(@editorId).text())
       @debugEditor.file = new GenBank(@file.serialize())
       @debugEditor.viewFile()
 
-  deleteAtCursor: () ->
+  deleteAtCursor: (key = "<backspace>") ->
     sel = window.getSelection()
 
     console.log sel
@@ -88,7 +99,10 @@ class window.GorillaEditor
       element = loc.startContainer
       pe = element.parentNode
 
-      element.deleteData(caretPosition-1, 1)
+      removedChar = caretPosition - 1
+      if key == "<delete>"
+        removedChar = caretPosition
+      element.deleteData(removedChar, 1)
       
       if pe.tagName == "SPAN"
         spl = pe.id.split('-')
@@ -111,7 +125,7 @@ class window.GorillaEditor
       delme = null
 
       l = document.createRange()
-      if caretPosition - 1 == 0
+      if removedChar - 1 == 0
         if element.tagName != "SPAN" and element.parentNode.id != $(@editorId).attr('id')
           element = element.parentNode
         if element.innerHTML?.length == 0
@@ -120,7 +134,7 @@ class window.GorillaEditor
         if element.tagName == "SPAN"
           element = element.childNodes[0]
         caretPosition = element.length + 1
-      l.setStart(element, caretPosition-1)
+      l.setStart(element, removedChar)
       l.collapse(true)
 
       if delme != null
@@ -134,16 +148,26 @@ class window.GorillaEditor
 
   keyDown: (event) ->
     if event.keyCode == 8
-      console.log(event,"Backspace")
+      console.groupCollapsed("Handling Backspace")
       event.preventDefault()
-      event.stopPropagation()
-      @deleteAtCursor()
+      @deleteAtCursor('<backspace>')
+    else if event.keyCode == 46
+      console.groupCollapsed("Handling Delete")
+      event.preventDefault()
+      @deleteAtCursor('<delete>')
     else if event.ctrlKey
       console.log(event)
       if event.keyCode == 90
+        event.preventDefault()
+        console.groupCollapsed("Handling Undo")
         @undo()
       if event.keyCode == 89
+        event.preventDefault()
+        console.groupCollapsed("Handling Redo")
         @redo()
+    else
+      return
+    console.groupEnd()
 
   keyUp: (event) ->
 
@@ -244,4 +268,4 @@ class window.GorillaEditor
     console.groupEnd()
 
   textChanged: (event) ->
-    console.error "textChanged was fired"
+    console.error "contenteditable input event was fired"
