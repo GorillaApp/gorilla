@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: API Token / Oauth
+desc: Log on with token
+type: :feature
+component: users
+release: iteration-3
+reporter: Zachary Michael Bush <zach@zmbush.com>
+status: :unstarted
+disposition: 
+creation_time: 2013-04-08 23:45:34.303511 Z
+references: []
+
+id: 52deaa2068faa79293e07c3ff9ed6135939c51bb
+log_events: 
+- - 2013-04-08 23:45:35.425931 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - created
+  - ""

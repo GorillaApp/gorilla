@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Multiple Named Libraries
+desc: ""
+type: :feature
+component: features
+release: iteration-3
+reporter: Zachary Michael Bush <zach@zmbush.com>
+status: :unstarted
+disposition: 
+creation_time: 2013-04-08 23:43:47.714430 Z
+references: []
+
+id: 323708af4a0741722e99140aa3545b8426dee8ef
+log_events: 
+- - 2013-04-08 23:43:48.653799 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - created
+  - ""

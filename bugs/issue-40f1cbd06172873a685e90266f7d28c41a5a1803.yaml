@@ -1,0 +1,22 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Feature Hover dialog
+desc: Pop up a window with information about feature
+type: :feature
+component: editor
+release: iteration-3
+reporter: Zachary Michael Bush <zach@zmbush.com>
+status: :in_progress
+disposition: 
+creation_time: 2013-04-08 23:47:07.701635 Z
+references: []
+
+id: 40f1cbd06172873a685e90266f7d28c41a5a1803
+log_events: 
+- - 2013-04-08 23:47:10.252659 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - created
+  - ""
+- - 2013-04-09 02:47:41.109587 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - changed status from unstarted to in_progress
+  - ""

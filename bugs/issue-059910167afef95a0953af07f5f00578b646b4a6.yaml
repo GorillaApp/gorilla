@@ -2,7 +2,7 @@
 title: Add better logging for inserting/deleting (and updating features)
 desc: This seems to be working only some of the time. More logging would help us get the editor working better
 type: :task
-component: gorilla
+component: editor
 release: Iteration 1
 reporter: Zachary Michael Bush <zach@zmbush.com>
 status: :closed

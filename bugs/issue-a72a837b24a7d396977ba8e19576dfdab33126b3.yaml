@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Edit feature
+desc: Right click on feature to edit it
+type: :feature
+component: editor
+release: 
+reporter: Zachary Michael Bush <zach@zmbush.com>
+status: :unstarted
+disposition: 
+creation_time: 2013-04-08 23:47:58.155994 Z
+references: []
+
+id: a72a837b24a7d396977ba8e19576dfdab33126b3
+log_events: 
+- - 2013-04-08 23:48:01.620813 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - created
+  - ""
