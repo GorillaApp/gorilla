@@ -1,6 +1,5 @@
 #= require gorilla-editor
 #= require genbank
-#= require logging
 #= require jquery
 #= require helpers/keyboard_helper
 
@@ -16,8 +15,6 @@ ORIGIN
         1 cgtctctgac cagaccaata
 //
 """
-
-window.logger = new Log(lc.all, ll.WARNING)
 
 describe "Gorilla Editor", ->
   beforeEach ->

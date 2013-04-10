@@ -64,7 +64,7 @@ class window.GorillaEditor
       @nextFiles.push($.extend(true, {}, @file))
       @file = @previousFiles.pop()
       $(@editorId).html(@file.getAnnotatedSequence())
-      @updateDebugEditor()
+      @completeEdit()
 
   redo: (event) ->
     if @nextFiles.length > 0
@@ -72,14 +72,14 @@ class window.GorillaEditor
       @previousFiles.push($.extend(true, {}, @file))
       @file = @nextFiles.pop()
       $(@editorId).html(@file.getAnnotatedSequence())
-      @updateDebugEditor()
+      @completeEdit()
       
   trackChanges: ->
     Autosave.request(this)
-    @file.updateSequence($(@editorId).text())
     @previousFiles.push($.extend(true, {}, @file))
 
-  updateDebugEditor: ->
+  completeEdit: ->
+    @file.updateSequence($(@editorId).text())
     if @debugEditor != null
       @debugEditor.file = new GenBank(@file.serialize())
       @debugEditor.viewFile()
@@ -142,7 +142,7 @@ class window.GorillaEditor
 
       sel.addRange l
 
-      @updateDebugEditor()
+      @completeEdit()
     else
       console.error "How Dare You"
 
@@ -192,7 +192,12 @@ class window.GorillaEditor
         element = loc.startContainer
         pe = element.parentNode
 
-        if pe.tagName == "SPAN"
+        if caretPosition == 0
+          if pe.tagName == "SPAN"
+            element = pe
+            pe = pe.parentNode
+          pe.insertBefore(document.createTextNode(char), element)
+        else if pe.tagName == "SPAN"
           # Parse feature information from span ID
           idSplit = pe.id.split('-')
           featureId = parseInt(idSplit[1])
@@ -253,7 +258,7 @@ class window.GorillaEditor
             @file.advanceFeature(featureId, rangeId, 1)
           node = node.nextSibling
 
-        @updateDebugEditor()
+        @completeEdit()
 
         sel.removeAllRanges()
 
