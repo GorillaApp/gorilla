@@ -4,7 +4,7 @@ Gorilla is a rails/javascript re-implementation of the biological tool
 [ApE][ape]. 
 
 # To use the production Gorilla server
-You can find gorilla here: [gorilla.zmbush.com](gorilla.zmbush.com)
+You can find gorilla here: [gorilla.zmbush.com](http://gorilla.zmbush.com)
 
 
 # To Run Gorilla
