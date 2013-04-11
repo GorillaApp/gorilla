@@ -8,28 +8,28 @@ class FeatureController < ApplicationController
 
 	def add
     #no matter what happens, the result is returned as an error code
-		result = Features.add(params)
+		result = Feature.add(params)
     render :json => {:errCode => result}
 	end
 
 	def remove
-		result = Features.remove(params)
+		result = Feature.remove(params)
     render :json => {:errCode => result}
 	end
 
 	def edit
-    result = Features.edit(params)
+    result = Feature.edit(params)
     render :json => {:errCode => result}
 	end
 
 	def getAll
     #returns an array of features
-     result = Features.getAll(params)
+     result = Feature.getAll(params)
      render :json => {:features => result}
 	end
 
 	def getFeature
-    result = Features.getFeature(params)
+    result = Feature.getFeature(params)
     if result == DOES_NOT_EXIST
       render :json => {:errCode => result}
     else

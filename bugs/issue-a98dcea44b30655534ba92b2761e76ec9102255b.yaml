@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Add feature with select and right click
+desc: ""
+type: :feature
+component: editor
+release: 
+reporter: Zachary Michael Bush <zach@zmbush.com>
+status: :unstarted
+disposition: 
+creation_time: 2013-04-08 23:48:28.637547 Z
+references: []
+
+id: a98dcea44b30655534ba92b2761e76ec9102255b
+log_events: 
+- - 2013-04-08 23:48:30.231474 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - created
+  - ""

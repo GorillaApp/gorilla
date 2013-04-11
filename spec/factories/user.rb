@@ -1,4 +1,4 @@
-include ActionDispatch::TestProcess
+require 'faker'
 
 FactoryGirl.define do
   factory :user, :class => User do

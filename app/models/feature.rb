@@ -1,4 +1,4 @@
-class Features < ActiveRecord::Base
+class Feature < ActiveRecord::Base
   attr_accessible :forward_color, :name, :reverse_color, :sequence, :user_id
 
   belongs_to :user
@@ -21,13 +21,13 @@ class Features < ActiveRecord::Base
   UNEXPECTED_EXCEPTION = 5
 
   def self.add(params)
-   	@feature = Features.create(params.slice(:user_id, :name, :sequence, :forward_color, :reverse_color))
+   	@feature = Feature.create(params.slice(:user_id, :name, :sequence, :forward_color, :reverse_color))
   	@feature.save!
   	return SUCCESS
   end
 
   def self.remove(params)
-  	@feature = Features.find_by_id(params[:id])
+  	@feature = Feature.find_by_id(params[:id])
   	if @feature != nil
   		@feature.destroy
   		return SUCCESS
@@ -37,7 +37,7 @@ class Features < ActiveRecord::Base
 
   def self.edit(params)
     #right now, this method always return success
-  	feature = Features.find_by_id(params[:id])
+  	feature = Feature.find_by_id(params[:id])
 
   	if params[:name] != nil
   		feature.name = params[:name]
@@ -58,7 +58,7 @@ class Features < ActiveRecord::Base
 
   def self.getAll(params)
     #returns an array of all features that match the user_id
-  	allFeat =  Features.all(:conditions => ["user_id = ?", (params[:user_id])])
+  	allFeat =  Feature.all(:conditions => ["user_id = ?", (params[:user_id])])
     result = []
     allFeat.each do |feat|
       result.push({:id => feat.id, :name => feat.name, :sequence => feat.sequence, :forward_color => feat.forward_color, :reverse_color => feat.reverse_color})
@@ -67,7 +67,7 @@ class Features < ActiveRecord::Base
   end
 
   def self.getFeature(params)
-  	feat = Features.find_by_user_id_and_id(params[:user_id], params[:id])
+  	feat = Feature.find_by_user_id_and_id(params[:user_id], params[:id])
     if feat == nil
       return DOES_NOT_EXIST
     else

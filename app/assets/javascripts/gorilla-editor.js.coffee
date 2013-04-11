@@ -1,3 +1,5 @@
+#= require autosave
+
 class window.GorillaEditor
   constructor: (@editorId, @initialDocument = '', @debugEditor = null) ->
     logger.d("Initializing GorillaEditor...")
@@ -44,7 +46,7 @@ class window.GorillaEditor
 
   undo: (event) ->
     if @previousFiles.length > 0
-      Autosave.request()
+      Autosave.request(this)
       @nextFiles.push($.extend(true, {}, @file))
       @file = @previousFiles.pop()
       $(@editorId).html(@file.getAnnotatedSequence())
@@ -52,14 +54,14 @@ class window.GorillaEditor
 
   redo: (event) ->
     if @nextFiles.length > 0
-      Autosave.request()
+      Autosave.request(this)
       @previousFiles.push($.extend(true, {}, @file))
       @file = @nextFiles.pop()
       $(@editorId).html(@file.getAnnotatedSequence())
       @updateDebugEditor()
       
   trackChanges: ->
-    Autosave.request()
+    Autosave.request(this)
     @previousFiles.push($.extend(true, {}, @file))
 
   updateDebugEditor: ->
@@ -73,7 +75,7 @@ class window.GorillaEditor
 
     logger.l sel
 
-    if sel.type == "Caret"
+    if sel.isCollapsed
       @trackChanges()
 
       loc = sel.getRangeAt(0)
@@ -148,12 +150,13 @@ class window.GorillaEditor
 
     logger.enter()
 
-    char = String.fromCharCode(event.keyCode).toLowerCase()
+    code = if event.keyCode then event.keyCode else event.which
+    char = String.fromCharCode(code).toLowerCase()
     if "agtc".indexOf(char) != -1
       logger.d "ooh, exciting!"
       sel = window.getSelection()
 
-      if sel.type == "Caret"
+      if sel.isCollapsed
         @trackChanges()
 
         loc = sel.getRangeAt(0)
@@ -180,8 +183,7 @@ class window.GorillaEditor
           pe.removeChild(end)
 
           # Add the char as a new text node after the parent element
-          tn = document.createTextNode()
-          tn.textContent = char
+          tn = document.createTextNode(char)
           pe.parentNode.insertBefore(tn, pe.nextSibling) # this is retarded
 
           if caretPosition < featureLength
@@ -209,8 +211,7 @@ class window.GorillaEditor
 
           pe.removeChild(end)
 
-          tn = document.createTextNode()
-          tn.textContent = char
+          tn = document.createTextNode(char)
 
           pe.insertBefore(tn, start.nextSibling)
           pe.insertBefore(end, tn.nextSibling)
@@ -231,7 +232,7 @@ class window.GorillaEditor
         sel.removeAllRanges()
 
         l = document.createRange()
-        l.setStartAfter(element)
+        l.setStart(element, 1)
         l.collapse(true)
 
         sel.addRange l
