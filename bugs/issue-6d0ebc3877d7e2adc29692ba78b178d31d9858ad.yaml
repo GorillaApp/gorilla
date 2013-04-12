@@ -1,0 +1,20 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Capitalize / Uncapitalize Text
+desc: Button, or can do with right click. If nothing selected do on whole file
+type: :feature
+component: editor
+release: 
+reporter: Zachary Michael Bush <zach@zmbush.com>
+status: :unstarted
+disposition: 
+creation_time: 2013-04-12 20:02:36.006324 Z
+references: []
+
+id: 6d0ebc3877d7e2adc29692ba78b178d31d9858ad
+log_events: 
+- - 2013-04-12 20:02:37.870423 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - created
+  - ""
+git_branch: 
+claimer: 

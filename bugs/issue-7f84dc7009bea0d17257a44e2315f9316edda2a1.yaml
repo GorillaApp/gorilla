@@ -1,0 +1,24 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Enzyme Library
+desc: |-
+  Digestion
+  Ladder
+  Default Library
+  Pop up with split information
+type: :feature
+component: editor
+release: 
+reporter: Zachary Michael Bush <zach@zmbush.com>
+status: :unstarted
+disposition: 
+creation_time: 2013-04-12 20:06:48.355570 Z
+references: []
+
+id: 7f84dc7009bea0d17257a44e2315f9316edda2a1
+log_events: 
+- - 2013-04-12 20:06:48.895079 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - created
+  - ""
+git_branch: 
+claimer: 

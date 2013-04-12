@@ -1,0 +1,20 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Left Side Numbering
+desc: Put numbers down the left side of the open file
+type: :feature
+component: editor
+release: 
+reporter: Zachary Michael Bush <zach@zmbush.com>
+status: :unstarted
+disposition: 
+creation_time: 2013-04-12 20:04:13.046745 Z
+references: []
+
+id: 63b2736b40cf055f6eac0130a4ff67d0b0cd48d0
+log_events: 
+- - 2013-04-12 20:04:14.909720 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - created
+  - ""
+git_branch: 
+claimer: 
