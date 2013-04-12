@@ -7,7 +7,7 @@ desc: |-
   As Literal (n as it is)
 type: :feature
 component: editor
-release: 
+release: iteration-4
 reporter: Zachary Michael Bush <zach@zmbush.com>
 status: :unstarted
 disposition: 
@@ -19,6 +19,10 @@ log_events:
 - - 2013-04-12 20:09:53.881757 Z
   - Zachary Michael Bush <zach@zmbush.com>
   - created
+  - ""
+- - 2013-04-12 20:23:49.603574 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - assigned to release iteration-4 from unassigned
   - ""
 git_branch: 
 claimer: 

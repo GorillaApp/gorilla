@@ -7,7 +7,7 @@ desc: |-
   sequence
 type: :feature
 component: editor
-release: 
+release: iteration-3
 reporter: Zachary Michael Bush <zach@zmbush.com>
 status: :unstarted
 disposition: 
@@ -19,6 +19,10 @@ log_events:
 - - 2013-04-12 20:09:15.212777 Z
   - Zachary Michael Bush <zach@zmbush.com>
   - created
+  - ""
+- - 2013-04-12 20:23:36.931579 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - assigned to release iteration-3 from unassigned
   - ""
 git_branch: 
 claimer: 

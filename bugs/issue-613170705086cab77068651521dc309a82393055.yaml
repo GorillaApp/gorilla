@@ -5,7 +5,7 @@ desc: |-
   Move the start of file to current cursor spot
 type: :feature
 component: editor
-release: 
+release: Iteration 1
 reporter: Zachary Michael Bush <zach@zmbush.com>
 status: :unstarted
 disposition: 
@@ -17,6 +17,10 @@ log_events:
 - - 2013-04-12 20:08:17.961906 Z
   - Zachary Michael Bush <zach@zmbush.com>
   - created
+  - ""
+- - 2013-04-12 20:18:30.668566 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - assigned to release Iteration 1 from unassigned
   - ""
 git_branch: 
 claimer: 

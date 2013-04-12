@@ -3,7 +3,7 @@ title: Amino Acid Selection (three character lookup)
 desc: Pop up a window with full translation
 type: :feature
 component: editor
-release: 
+release: iteration-3
 reporter: Zachary Michael Bush <zach@zmbush.com>
 status: :unstarted
 disposition: 
@@ -15,6 +15,10 @@ log_events:
 - - 2013-04-12 20:05:28.771725 Z
   - Zachary Michael Bush <zach@zmbush.com>
   - created
+  - ""
+- - 2013-04-12 20:22:17.751764 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - assigned to release iteration-3 from unassigned
   - ""
 git_branch: 
 claimer: 

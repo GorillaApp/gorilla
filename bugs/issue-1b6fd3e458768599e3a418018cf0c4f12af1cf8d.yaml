@@ -6,7 +6,7 @@ desc: |-
   Reverse order and flip all bases
 type: :feature
 component: editor
-release: 
+release: iteration-4
 reporter: Zachary Michael Bush <zach@zmbush.com>
 status: :unstarted
 disposition: 
@@ -18,6 +18,10 @@ log_events:
 - - 2013-04-12 20:03:29.583366 Z
   - Zachary Michael Bush <zach@zmbush.com>
   - created
+  - ""
+- - 2013-04-12 20:21:34.675274 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - assigned to release iteration-4 from unassigned
   - ""
 git_branch: 
 claimer: 

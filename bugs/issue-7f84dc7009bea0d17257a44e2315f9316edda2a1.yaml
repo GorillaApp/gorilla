@@ -7,7 +7,7 @@ desc: |-
   Pop up with split information
 type: :feature
 component: editor
-release: 
+release: iteration-3
 reporter: Zachary Michael Bush <zach@zmbush.com>
 status: :unstarted
 disposition: 
@@ -20,5 +20,9 @@ log_events:
   - Zachary Michael Bush <zach@zmbush.com>
   - created
   - ""
+- - 2013-04-12 20:17:38.109596 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - assigned to release iteration-3 from unassigned
+  - Backend stuff at least
 git_branch: 
 claimer: 
