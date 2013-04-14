@@ -1,0 +1,26 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Circular vs Linear Mode
+desc: |-
+  Feature Recognition
+  Move the start of file to current cursor spot
+type: :feature
+component: editor
+release: Iteration 1
+reporter: Zachary Michael Bush <zach@zmbush.com>
+status: :unstarted
+disposition: 
+creation_time: 2013-04-12 20:08:17.383539 Z
+references: []
+
+id: 613170705086cab77068651521dc309a82393055
+log_events: 
+- - 2013-04-12 20:08:17.961906 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - created
+  - ""
+- - 2013-04-12 20:18:30.668566 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - assigned to release Iteration 1 from unassigned
+  - ""
+git_branch: 
+claimer: 
