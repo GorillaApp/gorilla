@@ -63,4 +63,5 @@ class window.Autosave
     $('#deleteAutosave').click ->
       Autosave.delete()
 
-    window.setInterval (-> Autosave.save(editor.file)), 10000
+    # I'm not sure the below line is necessary because the GorillaEditor autosaves with each change
+    # window.setInterval (-> Autosave.save(editor.file)), 10000

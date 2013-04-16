@@ -31,7 +31,6 @@ class Autosave < ActiveRecord::Base
     if ! autosaved_file.nil?
       autosaved_file.destroy
     end
-  	# Autosave.find_by_name(name).destroy
   end
 
 end
