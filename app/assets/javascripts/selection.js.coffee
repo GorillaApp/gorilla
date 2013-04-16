@@ -1,3 +1,8 @@
+# Current problems:
+# getNodesFromHtmlText cannot handle if text node is first node
+# in html data. Also, if text node is last node in html data it
+# is simply ignored.
+
 # Credit to: StackOverflow user Tim Down
 getSelectionHtml =  () ->
   sel = ""
@@ -11,17 +16,17 @@ getSelectionHtml =  () ->
       html = el.innerHTML
     else if document.selection && document.selection.type == "Text"
       html = document.selection.createRange().htmlText
-  return html
+  return [html, sel]
 
 # Credit to: StackOverflow user Pat
 getNodesFromHtmlText = (htmlText) ->
-  spans = $(htmlText).each(()->
-    $span = $(this)
-    divId = $span.closest('div').attr('id')
-    spanId = $span.attr('id')
-    spanTxt = $span.text()
+  nodes = $(htmlText).each(()->
+    $node = $(this)
+    divId = $node.closest('div').attr('id')
+    nodeId = $node.attr('id')
+    nodeTxt = $node.text()
   )
-  return spans
+  return nodes
 
 getNodeData = (node) ->
   if node.nodeName == "SPAN"
@@ -35,12 +40,20 @@ getNodeData = (node) ->
 
 getFeatureDataOfSelected = () ->
   nodeData = []
-  selectedHtml = getSelectionHtml()
+  [selectedHtml, sel] = getSelectionHtml()
   nodes = getNodesFromHtmlText(selectedHtml)
   
   for node in nodes
     nodeDatum = getNodeData(node)
     nodeData.push nodeDatum
+  
+  if nodeData.length > 0
+    if sel.anchorOffset != 0
+      nodeData[0].push sel.baseOffset
+    else
+      nodeData[0].push 0
+
+    nodeData[nodeData.length - 1].push sel.extentOffset
 
   return nodeData
 
