@@ -1,15 +1,18 @@
 #= require genbank
 #= require autosave
+#= require util
 
 window.G or= {}
+Autosave = G.Autosave
+GenBank = G.GenBank
 
 window.G.GorillaEditor = class GorillaEditor
   constructor: (@editorId, @initialDocument = '', @debugEditor = null) ->
     console.groupCollapsed("Initializing GorillaEditor: #{editorId}")
     if @initialDocument != ''
-      @file = new G.GenBank(@initialDocument, @editorId[1..])
+      @file = new GenBank(@initialDocument, @editorId[1..])
       if @debugEditor != null
-        @debugEditor.file = new G.GenBank(@initialDocument, @debugEditor.editorId[1..])
+        @debugEditor.file = new GenBank(@initialDocument, @debugEditor.editorId[1..])
         @debugEditor.startEditing()
     console.log("GorillaEditor ready!")
     console.groupEnd()
@@ -84,7 +87,7 @@ window.G.GorillaEditor = class GorillaEditor
   completeEdit: ->
     @file.updateSequence($(@editorId).text())
     if @debugEditor != null
-      @debugEditor.file = new GenBank(@file.serialize())
+      @debugEditor.file = new G.GenBank(@file.serialize())
       @debugEditor.viewFile()
 
   deleteAtCursor: (key = "<backspace>") ->
