@@ -223,10 +223,15 @@ window.G.GenBank = class GenBank
 
   serialize: () ->
     console.groupCollapsed("Serializing File")
-    file = "LOCUS".padBy(12) + @data.LOCUS.name.padBy(13) + (@getGeneSequence().length + " bp").padBy(11) + @data.LOCUS.type.padBy(16) + @data.LOCUS.division + " " + @data.LOCUS.date + @newline
+    file = "LOCUS".padBy(12) + @data.LOCUS.name.padBy(13)
+    file += (@getGeneSequence().length + " bp").padBy(11)
+    file += @data.LOCUS.type.padBy(16) + @data.LOCUS.division + " "
+    file += @data.LOCUS.date + @newline
+    ignoredSections = ["LOCUS", "FEATURES", "ORIGIN", "//", "raw_genes",
+                       "features"]
     # file = "LOCUS".padBy(12) + @data.LOCUS + @newline
     for own section,contents of @data
-      if ["LOCUS", "FEATURES", "ORIGIN", "//", "raw_genes", "features"].indexOf(section) == -1
+      if ignoredSections.indexOf(section) == -1
         file += section.padBy(12) + contents + @newline
     file += @serializeFeatures()
     file += @serializeGenes()
