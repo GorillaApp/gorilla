@@ -1,12 +1,15 @@
+#= require genbank
 #= require autosave
 
-class window.GorillaEditor
+window.G or= {}
+
+window.G.GorillaEditor = class GorillaEditor
   constructor: (@editorId, @initialDocument = '', @debugEditor = null) ->
     console.groupCollapsed("Initializing GorillaEditor: #{editorId}")
     if @initialDocument != ''
-      @file = new GenBank(@initialDocument, @editorId[1..])
+      @file = new G.GenBank(@initialDocument, @editorId[1..])
       if @debugEditor != null
-        @debugEditor.file = new GenBank(@initialDocument, @debugEditor.editorId[1..])
+        @debugEditor.file = new G.GenBank(@initialDocument, @debugEditor.editorId[1..])
         @debugEditor.startEditing()
     console.log("GorillaEditor ready!")
     console.groupEnd()

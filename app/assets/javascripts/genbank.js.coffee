@@ -12,7 +12,9 @@ String.prototype.padBy = (length) ->
     pad -= 1
   retval
 
-class window.GenBank
+window.G or= {}
+
+window.G.GenBank = class GenBank
   constructor: (@text, @id = "default") ->
     console.groupCollapsed("GenBank Constructor #{@id}")
     @newline = "\n"
