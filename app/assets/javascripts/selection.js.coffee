@@ -1,3 +1,4 @@
+# Credit to: StackOverflow user Tim Down
 getSelectionHtml =  () ->
   sel = ""
   html = ""
@@ -12,4 +13,16 @@ getSelectionHtml =  () ->
       html = document.selection.createRange().htmlText
   return html
 
+# Credit to: StackOverflow user Pat
+getSpansFromHtml = () ->
+  spans = $(s).each(()->
+    $span = $(this)
+    divId = $span.closest('div').attr('id')
+    spanId = $span.attr('id')
+    spanTxt = $span.text()
+  )
+  return spans
+
+
 window.getSelectionHtml = getSelectionHtml
+window.getSpansFromHtml = getSpansFromHtml
