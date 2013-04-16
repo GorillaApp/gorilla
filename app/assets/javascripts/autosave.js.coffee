@@ -50,6 +50,7 @@ class window.Autosave
   @delete: () ->
     $.post "/edit/delete",
            id: first_line,
+           user: user,
            -> 
               notify("Delete Successful", 'status', 1000)
 

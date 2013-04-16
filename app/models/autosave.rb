@@ -17,7 +17,6 @@ class Autosave < ActiveRecord::Base
   end
 
   def self.find_autosaved_file(name, user_id)
-
   	autosaved_file_contents = nil
   	autosaved_file = Autosave.find_by_name_and_user_id(name, user_id)
   	if ! autosaved_file.nil?
@@ -26,8 +25,8 @@ class Autosave < ActiveRecord::Base
   	return autosaved_file_contents
   end
 
-  def self.delete_save(name)
-    autosaved_file = Autosave.find_by_name(name)
+  def self.delete_save(name, user_id)
+    autosaved_file = Autosave.find_by_name_and_user_id(name, user_id)
     if ! autosaved_file.nil?
       autosaved_file.destroy
     end
