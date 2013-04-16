@@ -34,6 +34,8 @@ class window.Autosave
           window.isRestore = false
           callback()
         return
+      else
+        Autosave.delete()
     window.isRestore = false
     callback()
 
