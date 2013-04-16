@@ -19,7 +19,7 @@ ORIGIN
 describe "Gorilla Editor", ->
   beforeEach ->
     $('body').html('<div id="ed"></div>')
-    @ge = new GorillaEditor("#ed", testFile)
+    @ge = new G.GorillaEditor("#ed", testFile)
 
   context 'while viewing', ->
     beforeEach ->
