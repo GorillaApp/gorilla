@@ -27,7 +27,11 @@ class Autosave < ActiveRecord::Base
   end
 
   def self.delete_save(name)
-  	Autosave.find_by_name(name).destroy
+    autosaved_file = Autosave.find_by_name(name)
+    if ! autosaved_file.nil?
+      autosaved_file.destroy
+    end
+  	# Autosave.find_by_name(name).destroy
   end
 
 end

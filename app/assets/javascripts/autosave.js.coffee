@@ -50,13 +50,14 @@ class window.Autosave
   @delete: () ->
     $.post "/edit/delete",
            id: first_line,
-           (-> notify("Delete Successful", 'status', 1000))
+           -> 
+              notify("Delete Successful", 'status', 1000)
 
   @start: (editor) ->
     $("#autosavechoice").hide()
 
     $('#autosave').click ->
-      Autosave.request()
+      Autosave.request(editor)
       Autosave.save(editor.file)
 
     $('#deleteAutosave').click ->
