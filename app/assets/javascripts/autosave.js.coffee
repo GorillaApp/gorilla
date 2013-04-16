@@ -34,6 +34,8 @@ class window.Autosave
           window.isRestore = false
           callback()
         return
+      else
+        Autosave.delete()
     window.isRestore = false
     callback()
 
@@ -50,16 +52,19 @@ class window.Autosave
   @delete: () ->
     $.post "/edit/delete",
            id: first_line,
-           (-> notify("Delete Successful", 'status', 1000))
+           user: user,
+           -> 
+              notify("Delete Successful", 'status', 1000)
 
   @start: (editor) ->
     $("#autosavechoice").hide()
 
     $('#autosave').click ->
-      Autosave.request()
+      Autosave.request(editor)
       Autosave.save(editor.file)
 
     $('#deleteAutosave').click ->
       Autosave.delete()
 
-    window.setInterval (-> Autosave.save(editor.file)), 10000
+    # I'm not sure the below line is necessary because the GorillaEditor autosaves with each change
+    # window.setInterval (-> Autosave.save(editor.file)), 10000

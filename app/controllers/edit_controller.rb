@@ -49,7 +49,9 @@ class EditController < ApplicationController
 
   def delete
     id = params[:id]
-    Autosave.delete_save(id)
+    user = params[:user]
+    
+    Autosave.delete_save(id, user)
 
     render json: {success: 1}
   end
