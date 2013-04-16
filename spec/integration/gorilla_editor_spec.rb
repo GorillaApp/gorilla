@@ -6,7 +6,7 @@ describe "A user", :js => true do
   include GorillaHelper
   
   context "that is logged" do
-    before (:each) do
+    before :each do
       visit '/'
 
       find("#users_form").click_link "Sign up"
