@@ -14,8 +14,8 @@ getSelectionHtml =  () ->
   return html
 
 # Credit to: StackOverflow user Pat
-getSpansFromHtml = () ->
-  spans = $(s).each(()->
+getNodesFromHtmlText = (htmlText) ->
+  spans = $(htmlText).each(()->
     $span = $(this)
     divId = $span.closest('div').attr('id')
     spanId = $span.attr('id')
@@ -23,6 +23,27 @@ getSpansFromHtml = () ->
   )
   return spans
 
+getNodeData = (node) ->
+  if node.nodeName == "SPAN"
+    split_id = node.id.split('-')
+    featureId = split_id[1]
+    rangeId = split_id[2]
+    text = node.innerHTML
+    return [featureId, rangeId, text]
+  else
+    return node
 
+getFeatureDataOfSelected = () ->
+  nodeData = []
+  selectedHtml = getSelectionHtml()
+  nodes = getNodesFromHtmlText(selectedHtml)
+  
+  for node in nodes
+    nodeDatum = getNodeData(node)
+    nodeData.push nodeDatum
+
+  return nodeData
+
+window.getFeatureDataOfSelected = getFeatureDataOfSelected
 window.getSelectionHtml = getSelectionHtml
-window.getSpansFromHtml = getSpansFromHtml
+window.getNodesFromHtmlText = getNodesFromHtmlText
