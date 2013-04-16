@@ -101,14 +101,16 @@ window.G.GenBank = class GenBank
 
   annotateRange: (seq, range) ->
     console.groupCollapsed("Annotating range: ", range)
-    feat = range.feats[range.feats.length - 1]
+    r = range.feats[range.feats.length - 1]
+    feat = r.feature
+    span = r.range
     console.groupCollapsed("The feature: ", feat, "is on top")
     color = feat.parameters['/ApEinfo_fwdcolor']
     if feat.location.strand == 1
         color = feat.parameters['/ApEinfo_revcolor']
     name = feat.parameters["/label"]
     seq = @annotate(seq, range.selection.start, range.selection.end, color,
-                    name, 0, feat.id)
+                    name, span.id, feat.id)
     console.groupEnd()
     seq
 
@@ -203,16 +205,20 @@ window.G.GenBank = class GenBank
             for i in [range.start..range.end] by 1
                 if selections[i] == undefined
                     selections[i] = []
-                selections[i].push(feature)
+                selections[i].push(feature: feature, range: range)
     ranges = []
     previous = undefined
     sel = start: 0, end: 0
     i = 0
     for selection in selections
         eq = (previous != undefined and selection != undefined)
+        if eq and (previous.length != selection.length)
+            eq = false
         if eq
-            for j in [0..selection.length]
-                if selection[j] != previous[j]
+            for j in [0...selection.length]
+                s = selection[j]
+                p = previous[j]
+                if s.range != p.range or s.feature != p.feature
                     eq = false
         if eq
             sel.end = i
@@ -222,6 +228,8 @@ window.G.GenBank = class GenBank
             previous = selection
             sel = start: i, end: i
         i += 1
+    if previous != undefined
+        ranges.push(feats: previous, selection: sel)
 
     for range in ranges
         seq = @annotateRange(seq, range)
