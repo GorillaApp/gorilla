@@ -20,6 +20,7 @@ getSelectionHtml =  () ->
 
 # Credit to: StackOverflow user Pat
 getNodesFromHtmlText = (htmlText) ->
+
   nodes = $(htmlText).each(()->
     $node = $(this)
     divId = $node.closest('div').attr('id')
@@ -33,16 +34,35 @@ getNodeData = (node) ->
     split_id = node.id.split('-')
     featureId = split_id[1]
     rangeId = split_id[2]
-    text = node.innerHTML
-    return [featureId, rangeId, text]
+    #text = node.innerHTML
+    return [featureId, rangeId]
   else
     return node
 
 getFeatureDataOfSelected = () ->
   nodeData = []
   [selectedHtml, sel] = getSelectionHtml()
-  nodes = getNodesFromHtmlText(selectedHtml)
-  
+  nodes = []
+  textNodes = []
+
+  i = 0
+  j = selectedHtml.length - 1
+  # finishes when it either finds a < or it equals the length
+  while selectedHtml[i] != '<' and i < selectedHtml.length
+    i += 1
+  while selectedHtml[j] != '>' and j > 0
+    j -= 1
+
+  # if it is completely a text node, push its container, the span
+  if i == selectedHtml.length
+    nodes = [sel.anchorNode.parentNode]
+  else
+    if i != 0 # if it begins with a text node
+      text = selectedHtml.substr(0,i)
+      textNodes.push text
+      selectedHtml = selectedHtml[i..]
+
+  nodes = textNodes.concat getNodesFromHtmlText(selectedHtml)
   for node in nodes
     nodeDatum = getNodeData(node)
     nodeData.push nodeDatum
