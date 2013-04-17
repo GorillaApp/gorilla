@@ -7,7 +7,6 @@ class EditController < ApplicationController
   def load
     @file_restore_contents = ''
     file = ''
-    file_url = (params[:fileURL].nil? ? "" : params[:fileURL])
     @saveURL = params[:saveURL]
 
     if not params[:saveURL].blank?
@@ -50,7 +49,9 @@ class EditController < ApplicationController
 
   def delete
     id = params[:id]
-    Autosave.delete_save(id)
+    user = params[:user]
+    
+    Autosave.delete_save(id, user)
 
     render json: {success: 1}
   end
