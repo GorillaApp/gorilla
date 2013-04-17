@@ -7,10 +7,14 @@ Autosave = G.Autosave
 GenBank = G.GenBank
 
 window.G.GorillaEditor = class GorillaEditor
-  constructor: (@editorId, @initialDocument = '', @debugEditor = null) ->
-    console.groupCollapsed("Initializing GorillaEditor: #{editorId}")
+  constructor: (@mainId, @initialDocument = '', @debugEditor = null) ->
+    console.groupCollapsed("Initializing GorillaEditor: #{@mainId}")
+    $(@mainId).html('<div class="numbers"></div><div class="editor"></div><div style="clear:both;"></div>')
+              .addClass('gorilla-container')
+    @editorId = @mainId + ' .editor'
+    @numbersId = @mainId + ' .numbers'
     if @initialDocument != ''
-      @file = new GenBank(@initialDocument, @editorId[1..])
+      @file = new GenBank(@initialDocument, @mainId[1..])
       if @debugEditor != null
         @debugEditor.file = new GenBank(@initialDocument, @debugEditor.editorId[1..])
         @debugEditor.startEditing()
@@ -55,6 +59,9 @@ window.G.GorillaEditor = class GorillaEditor
                 .bind('dragover', (event) -> event.preventDefault())
                 .bind('drop', (event) -> event.preventDefault())
 
+
+
+
     @editorContents = $(@editorId).text()
     @editorHtml = $(@editorId).html()
     @previousEditors = []
@@ -81,6 +88,17 @@ window.G.GorillaEditor = class GorillaEditor
       @completeEdit()
       
   trackChanges: ->
+    size = getCharSize('monospace', '13px')
+    console.log size
+    chars = $(@editorId).get(0).clientWidth / size.width
+    lines = $(@editorId).get(0).clientHeight / 16
+    console.log chars, lines
+    text = ''
+    loc = 1
+    for line in [0...lines]
+        text += loc + '<br>'
+        loc += chars
+    $(@numbersId).html(text)
     Autosave.request(this)
     @previousFiles.push($.extend(true, {}, @file))
 
