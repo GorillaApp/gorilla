@@ -3,7 +3,7 @@ title: Edit feature
 desc: Right click on feature to edit it
 type: :feature
 component: editor
-release: 
+release: iteration-4
 reporter: Zachary Michael Bush <zach@zmbush.com>
 status: :unstarted
 disposition: 
@@ -16,3 +16,9 @@ log_events:
   - Zachary Michael Bush <zach@zmbush.com>
   - created
   - ""
+- - 2013-04-11 04:57:51.913149 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - assigned to release iteration-4 from unassigned
+  - This will probably take a while.
+git_branch: 
+claimer: 

@@ -1,0 +1,24 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Amino Acid Selection (three character lookup)
+desc: Pop up a window with full translation
+type: :feature
+component: editor
+release: iteration-3
+reporter: Zachary Michael Bush <zach@zmbush.com>
+status: :unstarted
+disposition: 
+creation_time: 2013-04-12 20:05:27.904180 Z
+references: []
+
+id: a3e34e97f9b3c1b2258b0130fee329dfb86ca279
+log_events: 
+- - 2013-04-12 20:05:28.771725 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - created
+  - ""
+- - 2013-04-12 20:22:17.751764 Z
+  - Zachary Michael Bush <zach@zmbush.com>
+  - assigned to release iteration-3 from unassigned
+  - ""
+git_branch: 
+claimer: 

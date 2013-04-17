@@ -1,24 +1,24 @@
 --- !ditz.rubyforge.org,2008-03-06/issue 
-title: Add feature with select and right click
-desc: ""
+title: Left Side Numbering
+desc: Put numbers down the left side of the open file
 type: :feature
 component: editor
-release: iteration-4
+release: iteration-3
 reporter: Zachary Michael Bush <zach@zmbush.com>
 status: :unstarted
 disposition: 
-creation_time: 2013-04-08 23:48:28.637547 Z
+creation_time: 2013-04-12 20:04:13.046745 Z
 references: []
 
-id: a98dcea44b30655534ba92b2761e76ec9102255b
+id: 63b2736b40cf055f6eac0130a4ff67d0b0cd48d0
 log_events: 
-- - 2013-04-08 23:48:30.231474 Z
+- - 2013-04-12 20:04:14.909720 Z
   - Zachary Michael Bush <zach@zmbush.com>
   - created
   - ""
-- - 2013-04-11 04:58:12.630440 Z
+- - 2013-04-12 20:21:54.365042 Z
   - Zachary Michael Bush <zach@zmbush.com>
-  - assigned to release iteration-4 from unassigned
+  - assigned to release iteration-3 from unassigned
   - ""
 git_branch: 
 claimer: 

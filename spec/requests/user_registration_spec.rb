@@ -32,7 +32,7 @@ describe "user sign in" do
   end
 end
 
-describe "invalid user sign in " do
+describe "invalid user sign in" do
 
   it "checks to see that attempting to login with invalid credentials will not work" do
 

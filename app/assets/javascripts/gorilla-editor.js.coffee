@@ -1,25 +1,33 @@
+#= require genbank
 #= require autosave
+#= require util
 
-class window.GorillaEditor
+window.G or= {}
+Autosave = G.Autosave
+GenBank = G.GenBank
+
+window.G.GorillaEditor = class GorillaEditor
   constructor: (@editorId, @initialDocument = '', @debugEditor = null) ->
-    logger.d("Initializing GorillaEditor...")
+    console.groupCollapsed("Initializing GorillaEditor: #{editorId}")
     if @initialDocument != ''
       @file = new GenBank(@initialDocument, @editorId[1..])
       if @debugEditor != null
         @debugEditor.file = new GenBank(@initialDocument, @debugEditor.editorId[1..])
         @debugEditor.startEditing()
-    logger.d("GorillaEditor ready!")
+    console.log("GorillaEditor ready!")
+    console.groupEnd()
 
   viewFile: () ->
-    logger.d("Preparing Editor to be viewed")
+    console.groupCollapsed("Preparing Editor to be viewed")
 
     $(@editorId).html(@file.getAnnotatedSequence())
                 .addClass('gorilla-editor viewing')
 
-    logger.d("Ready to view")
+    console.log("Ready to view")
+    console.groupEnd()
 
   startEditing: () ->
-    logger.d("Preparing Editor to be edited")
+    console.groupCollapsed("Preparing Editor to be edited")
     me = @
 
     @viewFile()
@@ -29,12 +37,23 @@ class window.GorillaEditor
                 .removeClass('viewing')
                 .addClass('editing')
 
-    $(@editorId).find("*").andSelf().unbind('keypress').unbind('keydown').unbind('keyup')
+    $(@editorId).find("*").andSelf()
+                .unbind('keypress')
+                .unbind('keydown')
+                .unbind('keyup')
+                .unbind('dragenter')
+                .unbind('dragleave')
+                .unbind('dragover')
+                .unbind('drop')
 
     $(@editorId).bind('input', (event) -> me.textChanged(event))
                 .keypress((event) -> me.keyPressed(event))
                 .keydown((event) -> me.keyDown(event))
                 .keyup((event) -> me.keyUp(event))
+                .bind('dragenter', (event) -> event.preventDefault())
+                .bind('dragleave', (event) -> event.preventDefault())
+                .bind('dragover', (event) -> event.preventDefault())
+                .bind('drop', (event) -> event.preventDefault())
 
     @editorContents = $(@editorId).text()
     @editorHtml = $(@editorId).html()
@@ -42,7 +61,8 @@ class window.GorillaEditor
     @nextEditors = []
     @previousFiles = []
     @nextFiles = []
-    logger.d("Editor ready!")
+    console.log("Editor ready!")
+    console.groupEnd()
 
   undo: (event) ->
     if @previousFiles.length > 0
@@ -50,7 +70,7 @@ class window.GorillaEditor
       @nextFiles.push($.extend(true, {}, @file))
       @file = @previousFiles.pop()
       $(@editorId).html(@file.getAnnotatedSequence())
-      @updateDebugEditor()
+      @completeEdit()
 
   redo: (event) ->
     if @nextFiles.length > 0
@@ -58,22 +78,22 @@ class window.GorillaEditor
       @previousFiles.push($.extend(true, {}, @file))
       @file = @nextFiles.pop()
       $(@editorId).html(@file.getAnnotatedSequence())
-      @updateDebugEditor()
+      @completeEdit()
       
   trackChanges: ->
     Autosave.request(this)
     @previousFiles.push($.extend(true, {}, @file))
 
-  updateDebugEditor: ->
+  completeEdit: ->
+    @file.updateSequence($(@editorId).text())
     if @debugEditor != null
-      @file.updateSequence($(@editorId).text())
-      @debugEditor.file = new GenBank(@file.serialize())
+      @debugEditor.file = new G.GenBank(@file.serialize())
       @debugEditor.viewFile()
 
-  deleteAtCursor: () ->
+  deleteAtCursor: (key = "<backspace>") ->
     sel = window.getSelection()
 
-    logger.l sel
+    console.log sel
 
     if sel.isCollapsed
       @trackChanges()
@@ -85,22 +105,23 @@ class window.GorillaEditor
       element = loc.startContainer
       pe = element.parentNode
 
-      element.deleteData(caretPosition-1, 1)
+      removedChar = caretPosition - 1
+      if key == "<delete>"
+        removedChar = caretPosition
+      element.deleteData(removedChar, 1)
       
       if pe.tagName == "SPAN"
-        spl = pe.id.split('-')
-        featureId = parseInt(spl[1])
-        rangeId = parseInt(spl[2])
-        @file.moveEndBy(featureId, rangeId, -1)
+        data = GenBank.getSpanData(pe)
+        for featureId, content of data
+            @file.moveEndBy(featureId, content.span, -1)
         node = pe.nextSibling
       else
         node = element
       while !!node
         if node.tagName == "SPAN"
-          spl = node.id.split('-')
-          featureId = parseInt(spl[1])
-          rangeId = parseInt(spl[2])
-          @file.advanceFeature(featureId, rangeId, -1)
+          data = GenBank.getSpanData(pe)
+          for featureId, content of data
+              @file.advanceFeature(featureId, content.span, -1)
         node = node.nextSibling
 
       sel.removeAllRanges()
@@ -108,7 +129,7 @@ class window.GorillaEditor
       delme = null
 
       l = document.createRange()
-      if caretPosition - 1 == 0
+      if removedChar - 1 == 0
         if element.tagName != "SPAN" and element.parentNode.id != $(@editorId).attr('id')
           element = element.parentNode
         if element.innerHTML?.length == 0
@@ -117,7 +138,7 @@ class window.GorillaEditor
         if element.tagName == "SPAN"
           element = element.childNodes[0]
         caretPosition = element.length + 1
-      l.setStart(element, caretPosition-1)
+      l.setStart(element, removedChar)
       l.collapse(true)
 
       if delme != null
@@ -125,35 +146,44 @@ class window.GorillaEditor
 
       sel.addRange l
 
-      @updateDebugEditor()
+      @completeEdit()
     else
-      logger.wtf "How Dare You"
+      console.error "How Dare You"
 
   keyDown: (event) ->
     if event.keyCode == 8
-      logger.l event
-      logger.l "Backspace"
+      console.groupCollapsed("Handling Backspace")
       event.preventDefault()
-      event.stopPropagation()
-      @deleteAtCursor()
+      @deleteAtCursor('<backspace>')
+    else if event.keyCode == 46
+      console.groupCollapsed("Handling Delete")
+      event.preventDefault()
+      @deleteAtCursor('<delete>')
     else if event.ctrlKey
-      logger.l event
+      console.log(event)
       if event.keyCode == 90
+        event.preventDefault()
+        console.groupCollapsed("Handling Undo")
         @undo()
       if event.keyCode == 89
+        event.preventDefault()
+        console.groupCollapsed("Handling Redo")
         @redo()
+    else
+      return
+    console.groupEnd()
 
   keyUp: (event) ->
 
   keyPressed: (event) ->
     event.preventDefault()
 
-    logger.enter()
-
     code = if event.keyCode then event.keyCode else event.which
-    char = String.fromCharCode(code).toLowerCase()
-    if "agtc".indexOf(char) != -1
-      logger.d "ooh, exciting!"
+    char = String.fromCharCode(code)
+    console.groupCollapsed("Handling Key: ", char)
+
+    if "agtcnACTGN".indexOf(char) != -1
+      console.log("ooh, exciting!")
       sel = window.getSelection()
 
       if sel.isCollapsed
@@ -166,11 +196,26 @@ class window.GorillaEditor
         element = loc.startContainer
         pe = element.parentNode
 
-        if pe.tagName == "SPAN"
+        if caretPosition == 0
+          if pe.tagName == "SPAN"
+            element = pe
+            pe = pe.parentNode
+          pe.insertBefore(document.createTextNode(char), element)
+        else if pe.tagName == "SPAN"
           # Parse feature information from span ID
-          idSplit = pe.id.split('-')
-          featureId = parseInt(idSplit[1])
-          spanId = parseInt(idSplit[2])
+          offsets = pe.getAttribute('data-offsets').split(',')
+          features = pe.getAttribute('data-features').split(',')
+          data = {}
+          for offset in offsets
+              split = offset.split(':')
+              data[split[0]] or= {}
+              data[split[0]]['offset'] = parseInt(split[1])
+          for feature in features
+              split = feature.split(':')
+              data[split[0]] or= {}
+              data[split[0]]['span'] = parseInt(split[1])
+
+          console.log data
 
           # We'll need this later
           featureLength = element.length
@@ -188,22 +233,53 @@ class window.GorillaEditor
 
           if caretPosition < featureLength
             # Split feature apart
-            feat = @file.splitFeatureAt(featureId, spanId, caretPosition-1)
+            data_features = ""
+            data_offsets = ""
+            featuresAffected = []
+            for featureId, content of data
+                if data_features != ""
+                    data_features += ","
+                    data_offsets += ","
+                feat = @file.splitFeatureAt(featureId, content.span, content.offset + caretPosition - 1)
+                featuresAffected.push(feat)
+                data_features += "#{feat.new.id}:#{content.span}"
+                data_offsets += "#{feat.new.id}:0"
 
             # Populate new span with appropriate information
             newGuy = document.createElement("SPAN")
-            newGuy.id = "#{feat.new.parameters['/label']}-#{feat.new.id}-#{spanId}-#{@file.id}"
-            newGuy.className = "#{feat.new.parameters['/label']}-#{feat.new.id}"
+            newid = $(@editorId).find('span').length
+            newGuy.id = "#{newid}-#{@file.id}"
             newGuy.setAttribute("style", pe.getAttribute('style'))
+            newGuy.setAttribute("data-offsets", data_offsets)
+            newGuy.setAttribute("data-features", data_features)
             newGuy.appendChild(end)
             pe.parentNode.insertBefore(newGuy, tn.nextSibling)
 
             # Update successive ranges if there are more than one.
-            for range in feat.new.location.ranges[1..]
-              oldNode = document.getElementById("#{feat.new.parameters['/label']}-#{feat.old.id}-#{range.id}")
-              oldNode.id = "#{feat.new.parameters['/label']}-#{feat.new.id}-#{range.id}"
-              oldNode.className = "#{feat.new.parameters['/label']}-#{feat.new.id}"
-
+            node = tn
+            while !!node
+                if node.tagName == "SPAN"
+                    features = node.getAttribute('data-features').split(',')
+                    offsets = node.getAttribute('data-offsets').split(',')
+                    feats = []
+                    offs = []
+                    for feature in features
+                        split = feature.split(':')
+                        for feat in featuresAffected
+                            if parseInt(split[0]) == feat.old.id
+                                split[0] = feat.new.id
+                        feats.push(split.join(':'))
+                    node.setAttribute('data-features', feats.join(','))
+                    
+                    for offset in offsets
+                        split = offset.split(':')
+                        for feat in featuresAffected
+                            if parseInt(split[0]) == feat.old.id
+                                split[0] = feat.new.id
+                                split[1] = parseInt(split[1]) - caretPosition - data[feat.old.id].offset
+                        offs.push(split.join(':'))
+                    node.setAttribute('data-offsets', offs.join(','))
+                node = node.nextSibling
           element = tn
         else
           end = element.splitText(caretPosition)
@@ -218,16 +294,21 @@ class window.GorillaEditor
          
           element = tn
 
+        advancedFeatures = {}
         node = element
         while !!node
           if node.tagName == "SPAN"
-            spl = node.id.split('-')
-            featureId = parseInt(spl[1])
-            rangeId = parseInt(spl[2])
-            @file.advanceFeature(featureId, rangeId, 1)
+            data = GenBank.getSpanData(node)
+
+            for featureId, content of data
+                rangeId = content.span
+                advancedFeatures[featureId] or= {}
+                if advancedFeatures[featureId][rangeId] == undefined
+                    advancedFeatures[featureId][rangeId] = true
+                    @file.advanceFeature(featureId, rangeId, 1)
           node = node.nextSibling
 
-        @updateDebugEditor()
+        @completeEdit()
 
         sel.removeAllRanges()
 
@@ -237,8 +318,9 @@ class window.GorillaEditor
 
         sel.addRange l
       else
-        logger.wtf "I don't know how to handle this responsibility!"
-    logger.exit()
+        console.error "I don't know how to handle this responsibility"
+
+    console.groupEnd()
 
   textChanged: (event) ->
-    logger.wtf "NOOOOOOOOOOOOOOOOOOOOOOOO"
+    console.error "contenteditable input event was fired"

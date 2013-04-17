@@ -1,24 +1,28 @@
 --- !ditz.rubyforge.org,2008-03-06/issue 
-title: Add feature with select and right click
-desc: ""
+title: Text selection information
+desc: |-
+  Start <%3>
+  End <%3>
+  Length <%3>
+  sequence
 type: :feature
 component: editor
-release: iteration-4
+release: iteration-3
 reporter: Zachary Michael Bush <zach@zmbush.com>
 status: :unstarted
 disposition: 
-creation_time: 2013-04-08 23:48:28.637547 Z
+creation_time: 2013-04-12 20:09:14.321023 Z
 references: []
 
-id: a98dcea44b30655534ba92b2761e76ec9102255b
+id: 15f1fdddaf733a32cb23bd3e0169e087847c1fd7
 log_events: 
-- - 2013-04-08 23:48:30.231474 Z
+- - 2013-04-12 20:09:15.212777 Z
   - Zachary Michael Bush <zach@zmbush.com>
   - created
   - ""
-- - 2013-04-11 04:58:12.630440 Z
+- - 2013-04-12 20:23:36.931579 Z
   - Zachary Michael Bush <zach@zmbush.com>
-  - assigned to release iteration-4 from unassigned
+  - assigned to release iteration-3 from unassigned
   - ""
 git_branch: 
 claimer: 

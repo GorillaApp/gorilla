@@ -18,6 +18,8 @@ module GorillaHelper
       case thing
       when :backspace
         _type_raw(8, :keydown)
+      when :delete
+        _type_raw(46, :keydown)
       when :undo
         _type_raw(90, :keydown, true)
       when :redo
