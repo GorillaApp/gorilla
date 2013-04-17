@@ -11,12 +11,27 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130402194012) do
+ActiveRecord::Schema.define(:version => 20130417234342) do
 
   create_table "autosaves", :force => true do |t|
     t.string   "name"
     t.integer  "user_id"
     t.text     "contents"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "enzymes", :force => true do |t|
+    t.string   "name"
+    t.string   "site"
+    t.string   "comment"
+    t.integer  "user_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "feature_libraries", :force => true do |t|
+    t.integer  "user_id"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
@@ -27,6 +42,7 @@ ActiveRecord::Schema.define(:version => 20130402194012) do
     t.string   "sequence"
     t.string   "forward_color"
     t.string   "reverse_color"
+    t.integer  "library_id"
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
   end
