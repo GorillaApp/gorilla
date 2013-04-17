@@ -45,17 +45,21 @@ getFeatureDataOfSelected = () ->
   nodes = []
   textNodes = []
 
-  #i = 0
-  #j = selectedHtml.length - 1
-  # finishes when it either finds a < or it equals the length
-  #while selectedHtml[i] != '<' and i < selectedHtml.length
-  #  i += 1
-  #while selectedHtml[j] != '>' and j > 0
-  #  j -= 1
+  i = 0
+  j = selectedHtml.length - 1
+  #finishes when it either finds a < or it equals the length
+  while selectedHtml[i] != '<' and i < selectedHtml.length
+    i += 1
+  while selectedHtml[j] != '>' and j > 0
+    j -= 1
 
   # if it is completely a text node, push its container, the span
-  #if i == selectedHtml.length
-  #  nodes = [sel.anchorNode.parentNode]
+  if i == selectedHtml.length
+    nodes = [sel.anchorNode.parentNode]
+  else
+    nodes = getNodesFromHtmlText(selectedHtml)
+
+  console.log(nodes)
     #else
     #if i != 0 # if it begins with a text node
     #text = selectedHtml.substr(0,i)
@@ -63,9 +67,9 @@ getFeatureDataOfSelected = () ->
       #      selectedHtml = selectedHtml[i..]
 
     #nodes = textNodes.concat 
-  nodes = getNodesFromHtmlText(selectedHtml)
   for node in nodes
     nodeDatum = getNodeData(node)
+    console.log(nodeDatum)
     nodeData.push nodeDatum
   
   if nodeData.length > 0
