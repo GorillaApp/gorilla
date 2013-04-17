@@ -111,19 +111,17 @@ window.G.GorillaEditor = class GorillaEditor
       element.deleteData(removedChar, 1)
       
       if pe.tagName == "SPAN"
-        spl = pe.id.split('-')
-        featureId = parseInt(spl[1])
-        rangeId = parseInt(spl[2])
-        @file.moveEndBy(featureId, rangeId, -1)
+        data = GenBank.getSpanData(pe)
+        for featureId, content of data
+            @file.moveEndBy(featureId, content.span, -1)
         node = pe.nextSibling
       else
         node = element
       while !!node
         if node.tagName == "SPAN"
-          spl = node.id.split('-')
-          featureId = parseInt(spl[1])
-          rangeId = parseInt(spl[2])
-          @file.advanceFeature(featureId, rangeId, -1)
+          data = GenBank.getSpanData(pe)
+          for featureId, content of data
+              @file.advanceFeature(featureId, content.span, -1)
         node = node.nextSibling
 
       sel.removeAllRanges()
@@ -249,7 +247,8 @@ window.G.GorillaEditor = class GorillaEditor
 
             # Populate new span with appropriate information
             newGuy = document.createElement("SPAN")
-            newGuy.id = "0-#{@file.id}"
+            newid = $(@editorId).find('span').length
+            newGuy.id = "#{newid}-#{@file.id}"
             newGuy.setAttribute("style", pe.getAttribute('style'))
             newGuy.setAttribute("data-offsets", data_offsets)
             newGuy.setAttribute("data-features", data_features)

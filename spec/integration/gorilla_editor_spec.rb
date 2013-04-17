@@ -42,7 +42,7 @@ EOF
 
       page.should have_content "cgtctctgaccagaccaata"
 
-      find('#ColE1-0-0-main_editor').should have_content "cgtctctgac"
+      find('#0-main_editor').should have_content "cgtctctgac"
     end
 
     context 'and opens a file' do
@@ -64,48 +64,56 @@ ORIGIN
 EOF
         click_button "Open File"
 
-        find('#ColE1-0-0-main_editor').should have_content "cgtctctgac"
+        find('#0-main_editor').should have_content "cgtctctgac"
       end
 
       it 'should be able to insert text' do
-        set_cursor_at('ColE1-0-0-main_editor', 3)
+        set_cursor_at('0-main_editor', 3)
 
         type('a')
         
-        find('#ColE1-1-0-main_editor').should have_content 'ctctgac'
-        find('#ColE1-0-0-main_editor').should have_content 'cgt'
-        find(:xpath, "//span[@id='ColE1-0-0-main_editor']/following-sibling::*").should have_content 'a'
+        find('#1-main_editor').should have_content 'ctctgac'
+        find('#0-main_editor').should have_content 'cgt'
+        find(:xpath, "//span[@id='0-main_editor']/following-sibling::*").should have_content 'a'
       end
 
-      it 'should be able to insert a, c, t, and g' do
-        set_cursor_at('ColE1-0-0-main_editor', 3)
+      it 'should be able to insert a, c, t, g, and n' do
+        set_cursor_at('0-main_editor', 3)
 
-        type('actg')
+        type('actgn')
         
-        find('#ColE1-1-0-main_editor').should have_content 'ctctgac'
-        find('#ColE1-0-0-main_editor').should have_content 'cgt'
+        find('#1-main_editor').should have_content 'ctctgac'
+        find('#0-main_editor').should have_content 'cgt'
 
-        page.should have_content 'cgtactgctctgac'
+        page.should have_content 'cgtactgnctctgac'
       end
 
       it 'should not be able to enter any other characters' do
-        set_cursor_at('ColE1-0-0-main_editor', 5)
+        set_cursor_at('0-main_editor', 5)
 
         type('abcdefghijklmnopqrstuvwxyz')
         
-        page.should have_content 'cgtctacgtctgac'
+        page.should have_content 'cgtctacgntctgac'
       end
 
       it 'should be able to backspace text' do
-        set_cursor_at('ColE1-0-0-main_editor', 5)
+        set_cursor_at('0-main_editor', 5)
         type(:backspace)
         type(:backspace)
         type(:backspace)
-        find("#ColE1-0-0-main_editor").should have_content "cgctgac"
+        find("#0-main_editor").should have_content "cgctgac"
+      end
+
+      it 'should be able to delete text' do
+        set_cursor_at('0-main_editor', 2)
+        type(:delete)
+        type(:delete)
+        type(:delete)
+        find('#0-main_editor').should have_content "cgctgac"
       end
 
       it 'should autosave after editing' do
-        set_cursor_at('ColE1-0-0-main_editor', 5)
+        set_cursor_at('0-main_editor', 5)
 
         type('ag')
 
@@ -115,7 +123,7 @@ EOF
       end
 
       it 'should be able to undo' do
-        set_cursor_at('ColE1-0-0-main_editor', 0)
+        set_cursor_at('0-main_editor', 0)
 
         type('t')
 
@@ -127,7 +135,7 @@ EOF
       end
 
       it 'should be able to redo' do
-        set_cursor_at('ColE1-0-0-main_editor', 0)
+        set_cursor_at('0-main_editor', 0)
 
         type('t')
 

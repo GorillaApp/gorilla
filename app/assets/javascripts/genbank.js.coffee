@@ -130,16 +130,20 @@ window.G.GenBank = class GenBank
     beg = sequence[...startix]
     end = sequence[endix+1..]
     mid = sequence[startix..endix]
-    data = ""
+    data_features = ""
+    data_offsets = ""
     for parts in features
         feat = parts.feature
         span = parts.range
-        if data != ""
-            data += ","
-        data += "#{feat.id}:#{span.id}"
+        offset = start - span.start
+        if data_features != ""
+            data_features += ","
+            data_offsets += ","
+        data_features += "#{feat.id}:#{span.id}"
+        data_offsets += "#{feat.id}:#{offset}"
 
     console.groupEnd()
-    beg + "<span id='#{id}-#{@id}' style='background-color:#{color}' data-features='#{data}' >" + mid + "</span>" + end
+    beg + "<span id='#{id}-#{@id}' style='background-color:#{color}' data-offsets='#{data_offsets}' data-features='#{data_features}'>" + mid + "</span>" + end
 
   annotateRange: (seq, range, i = 0) ->
     console.groupCollapsed("Annotating range: ", range)
@@ -187,6 +191,20 @@ window.G.GenBank = class GenBank
     f.location.ranges.sort(@sortByStartIndex)
     console.groupEnd()
     f
+
+  @getSpanData: (node) ->
+    offsets = node.getAttribute('data-offsets').split(',')
+    features = node.getAttribute('data-features').split(',')
+    data = {}
+    for offset in offsets
+      split = offset.split(':')
+      data[split[0]] or= {}
+      data[split[0]]['offset'] = parseInt(split[1])
+    for feature in features
+      split = feature.split(':')
+      data[split[0]] or= {}
+      data[split[0]]['span'] = parseInt(split[1])
+    return data
 
   splitFeatureAt: (featId, rangeId, newLength) ->
     console.groupCollapsed("Splitting feature",featId,rangeId,"at",newLength)
