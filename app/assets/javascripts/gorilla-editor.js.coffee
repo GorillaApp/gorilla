@@ -181,10 +181,10 @@ window.G.GorillaEditor = class GorillaEditor
     event.preventDefault()
 
     code = if event.keyCode then event.keyCode else event.which
-    char = String.fromCharCode(code).toLowerCase()
+    char = String.fromCharCode(code)
     console.groupCollapsed("Handling Key: ", char)
 
-    if "agtc".indexOf(char) != -1
+    if "agtcnACTGN".indexOf(char) != -1
       console.log("ooh, exciting!")
       sel = window.getSelection()
 
@@ -205,9 +205,19 @@ window.G.GorillaEditor = class GorillaEditor
           pe.insertBefore(document.createTextNode(char), element)
         else if pe.tagName == "SPAN"
           # Parse feature information from span ID
-          idSplit = pe.id.split('-')
-          featureId = parseInt(idSplit[1])
-          spanId = parseInt(idSplit[2])
+          offsets = pe.getAttribute('data-offsets').split(',')
+          features = pe.getAttribute('data-features').split(',')
+          data = {}
+          for offset in offsets
+              split = offset.split(':')
+              data[split[0]] or= {}
+              data[split[0]]['offset'] = parseInt(split[1])
+          for feature in features
+              split = feature.split(':')
+              data[split[0]] or= {}
+              data[split[0]]['span'] = parseInt(split[1])
+
+          console.log data
 
           # We'll need this later
           featureLength = element.length
@@ -225,22 +235,52 @@ window.G.GorillaEditor = class GorillaEditor
 
           if caretPosition < featureLength
             # Split feature apart
-            feat = @file.splitFeatureAt(featureId, spanId, caretPosition-1)
+            data_features = ""
+            data_offsets = ""
+            featuresAffected = []
+            for featureId, content of data
+                if data_features != ""
+                    data_features += ","
+                    data_offsets += ","
+                feat = @file.splitFeatureAt(featureId, content.span, content.offset + caretPosition - 1)
+                featuresAffected.push(feat)
+                data_features += "#{feat.new.id}:#{content.span}"
+                data_offsets += "#{feat.new.id}:0"
 
             # Populate new span with appropriate information
             newGuy = document.createElement("SPAN")
-            newGuy.id = "#{feat.new.parameters['/label']}-#{feat.new.id}-#{spanId}-#{@file.id}"
-            newGuy.className = "#{feat.new.parameters['/label']}-#{feat.new.id}"
+            newGuy.id = "0-#{@file.id}"
             newGuy.setAttribute("style", pe.getAttribute('style'))
+            newGuy.setAttribute("data-offsets", data_offsets)
+            newGuy.setAttribute("data-features", data_features)
             newGuy.appendChild(end)
             pe.parentNode.insertBefore(newGuy, tn.nextSibling)
 
             # Update successive ranges if there are more than one.
-            for range in feat.new.location.ranges[1..]
-              oldNode = document.getElementById("#{feat.new.parameters['/label']}-#{feat.old.id}-#{range.id}")
-              oldNode.id = "#{feat.new.parameters['/label']}-#{feat.new.id}-#{range.id}"
-              oldNode.className = "#{feat.new.parameters['/label']}-#{feat.new.id}"
-
+            node = tn
+            while !!node
+                if node.tagName == "SPAN"
+                    features = node.getAttribute('data-features').split(',')
+                    offsets = node.getAttribute('data-offsets').split(',')
+                    feats = []
+                    offs = []
+                    for feature in features
+                        split = feature.split(':')
+                        for feat in featuresAffected
+                            if parseInt(split[0]) == feat.old.id
+                                split[0] = feat.new.id
+                        feats.push(split.join(':'))
+                    node.setAttribute('data-features', feats.join(','))
+                    
+                    for offset in offsets
+                        split = offset.split(':')
+                        for feat in featuresAffected
+                            if parseInt(split[0]) == feat.old.id
+                                split[0] = feat.new.id
+                                split[1] = parseInt(split[1]) - caretPosition - data[feat.old.id].offset
+                        offs.push(split.join(':'))
+                    node.setAttribute('data-offsets', offs.join(','))
+                node = node.nextSibling
           element = tn
         else
           end = element.splitText(caretPosition)
@@ -255,13 +295,18 @@ window.G.GorillaEditor = class GorillaEditor
          
           element = tn
 
+        advancedFeatures = {}
         node = element
         while !!node
           if node.tagName == "SPAN"
-            spl = node.id.split('-')
-            featureId = parseInt(spl[1])
-            rangeId = parseInt(spl[2])
-            @file.advanceFeature(featureId, rangeId, 1)
+            data = GenBank.getSpanData(node)
+
+            for featureId, content of data
+                rangeId = content.span
+                advancedFeatures[featureId] or= {}
+                if advancedFeatures[featureId][rangeId] == undefined
+                    advancedFeatures[featureId][rangeId] = true
+                    @file.advanceFeature(featureId, rangeId, 1)
           node = node.nextSibling
 
         @completeEdit()
