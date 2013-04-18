@@ -82,6 +82,6 @@ getFeatureDataOfSelected = () ->
 
   return nodeData
 
-window.getFeatureDataOfSelected = getFeatureDataOfSelected
-window.getSelectionHtml = getSelectionHtml
-window.getNodesFromHtmlText = getNodesFromHtmlText
+window.G.getFeatureDataOfSelected = getFeatureDataOfSelected
+window.G.getSelectionHtml = getSelectionHtml
+window.G.getNodesFromHtmlText = getNodesFromHtmlText
