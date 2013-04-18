@@ -40,13 +40,13 @@ describe Feature do
     result.should == 1
   end
 
-   it "should return all features associated with a user id" do
+  it "should return all features associated with a user id" do
     params = FactoryGirl.attributes_for(:feature)
     params2 = FactoryGirl.attributes_for(:feature2)
     Feature.add(params)
     Feature.add(params2)
     params3 = {:user_id => 12345}
     puts Feature.getAll(params3)
-   end
+  end
 
 end
