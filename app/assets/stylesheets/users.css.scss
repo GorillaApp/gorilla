@@ -8,3 +8,21 @@ DIV#user_nav {
   width: 230px;
   margin: 0px auto;
 }
+
+#users_form INPUT {
+  width: 230px;
+}
+
+#users_form INPUT[type=submit]{
+  width: auto;
+  float: right;
+}
+
+#users_form INPUT[type=checkbox] {
+  width: auto;
+}
+
+#users_form A {
+  float: left;
+  clear: right;
+}

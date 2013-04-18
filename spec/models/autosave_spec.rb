@@ -1,7 +1,9 @@
-require 'spec_helper'
-
+require "spec_helper"
 # Added file contents outside of tests because it is referened multiple times
-file_contents = <<-EOF
+
+describe "Autosave" do
+
+    file_contents = <<-EOF
 LOCUS       pGG002                  2559 bp ds-DNA   circular    UNK 01-JAN-1980
 DEFINITION  .
 ACCESSION   <unknown id>
@@ -112,58 +114,61 @@ ORIGIN
 //
 EOF
 
-describe Autosave do
+    describe "save_file" do
 
-    it "checks to see that save_file correctly saves the file" do
-        first_line = file_contents.split("\n").first()  # This is the "id" for this file
-        user_id = 1
-        Autosave.save_file(file_contents, first_line, user_id)    # Saving file
-        result = Autosave.find_by_name_and_user_id(first_line, user_id)  # Grabbing the autosave object to ensure fields were updated
-        result.contents.should eql(file_contents)
-        result.name.should eql(first_line)
-        result.user_id.should eql(user_id)
+        it "saves new file" do
+            first_line = file_contents.split("\n").first()  # This is the "id" for this file
+            user_id = 1
+            Autosave.save_file(file_contents, first_line, user_id)    # Saving file
+            result = Autosave.find_by_name_and_user_id(first_line, user_id)  # Grabbing the autosave object to ensure fields were updated
+            result.contents.should eql(file_contents)
+            result.name.should eql(first_line)
+            result.user_id.should eql(user_id)
+        end
+
+        it "correctly updates autosave file contents" do
+            first_line = file_contents.split("\n").first()
+            user_id = 1
+            Autosave.save_file(file_contents, first_line, user_id)    # Saving file
+
+            new_file_contents = file_contents + "a"     # Modifying the file
+            Autosave.save_file(new_file_contents, first_line, user_id)
+            result_object = Autosave.find_by_name_and_user_id(first_line, user_id)   # Grabbing the autosave object to ensure file_contents were updated on second save
+            result_object.contents.should eql(new_file_contents)
+        end
+
     end
 
-    it "checks to see that save_file on existing autosave correctly updates file contents" do
-        first_line = file_contents.split("\n").first()
-        user_id = 1
-        Autosave.save_file(file_contents, first_line, user_id)    # Saving file
+    describe "find_autosaved_file" do
 
-        new_file_contents = file_contents + "a"     # Modifying the file
-        Autosave.save_file(new_file_contents, first_line, user_id)
-        result_object = Autosave.find_by_name_and_user_id(first_line, user_id)   # Grabbing the autosave object to ensure file_contents were updated on second save
-        result_object.contents.should eql(new_file_contents)
+        it "returns nil if no file with that name exists" do
+            user_id = 1
+            result = Autosave.find_autosaved_file("Not a valid entry", user_id)
+            result.should be_nil
+        end
+
+        it "returns file if it exists and is not nil" do
+            first_line = file_contents.split("\n").first()
+            user_id = 1
+            Autosave.save_file(file_contents, first_line, user_id)    # Saving file
+            result = Autosave.find_autosaved_file(first_line, user_id)
+            result.should_not be_nil    # Ensuring file contents are found (not nil)
+            result.should eql(file_contents)    # Result should == the saved file contents
+        end
+
     end
 
-    it "checks to see if find_autosaved_file correctly returns nil" do
-        user_id = 1
-        result = Autosave.find_autosaved_file("Not a valid entry", user_id)
-        result.should be_nil
-    end
+    describe "delete_save" do
 
-    it "checks to see if find_autosaved_file correctly returns the file and is not nil" do
-        first_line = file_contents.split("\n").first()
-        user_id = 1
-        Autosave.save_file(file_contents, first_line, user_id)    # Saving file
-        result = Autosave.find_autosaved_file(first_line, user_id)
-        result.should_not be_nil    # Ensuring file contents are found (not nil)
-    end
+        it "deletes the autosave entry if it exists" do
+            first_line = file_contents.split("\n").first()
+            user_id = 1
+            Autosave.save_file(file_contents, first_line, user_id)    # Saving file
+            Autosave.delete_save(first_line, user_id)   # Deleting save
+            result = Autosave.find_autosaved_file(first_line, user_id)
+            result.should be_nil
+        end
 
-    it "checks to see if find_autosaved_file correctly returns the file" do
-        first_line = file_contents.split("\n").first()
-        user_id = 1
-        Autosave.save_file(file_contents, first_line, user_id)    # Saving file
-        result = Autosave.find_autosaved_file(first_line, user_id)   # Result should == the saved file contents
-        result.should eql(file_contents)
-    end
-
-    it "checks to see that delete_save correctly deletes the autosave entry" do
-        first_line = file_contents.split("\n").first()
-        user_id = 1
-        Autosave.save_file(file_contents, first_line, user_id)    # Saving file
-        Autosave.delete_save(first_line)   # Deleting save
-        result = Autosave.find_autosaved_file(first_line, user_id)
-        result.should be_nil
     end
 
 end

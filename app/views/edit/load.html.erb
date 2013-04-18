@@ -52,6 +52,6 @@ allFeatures = null;
 user = <%= (current_user.nil? ? -1 : current_user.id) %>;
 
 $(document).ready(function () {
-  begin_editing("#main_editor", "#autosaved_editor");
+  G.begin_editing("#main_editor", "#autosaved_editor");
 });
 </script>

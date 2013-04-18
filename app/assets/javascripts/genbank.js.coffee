@@ -12,21 +12,10 @@ String.prototype.padBy = (length) ->
     pad -= 1
   retval
 
-getSelectionHtml: () ->
-  sel = ""
-  html = ""
-  if window.getSelection
-    sel = window.getSelection()
-    if sel.rangeCount
-      frag = sel.getRangeAt(0).cloneContents()
-      el = document.createElement("div")
-      el.appendChild(frag)
-      html = el.innerHTML
-    else if document.selection && document.selection.type == "Text"
-      html = document.selection.createRange().htmlText
-  return html
 
-class window.GenBank
+window.G or= {}
+
+window.G.GenBank = class GenBank
   constructor: (@text, @id = "default") ->
     console.groupCollapsed("GenBank Constructor #{@id}")
     @newline = "\n"
@@ -66,9 +55,7 @@ class window.GenBank
     console.groupEnd()
     console.groupEnd()
 
-
-
-  annotate: (sequence, start, end, color, name, spanId, featureId) ->
+  annotateOld: (sequence, start, end, color, name, spanId, featureId) ->
     console.groupCollapsed("Adding annotation #{featureId}-#{spanId} to sequence: (#{start}..#{end})")
     if typeof(start) != "number"
       start = parseInt(start) - 1
@@ -109,7 +96,67 @@ class window.GenBank
       color = feature.parameters["/ApEinfo_revcolor"]
     name = feature.parameters["/label"]
     for span in feature.location.ranges
-      seq = @annotate(seq, span.start, span.end, color, name, span.id, feature.id)
+      seq = @annotateOld(seq, span.start, span.end, color, name, span.id, feature.id)
+    console.groupEnd()
+    seq
+ 
+  annotate: (sequence, start, end, color, features, id) ->
+    console.groupCollapsed("Adding annotation #{id} to sequence: (#{start}..#{end})")
+    if typeof(start) != "number"
+      start = parseInt(start) - 1
+    if typeof(end) != "number"
+      end = parseInt(end) - 1
+    count = true
+    current = 0
+    startix = -1
+    endix = -1
+    for x in [0..sequence.length]
+      if sequence[x] == "<"
+        count = false
+      if current == start
+        startix = x
+      if current == end
+        endix = x
+      if count
+        current += 1
+      if sequence[x] == ">"
+        count = true
+    if startix == -1 or endix == -1
+      console.error("End index or start index not found...", startix, endix)
+      if current == start
+        startix = x
+      if current == end
+        endix = x
+    console.log(startix, endix)
+    beg = sequence[...startix]
+    end = sequence[endix+1..]
+    mid = sequence[startix..endix]
+    data_features = ""
+    data_offsets = ""
+    for parts in features
+        feat = parts.feature
+        span = parts.range
+        offset = start - span.start
+        if data_features != ""
+            data_features += ","
+            data_offsets += ","
+        data_features += "#{feat.id}:#{span.id}"
+        data_offsets += "#{feat.id}:#{offset}"
+
+    console.groupEnd()
+    beg + "<span id='#{id}-#{@id}' style='background-color:#{color}' data-offsets='#{data_offsets}' data-features='#{data_features}'>" + mid + "</span>" + end
+
+  annotateRange: (seq, range, i = 0) ->
+    console.groupCollapsed("Annotating range: ", range)
+    r = range.feats[range.feats.length - 1]
+    feat = r.feature
+    span = r.range
+    console.log("The feature: ", feat, "is on top")
+    color = feat.parameters['/ApEinfo_fwdcolor']
+    if feat.location.strand == 1
+        color = feat.parameters['/ApEinfo_revcolor']
+    name = feat.parameters["/label"]
+    seq = @annotate(seq, range.selection.start, range.selection.end, color, range.feats, i)
     console.groupEnd()
     seq
 
@@ -145,6 +192,20 @@ class window.GenBank
     f.location.ranges.sort(@sortByStartIndex)
     console.groupEnd()
     f
+
+  @getSpanData: (node) ->
+    offsets = node.getAttribute('data-offsets').split(',')
+    features = node.getAttribute('data-features').split(',')
+    data = {}
+    for offset in offsets
+      split = offset.split(':')
+      data[split[0]] or= {}
+      data[split[0]]['offset'] = parseInt(split[1])
+    for feature in features
+      split = feature.split(':')
+      data[split[0]] or= {}
+      data[split[0]]['span'] = parseInt(split[1])
+    return data
 
   splitFeatureAt: (featId, rangeId, newLength) ->
     console.groupCollapsed("Splitting feature",featId,rangeId,"at",newLength)
@@ -198,8 +259,45 @@ class window.GenBank
     seq = @getGeneSequence()
     features = @getFeatures()
     console.debug("Adding each feature to the sequence")
+    selections = new Array(seq.length)
     for feature in features
-      seq = @annotateFeature(seq, feature)
+        for range in feature.location.ranges
+            for i in [range.start..range.end] by 1
+                if selections[i] == undefined
+                    selections[i] = []
+                selections[i].push(feature: feature, range: range)
+    ranges = []
+    previous = undefined
+    sel = start: 0, end: 0
+    i = 0
+    for selection in selections
+        eq = (previous != undefined and selection != undefined)
+        if eq and (previous.length != selection.length)
+            eq = false
+        if eq
+            for j in [0...selection.length]
+                s = selection[j]
+                p = previous[j]
+                if s.range != p.range or s.feature != p.feature
+                    eq = false
+        if eq
+            sel.end = i
+        else
+            if previous != undefined
+                ranges.push(feats: previous, selection: sel)
+            previous = selection
+            sel = start: i, end: i
+        i += 1
+    if previous != undefined
+        ranges.push(feats: previous, selection: sel)
+
+    rangeId = 0
+    for range in ranges
+        seq = @annotateRange(seq, range, rangeId)
+        rangeId += 1
+
+    # for feature in features
+      # seq = @annotateFeature(seq, feature)
     console.groupEnd()
     seq
 
@@ -237,10 +335,15 @@ class window.GenBank
 
   serialize: () ->
     console.groupCollapsed("Serializing File")
-    file = "LOCUS".padBy(12) + @data.LOCUS.name.padBy(13) + (@getGeneSequence().length + " bp").padBy(11) + @data.LOCUS.type.padBy(16) + @data.LOCUS.division + " " + @data.LOCUS.date + @newline
+    file = "LOCUS".padBy(12) + @data.LOCUS.name.padBy(13)
+    file += (@getGeneSequence().length + " bp").padBy(11)
+    file += @data.LOCUS.type.padBy(16) + @data.LOCUS.division + " "
+    file += @data.LOCUS.date + @newline
+    ignoredSections = ["LOCUS", "FEATURES", "ORIGIN", "//", "raw_genes",
+                       "features"]
     # file = "LOCUS".padBy(12) + @data.LOCUS + @newline
     for own section,contents of @data
-      if ["LOCUS", "FEATURES", "ORIGIN", "//", "raw_genes", "features"].indexOf(section) == -1
+      if ignoredSections.indexOf(section) == -1
         file += section.padBy(12) + contents + @newline
     file += @serializeFeatures()
     file += @serializeGenes()
