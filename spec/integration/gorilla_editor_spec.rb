@@ -104,6 +104,15 @@ EOF
         find("#0-main_editor").should have_content "cgctgac"
       end
 
+      it 'should be able to backspace from text into span' do
+        set_cursor_after('0-main_editor', 1)
+        page.save_screenshot('t1bef.png')
+        type(:backspace)
+        type(:backspace)
+        find("#0-main_editor").should have_content "cgtctctga"
+        page.save_screenshot('t1aft.png')
+      end
+
       it 'should be able to delete text' do
         set_cursor_at('0-main_editor', 2)
         type(:delete)
