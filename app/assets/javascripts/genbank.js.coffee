@@ -98,7 +98,7 @@ window.G.GenBank = class GenBank
       seq = @annotateOld(seq, span.start, span.end, color, name, span.id, feature.id)
     console.groupEnd()
     seq
- 
+
   annotate: (sequence, start, end, color, features, id) ->
     console.groupCollapsed("Adding annotation #{id} to sequence: (#{start}..#{end})")
     if typeof(start) != "number"
