@@ -119,7 +119,7 @@ window.G.GorillaEditor = class GorillaEditor
         node = element
       while !!node
         if node.tagName == "SPAN"
-          data = GenBank.getSpanData(pe)
+          data = GenBank.getSpanData(node)
           for featureId, content of data
               @file.advanceFeature(featureId, content.span, -1)
         node = node.nextSibling
@@ -129,7 +129,8 @@ window.G.GorillaEditor = class GorillaEditor
       delme = null
 
       l = document.createRange()
-      if removedChar - 1 == 0
+      console.log removedChar
+      if removedChar == 0
         if element.tagName != "SPAN" and element.parentNode.id != $(@editorId).attr('id')
           element = element.parentNode
         if element.innerHTML?.length == 0
@@ -137,8 +138,10 @@ window.G.GorillaEditor = class GorillaEditor
         element = element.previousSibling
         if element.tagName == "SPAN"
           element = element.childNodes[0]
-        caretPosition = element.length + 1
-      l.setStart(element, removedChar)
+        caretPosition = element.length
+        l.setStart(element, caretPosition)
+      else
+        l.setStart(element, removedChar)
       l.collapse(true)
 
       if delme != null
