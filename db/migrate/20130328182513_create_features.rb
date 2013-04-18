@@ -6,6 +6,7 @@ class CreateFeatures < ActiveRecord::Migration
       t.string :sequence
       t.string :forward_color
       t.string :reverse_color
+      t.integer :library_id
 
       t.timestamps
     end
