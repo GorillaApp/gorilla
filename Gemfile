@@ -32,6 +32,7 @@ gem 'jquery-rails'
 
 group :development, :test do
   gem 'capybara'
+  gem 'capybara-webkit'
   gem 'factory_girl_rails'
   gem 'faker'
   gem 'konacha'
