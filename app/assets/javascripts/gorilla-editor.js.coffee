@@ -20,8 +20,13 @@ window.G.GorillaEditor = class GorillaEditor
   viewFile: () ->
     console.groupCollapsed("Preparing Editor to be viewed")
 
+    me = @
+
     $(@editorId).html(@file.getAnnotatedSequence())
                 .addClass('gorilla-editor viewing')
+                .find('span')
+                .hover((event) -> me.showHoverDialog(event))
+                .mousemove((event) -> me.showHoverDialog(event))
 
     console.log("Ready to view")
     console.groupEnd()
@@ -63,6 +68,25 @@ window.G.GorillaEditor = class GorillaEditor
     @nextFiles = []
     console.log("Editor ready!")
     console.groupEnd()
+
+  showHoverDialog: (event) ->
+    if event.type == "mouseleave"
+        $('#hover-box').remove()
+        return
+    if event.type == "mouseenter"
+        data = GenBank.getSpanData(event.target)
+        text = ""
+        for featureId, content of data
+            if text != ""
+                text += '<br>'
+            feat = @file.getFeatures()[featureId]
+            text += feat.parameters['/label']
+        node = $(event.target)
+        newElement = $('<div>', id: 'hover-box')
+        newElement.html(text)
+        $('body').append(newElement)
+    $('#hover-box').css('top', event.pageY + 10)
+    $('#hover-box').css('left', event.pageX + 10)
 
   undo: (event) ->
     if @previousFiles.length > 0
