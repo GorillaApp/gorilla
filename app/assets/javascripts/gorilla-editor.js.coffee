@@ -105,21 +105,40 @@ window.G.GorillaEditor = class GorillaEditor
       element = loc.startContainer
       pe = element.parentNode
 
+      if key == "<delete>"
+        console.log element.length, caretPosition
+        if element.length <= caretPosition
+            caretPosition = 0
+            if pe.tagName == "SPAN"
+                element = pe
+            element = element.nextSibling
+            pe = element.parentNode
+            while element.nodeName == "#text" and element.length == 0
+                element = element.nextSibling
+            if element.tagName == "SPAN"
+                pe = element
+                element = pe.firstChild
+
       removedChar = caretPosition - 1
       if key == "<delete>"
         removedChar = caretPosition
       element.deleteData(removedChar, 1)
       
       if pe.tagName == "SPAN"
+        console.log 'caretPosition',caretPosition
         data = GenBank.getSpanData(pe)
         for featureId, content of data
-            @file.moveEndBy(featureId, content.span, -1)
+            if caretPosition == 0
+                @file.advanceFeature(featureId, content.span, -1)
+            else
+                @file.moveEndBy(featureId, content.span, -1)
         node = pe.nextSibling
       else
         node = element
+
       while !!node
         if node.tagName == "SPAN"
-          data = GenBank.getSpanData(pe)
+          data = GenBank.getSpanData(node)
           for featureId, content of data
               @file.advanceFeature(featureId, content.span, -1)
         node = node.nextSibling
@@ -129,7 +148,8 @@ window.G.GorillaEditor = class GorillaEditor
       delme = null
 
       l = document.createRange()
-      if removedChar - 1 == 0
+      console.log removedChar
+      if removedChar == 0
         if element.tagName != "SPAN" and element.parentNode.id != $(@editorId).attr('id')
           element = element.parentNode
         if element.innerHTML?.length == 0
@@ -137,8 +157,10 @@ window.G.GorillaEditor = class GorillaEditor
         element = element.previousSibling
         if element.tagName == "SPAN"
           element = element.childNodes[0]
-        caretPosition = element.length + 1
-      l.setStart(element, removedChar)
+        caretPosition = element.length
+        l.setStart(element, caretPosition)
+      else
+        l.setStart(element, removedChar)
       l.collapse(true)
 
       if delme != null

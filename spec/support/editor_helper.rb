@@ -13,6 +13,23 @@ module GorillaHelper
     SCRIPT
   end
 
+  def get_cursor_location()
+    page.driver.evaluate_script <<-SCRIPT
+    SCRIPT
+  end
+
+  def set_cursor_after(id, location)
+    page.driver.execute_script <<-SCRIPT
+      sel = window.getSelection();
+      id = document.getElementById('#{id}').nextSibling
+      sel.removeAllRanges();
+      l = document.createRange();
+      l.setStart(id, #{location});
+      l.collapse(true);
+      sel.addRange(l);
+    SCRIPT
+  end
+
   def type(thing, type=:keypress, ctrl=false)
     if thing.kind_of? Symbol
       case thing
