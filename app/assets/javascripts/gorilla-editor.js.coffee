@@ -152,10 +152,7 @@ window.G.GorillaEditor = class GorillaEditor
         console.log 'caretPosition',caretPosition
         data = GenBank.getSpanData(pe)
         for featureId, content of data
-            if caretPosition == 0 and content.offset == 0
-                @file.advanceFeature(featureId, content.span, -1)
-            else
-                @file.moveEndBy(featureId, content.span, -1)
+            @file.moveEndBy(featureId, content.span, -1)
         node = pe.nextSibling
       else
         node = element
