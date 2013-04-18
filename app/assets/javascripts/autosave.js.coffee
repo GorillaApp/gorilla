@@ -1,5 +1,6 @@
+window.G or= {}
 
-class window.Autosave
+window.G.Autosave = class Autosave
   @SHOULD_AUTOSAVE: false
   @TIMEOUT_ID: -1
 
@@ -11,17 +12,17 @@ class window.Autosave
 
   @handle: (editor_selector, autosave_selector, callback) ->
     $("#autosavechoice").hide()
-    d = new GenBank(doc)
-    dr = new GenBank(doc_restored)
+    d = new G.GenBank(doc)
+    dr = new G.GenBank(doc_restored)
 
     if doc_restored != null and d.getAnnotatedSequence() != dr.getAnnotatedSequence()
 
       recover_autosave = confirm("You may have closed this file without saving. Would you like to recover your changes?")
 
       if recover_autosave
-        main_editor = new GorillaEditor(editor_selector, doc)
+        main_editor = new G.GorillaEditor(editor_selector, doc)
         main_editor.viewFile()
-        autosave_editor = new GorillaEditor(autosave_selector, doc_restored)
+        autosave_editor = new G.GorillaEditor(autosave_selector, doc_restored)
         autosave_editor.viewFile()
 
         $(".editor_label").show()

@@ -43,10 +43,10 @@ ORIGIN
 
 describe 'GenBank editor', ->
   it 'should be able to load a file without error', ->
-    file = new GenBank(testFile)
+    file = new G.GenBank(testFile)
 
   it 'should be able to serialize genes properly', ->
-    file = new GenBank(testFile)
+    file = new G.GenBank(testFile)
     genes = file.serializeGenes()
     genes.should.contain "ORIGIN"
     genes.should.contain "1 cgtctctgac cagaccaata aaaaacgccc ggcggcaacc gagcgttctg aacaaatcca"
@@ -54,30 +54,30 @@ describe 'GenBank editor', ->
     genes.should.contain "//"
 
   it 'should be able to serialize features', ->
-    file = new GenBank(testFile)
+    file = new G.GenBank(testFile)
     features = file.serializeFeatures()
     features.should.contain "misc_feature    join(1..10,12..12)"
     features.should.contain "misc_feature    14..14"
 
   it 'should parse the gene sequence correctly', ->
-    file = new GenBank(testFile2)
+    file = new G.GenBank(testFile2)
     file.getGeneSequence().should.equal('cgtctctgaccagaccaata')
 
   it 'should annotate a simple file correctly', ->
-    file = new GenBank(testFile2)
+    file = new G.GenBank(testFile2)
     features = file.getAnnotatedSequence()
-    features.should.contain "<span id='ColE1-0-0-default' class='ColE1-0' style='background-color:#7f7f7f'>cgtctctgac</span>cagaccaata"
+    features.should.contain "<span id='0-default' style='background-color:#7f7f7f' data-offsets='0:0' data-features='0:0'>cgtctctgac</span>cagaccaata"
 
   describe "locations", ->
     it 'should serialize a location correctly', ->
-      loc = GenBank.serializeLocation(
+      loc = G.GenBank.serializeLocation(
         strand: 1
         ranges: [ { start: 0, end: 1, id: 0 }
                   { start: 2, end: 4, id: 1 } ])
       loc.should.equal "complement(join(1..2,3..5))"
 
     it 'should parse location correctly', ->
-      data = GenBank.parseLocationData("complement(join(1..2,3..5))")
+      data = G.GenBank.parseLocationData("complement(join(1..2,3..5))")
 
       data.strand.should.equal 1
 
@@ -98,6 +98,6 @@ describe 'GenBank editor', ->
 
     for location in testLocations
       it "should parse and re-encode #{location}", ->
-        d = GenBank.parseLocationData(location)
-        newLocation = GenBank.serializeLocation(d)
+        d = G.GenBank.parseLocationData(location)
+        newLocation = G.GenBank.serializeLocation(d)
         newLocation.should.equal location
