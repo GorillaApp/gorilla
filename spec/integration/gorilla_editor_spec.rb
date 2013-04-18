@@ -179,7 +179,7 @@ FEATURES             Location/Qualifiers
                      /ApEinfo_label="ColE1" 
                      /ApEinfo_fwdcolor="#7f7f7f" 
                      /label="ColE1" 
-     misc_feature    11..20
+     misc_feature    13..20
                      /ApEinfo_revcolor="#7f7f7f" 
                      /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}" 
                      /ApEinfo_label="ColE1" 
@@ -198,6 +198,21 @@ EOF
         set_cursor_at('0-main_editor', 10)
         type(:delete)
         page.should have_content 'cgtctctgacagaccaata'
+      end
+
+      it 'should be able to delete over an empty text element' do
+        set_cursor_at('0-main_editor', 10)
+        type(:delete)
+        type(:delete)
+        type(:delete)
+        page.should have_content 'cgtctctgacaccaata'
+      end
+
+      it 'should be able to delete from a text node to a span' do
+        set_cursor_after('0-main_editor', 1)
+        type(:delete)
+        type(:delete)
+        page.should have_content 'cgtctctgaccaccaata'
       end
     end
   end

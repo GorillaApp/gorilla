@@ -106,12 +106,15 @@ window.G.GorillaEditor = class GorillaEditor
       pe = element.parentNode
 
       if key == "<delete>"
+        console.log element.length, caretPosition
         if element.length <= caretPosition
             caretPosition = 0
             if pe.tagName == "SPAN"
                 element = pe
-
             element = element.nextSibling
+            pe = element.parentNode
+            while element.nodeName == "#text" and element.length == 0
+                element = element.nextSibling
             if element.tagName == "SPAN"
                 pe = element
                 element = pe.firstChild
@@ -122,12 +125,17 @@ window.G.GorillaEditor = class GorillaEditor
       element.deleteData(removedChar, 1)
       
       if pe.tagName == "SPAN"
+        console.log 'caretPosition',caretPosition
         data = GenBank.getSpanData(pe)
         for featureId, content of data
-            @file.moveEndBy(featureId, content.span, -1)
+            if caretPosition == 0
+                @file.advanceFeature(featureId, content.span, -1)
+            else
+                @file.moveEndBy(featureId, content.span, -1)
         node = pe.nextSibling
       else
         node = element
+
       while !!node
         if node.tagName == "SPAN"
           data = GenBank.getSpanData(node)
