@@ -106,12 +106,14 @@ window.G.GorillaEditor = class GorillaEditor
       pe = element.parentNode
 
       if key == "<delete>"
+        console.log element.length, caretPosition
         if element.length <= caretPosition
             caretPosition = 0
             if pe.tagName == "SPAN"
                 element = pe
-
             element = element.nextSibling
+            while element.nodeName == "#text" and element.length == 0
+                element = element.nextSibling
             if element.tagName == "SPAN"
                 pe = element
                 element = pe.firstChild
