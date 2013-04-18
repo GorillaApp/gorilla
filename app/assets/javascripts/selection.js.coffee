@@ -3,6 +3,8 @@
 # in html data. Also, if text node is last node in html data it
 # is simply ignored.
 
+GenBank = window.G.GenBank #Import
+
 # Credit to: StackOverflow user Tim Down
 getSelectionHtml =  () ->
   sel = ""
@@ -22,6 +24,9 @@ getSelectionHtml =  () ->
 getNodesFromHtmlText = (htmlText) ->
 
   nodes = $(htmlText).each(()->
+
+    #patt = new RegExp ((\w*)(<span[^>]>[^<]*</span>)(\w*),modifiers)
+    
     $node = $(this)
     divId = $node.closest('div').attr('id')
     nodeId = $node.attr('id')
@@ -30,6 +35,9 @@ getNodesFromHtmlText = (htmlText) ->
   return nodes
 
 getNodeData = (node) ->
+  
+
+
   if node.nodeName == "SPAN"
     split_id = node.id.split('-')
     featureId = split_id[1]
@@ -82,6 +90,28 @@ getFeatureDataOfSelected = () ->
 
   return nodeData
 
-window.G.getFeatureDataOfSelected = getFeatureDataOfSelected
-window.G.getSelectionHtml = getSelectionHtml
-window.G.getNodesFromHtmlText = getNodesFromHtmlText
+modifySelection = (modFunction) ->
+  [sIndex, eIndex, editor] = getInfoFromSelection()
+  data = editor.file.getGeneSequence()
+  subData = data.substr(sIndex, eIndex).modFunction()
+  upData = replaceRange(data, subData, sIndex, eIndex)
+  editor.file.updateSequence(upData)
+
+getInfoFromSelection = () ->
+  data = GenBank.getSpanData(node)
+
+
+
+
+replaceRange = (text, repText, startIndex = 0, endIndex = -1) ->
+  if endIndex == -1
+    endIndex = text.length - 1
+  begin = text.substr(0, startIndex)
+  end =  text.substr(endIndex, text.length - 1)
+  return begin + repText + end
+
+window.G or= {}
+G.getFeatureDataOfSelected = getFeatureDataOfSelected
+G.getSelectionHtml = getSelectionHtml
+G.getNodesFromHtmlText = getNodesFromHtmlText
+G.replaceRange = replaceRange
