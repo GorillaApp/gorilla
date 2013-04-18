@@ -152,7 +152,7 @@ window.G.GorillaEditor = class GorillaEditor
         console.log 'caretPosition',caretPosition
         data = GenBank.getSpanData(pe)
         for featureId, content of data
-            if caretPosition == 0
+            if caretPosition == 0 and content.offset == 0
                 @file.advanceFeature(featureId, content.span, -1)
             else
                 @file.moveEndBy(featureId, content.span, -1)
@@ -164,7 +164,8 @@ window.G.GorillaEditor = class GorillaEditor
         if node.tagName == "SPAN"
           data = GenBank.getSpanData(node)
           for featureId, content of data
-              @file.advanceFeature(featureId, content.span, -1)
+              if content.offset == 0
+                  @file.advanceFeature(featureId, content.span, -1)
         node = node.nextSibling
 
       sel.removeAllRanges()

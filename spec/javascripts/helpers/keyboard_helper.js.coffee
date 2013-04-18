@@ -13,6 +13,7 @@ class window.Keyboard
     if thing.charAt(0) == "<" and thing.charAt(thing.length - 1) == ">"
       switch thing
         when "<backspace>" then Keyboard._type_raw(8, "keydown")
+        when "<delete>" then Keyboard._type_raw(46, "keydown")
         when "<undo>","<ctrl-z>"
           Keyboard._type_raw(90, "keydown", true)
         when "<redo>","<ctrl-y>"
