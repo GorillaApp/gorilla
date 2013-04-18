@@ -13,6 +13,11 @@ module GorillaHelper
     SCRIPT
   end
 
+  def get_cursor_location()
+    page.driver.evaluate_script <<-SCRIPT
+    SCRIPT
+  end
+
   def type(thing, type=:keypress, ctrl=false)
     if thing.kind_of? Symbol
       case thing

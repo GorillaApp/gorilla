@@ -105,6 +105,17 @@ window.G.GorillaEditor = class GorillaEditor
       element = loc.startContainer
       pe = element.parentNode
 
+      if key == "<delete>"
+        if element.length <= caretPosition
+            caretPosition = 0
+            if pe.tagName == "SPAN"
+                element = pe
+
+            element = element.nextSibling
+            if element.tagName == "SPAN"
+                pe = element
+                element = pe.firstChild
+
       removedChar = caretPosition - 1
       if key == "<delete>"
         removedChar = caretPosition
