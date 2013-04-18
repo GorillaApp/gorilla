@@ -130,7 +130,7 @@ window.G.GorillaEditor = class GorillaEditor
         node = element
       while !!node
         if node.tagName == "SPAN"
-          data = GenBank.getSpanData(pe)
+          data = GenBank.getSpanData(node)
           for featureId, content of data
               @file.advanceFeature(featureId, content.span, -1)
         node = node.nextSibling
