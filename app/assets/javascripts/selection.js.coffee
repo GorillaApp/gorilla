@@ -75,6 +75,10 @@ revCompSeq = (seq) ->
     i--
   return newSeq
 
+window.bind_selections = ->
+  $('#reverseComplement').unbind('click').click ->
+    reverseCompSelection()
+
 window.G or= {}
 
 G.toUpper = toUpper
