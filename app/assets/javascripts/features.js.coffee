@@ -26,7 +26,7 @@ populateTable = (features) ->
           #{feat.reverse_color}
         </td>
         <td>
-          <a style="color:red;text-decoration:none" 
+          <a style="color:red;text-decoration:none"
              data-id="#{feat.id}"
              data-user-id="#{user}"
              href="#">X</a>
@@ -68,7 +68,7 @@ window.setup_features = ->
 window.bind_features = ->
   $('#feature-form').unbind('submit').submit (event) ->
     event.preventDefault()
-    
+
     $('.issues').hide()
 
     formData = $(this).serializeArray()
@@ -102,3 +102,8 @@ window.bind_features = ->
       window.allFeatures = data.features
       populateTable(window.allFeatures)
       $('#allfeaturesdialog').dialog("open")
+
+  $('#featureLibrary').unbind('click').click ->
+    console.log("Testing")
+    callback = G.main_editor.file.processFeatures
+    G.main_editor.file.featureRequest(callback)
