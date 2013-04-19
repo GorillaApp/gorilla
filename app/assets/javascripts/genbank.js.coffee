@@ -750,8 +750,7 @@ window.G.GenBank = class GenBank
 
   # returns an array of text representation of a single feature
   parseFeatureFileContents: (fileContents, filename) ->
-    console.log("Parsing from File: ", filename)
-    console.log("THIS IS WHAT THE FILE SAYS" , fileContents)
+
     featureArray = fileContents.split("\n")
     featureArray
 
