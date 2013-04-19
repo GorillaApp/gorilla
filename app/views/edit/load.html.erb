@@ -1,6 +1,8 @@
 <%= content_for :links do %>
   <%= link_to "Add a feature", "#", id: :addFeature %>
   | <%= link_to "List of Features", "#", id: :listFeatures %>
+  | <%= link_to "Add an Enzyme", "#", id: :addEnzyme %>
+  | <%= link_to "List of Enzymes", "#", id: :listEnzymes %>
   | <%= link_to "Save", "#", id: :save %>
   <% if development? %>
     <span class="development">
@@ -41,6 +43,24 @@
   <div id="features-table"></div>
 </div>
 
+<div id="enzymedialog" class='enzyme' title="Add Enzyme">
+  <%= form_tag "#", method: "GET", id: 'enzyme-form' do %>
+    <div class='issues'></div>
+    <%= label_tag(:site, "Site: ") %>
+    <%= text_area_tag(:site, "", size:"50x4") %>
+    <%= label_tag(:comment, "Comment: ") %>
+    <%= text_area_tag(:comment, "", size:"50x4") %>
+    <%= label_tag(:name, "Name: ") %>
+    <%= text_field_tag(:name) %><br />
+
+    <%= hidden_field_tag(:user_id, current_user.id) %>
+    <%= submit_tag("Save Enzyme") %>
+  <% end %>
+</div>
+
+<div id="allenzymesdialog" class='enzymes' title="All Enzymes">
+  <div id="enzymes-table"></div>
+</div>
 
 <script type="text/javascript" >
 doc = <%= @file_contents.to_json.html_safe %>;
@@ -49,6 +69,7 @@ first_line = <%= @first_line.to_json.html_safe %>;
 isRestore = <%= @isRestore.to_json %>;
 saveURL = <%= @saveURL.to_json.html_safe %>;
 allFeatures = null;
+allEnzymes = null;
 user = <%= (current_user.nil? ? -1 : current_user.id) %>;
 
 $(document).ready(function () {

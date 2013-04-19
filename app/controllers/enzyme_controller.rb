@@ -25,7 +25,7 @@ class EnzymeController < ApplicationController
   def getAll
     #returns an array of features
     result = Enzyme.getAll(params)
-    render :json => {:features => result}
+    render :json => {:enzymes => result}
   end
 
   def getEnzyme
@@ -33,7 +33,7 @@ class EnzymeController < ApplicationController
     if result == DOES_NOT_EXIST
       render :json => {:errCode => result}
     else
-      render :json => {:features => result}
+      render :json => {:enzymes => result}
     end
   end
 

@@ -4,9 +4,13 @@ Gorilla::Application.routes.draw do
 
   post "feature/add"
 
-  get "feature/remove"
+  post "enzyme/add"
 
   get "feature/getAll"
+
+  get "feature/remove"
+
+  get "enzyme/getAll"
 
   get "feature/", :to => "feature#feature"
 

@@ -9,6 +9,7 @@ window.G or= {}
 window.G.begin_editing = (editor_selector, autosave_selector) ->
   console.groupCollapsed("Preparing to edit a file")
   setup_features()
+  setup_enzymes()
 
   if window.isRestore
     console.groupCollapsed("An autosaved version exists")
@@ -24,6 +25,7 @@ window.G.begin_editing = (editor_selector, autosave_selector) ->
     G.Autosave.start(G.main_editor)
 
     bind_features()
+    bind_enzymes()
 
     G.main_editor.startEditing()
   console.groupEnd()
