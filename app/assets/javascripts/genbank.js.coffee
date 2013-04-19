@@ -552,41 +552,44 @@ window.G.GenBank = class GenBank
 
         id = id + 1
 
-        console.log("Forward feature successfully matched")
+      else
 
-      result = @searchString(feature.sequence.split("").reverse().join(""))
+        # check for the reverse string
+        feature.sequence = feature.sequence.split("").reverse("").join("")
+        result = @searchString(feature.sequence)
 
-      if result > 0
-        console.log("found reverse complement")
-        console.log(feature.sequence)
 
-        newFeature = {}
-        ranges = []
+        if result > 0
+          console.log("found reverse complement")
+          console.log(feature.sequence)
 
-        if feature.sequence == feature.sequence.toLowerCase()
+          newFeature = {}
+          ranges = []
 
-          console.log("reverse complement all lower case")
+          if feature.sequence == feature.sequence.toLowerCase()
 
-          ranges.push
-            start: result
-            end: result + feature.sequence.length - 1
-            id: id
-          # console.log(ranges)
+            console.log("reverse complement all lower case")
 
-        else
+            ranges.push
+              start: result
+              end: result + feature.sequence.length - 1
+              id: id
+            # console.log(ranges)
 
-          console.log("reverse complement with capitals")
+          else
 
-          lowerIndicies = @getLowerIndicies(feature.sequence, result)
-          for range in lowerIndicies
-            ranges.push range
+            console.log("reverse complement with capitals")
 
-        newFeature.id = id
-        newFeature.location = {ranges: ranges, strand: 1}
-        newFeature.parameters = @generateFeatureParamObject feature
-        newFeatures.push newFeature
+            lowerIndicies = @getLowerIndicies(feature.sequence, result)
+            for range in lowerIndicies
+              ranges.push range
 
-        id = id + 1
+          newFeature.id = id
+          newFeature.location = {ranges: ranges, strand: 1}
+          newFeature.parameters = @generateFeatureParamObject feature
+          newFeatures.push newFeature
+
+          id = id + 1
 
     @addFeatures(newFeatures)
 
