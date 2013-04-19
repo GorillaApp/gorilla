@@ -20,8 +20,13 @@ window.G.GorillaEditor = class GorillaEditor
   viewFile: () ->
     console.groupCollapsed("Preparing Editor to be viewed")
 
+    me = @
+
     $(@editorId).html(@file.getAnnotatedSequence())
                 .addClass('gorilla-editor viewing')
+                .find('span')
+                .hover((event) -> me.showHoverDialog(event))
+                .mousemove((event) -> me.showHoverDialog(event))
 
     console.log("Ready to view")
     console.groupEnd()
@@ -64,6 +69,25 @@ window.G.GorillaEditor = class GorillaEditor
     console.log("Editor ready!")
     console.groupEnd()
 
+  showHoverDialog: (event) ->
+    if event.type == "mouseleave"
+        $('#hover-box').remove()
+        return
+    if event.type == "mouseenter"
+        data = GenBank.getSpanData(event.target)
+        text = ""
+        for featureId, content of data
+            if text != ""
+                text += '<br>'
+            feat = @file.getFeatures()[featureId]
+            text += feat.parameters['/label']
+        node = $(event.target)
+        newElement = $('<div>', id: 'hover-box')
+        newElement.html(text)
+        $('body').append(newElement)
+    $('#hover-box').css('top', event.pageY + 10)
+    $('#hover-box').css('left', event.pageX + 10)
+
   undo: (event) ->
     if @previousFiles.length > 0
       Autosave.request(this)
@@ -105,23 +129,40 @@ window.G.GorillaEditor = class GorillaEditor
       element = loc.startContainer
       pe = element.parentNode
 
+      if key == "<delete>"
+        console.log element.length, caretPosition
+        if element.length <= caretPosition
+            caretPosition = 0
+            if pe.tagName == "SPAN"
+                element = pe
+            element = element.nextSibling
+            pe = element.parentNode
+            while element.nodeName == "#text" and element.length == 0
+                element = element.nextSibling
+            if element.tagName == "SPAN"
+                pe = element
+                element = pe.firstChild
+
       removedChar = caretPosition - 1
       if key == "<delete>"
         removedChar = caretPosition
       element.deleteData(removedChar, 1)
       
       if pe.tagName == "SPAN"
+        console.log 'caretPosition',caretPosition
         data = GenBank.getSpanData(pe)
         for featureId, content of data
             @file.moveEndBy(featureId, content.span, -1)
         node = pe.nextSibling
       else
         node = element
+
       while !!node
         if node.tagName == "SPAN"
-          data = GenBank.getSpanData(pe)
+          data = GenBank.getSpanData(node)
           for featureId, content of data
-              @file.advanceFeature(featureId, content.span, -1)
+              if content.offset == 0
+                  @file.advanceFeature(featureId, content.span, -1)
         node = node.nextSibling
 
       sel.removeAllRanges()
@@ -129,7 +170,8 @@ window.G.GorillaEditor = class GorillaEditor
       delme = null
 
       l = document.createRange()
-      if removedChar - 1 == 0
+      console.log removedChar
+      if removedChar == 0
         if element.tagName != "SPAN" and element.parentNode.id != $(@editorId).attr('id')
           element = element.parentNode
         if element.innerHTML?.length == 0
@@ -137,8 +179,10 @@ window.G.GorillaEditor = class GorillaEditor
         element = element.previousSibling
         if element.tagName == "SPAN"
           element = element.childNodes[0]
-        caretPosition = element.length + 1
-      l.setStart(element, removedChar)
+        caretPosition = element.length
+        l.setStart(element, caretPosition)
+      else
+        l.setStart(element, removedChar)
       l.collapse(true)
 
       if delme != null

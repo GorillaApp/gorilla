@@ -1,4 +1,5 @@
 function json_request(type, uri, dict, success, failure) {
+    console.error('Deprecated')
     $.ajax({
         type: type,
         url: uri,

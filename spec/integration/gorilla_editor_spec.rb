@@ -104,6 +104,13 @@ EOF
         find("#0-main_editor").should have_content "cgctgac"
       end
 
+      it 'should be able to backspace from text into span' do
+        set_cursor_after('0-main_editor', 1)
+        type(:backspace)
+        type(:backspace)
+        find("#0-main_editor").should have_content "cgtctctga"
+      end
+
       it 'should be able to delete text' do
         set_cursor_at('0-main_editor', 2)
         type(:delete)
@@ -148,6 +155,62 @@ EOF
         type(:redo)
 
         page.should have_content "tcgtctctgaccagaccaata"
+      end
+
+      it 'should be able to delete past the end of a feature' do
+        set_cursor_at('0-main_editor', 10)
+        type(:delete)
+        page.should have_content 'cgtctctgacagaccaata'
+      end
+    end
+
+    context 'and opens a slightly more complicated file' do
+      before(:each) do
+        visit '/testclient/client'
+
+        find('#file').set <<-EOF
+LOCUS pGG001 20 bp ds-DNA circular UNK 01-JAN-1980
+FEATURES             Location/Qualifiers
+     misc_feature    complement(1..10)
+                     /ApEinfo_revcolor="#7f7f7f" 
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}" 
+                     /ApEinfo_label="ColE1" 
+                     /ApEinfo_fwdcolor="#7f7f7f" 
+                     /label="ColE1" 
+     misc_feature    13..20
+                     /ApEinfo_revcolor="#7f7f7f" 
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}" 
+                     /ApEinfo_label="ColE1" 
+                     /ApEinfo_fwdcolor="#7f7f7f" 
+                     /label="ColE1" 
+ORIGIN
+        1 cgtctctgac cagaccaata
+//
+EOF
+        click_button "Open File"
+
+        find('#0-main_editor').should have_content "cgtctctgac"
+      end
+
+      it 'should be able to delete past the end of a feature' do
+        set_cursor_at('0-main_editor', 10)
+        type(:delete)
+        page.should have_content 'cgtctctgacagaccaata'
+      end
+
+      it 'should be able to delete over an empty text element' do
+        set_cursor_at('0-main_editor', 10)
+        type(:delete)
+        type(:delete)
+        type(:delete)
+        page.should have_content 'cgtctctgacaccaata'
+      end
+
+      it 'should be able to delete from a text node to a span' do
+        set_cursor_after('0-main_editor', 1)
+        type(:delete)
+        type(:delete)
+        page.should have_content 'cgtctctgaccaccaata'
       end
     end
   end
