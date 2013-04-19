@@ -140,7 +140,7 @@ window.bind_features = ->
       G.main_editor.startEditing()
 
 
-  # $('#upload').unbind('change').bind('change', window.handleFileSelect)
+  $('#upload').unbind('change').bind('change', window.handleFileSelect)
 
 
 
