@@ -78,6 +78,10 @@ revCompSeq = (seq) ->
 window.bind_selections = ->
   $('#reverseComplement').unbind('click').click ->
     reverseCompSelection()
+  $('#toUpper').unbind('click').click ->
+    modifySelection(toUpper)
+  $('#toLower').unbind('click').click ->
+    modifySelection(toLower)
 
 window.G or= {}
 
