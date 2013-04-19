@@ -40,10 +40,21 @@
 </div>
 
 <div id="allfeaturesdialog" class='features' title="All Features">
+
   <div></div>
   <div id="features-table"></div>
 
   <%= select("library", "name", FeatureLibrary.getAll(user_id: current_user.id).collect {|n| [n[:name], n[:id]]} ) %>
+
+
+
+  <%= form_tag "#", method: "GET", id: 'library-form' do %>
+    <%= label_tag(:name, "Name: ") %>
+    <%= text_field_tag(:name) %><br />
+    <%= hidden_field_tag(:user_id, current_user.id) %>
+    <%= submit_tag("Save Library") %>
+  <% end %>
+
 </div>
 
 <div id="enzymedialog" class='enzyme' title="Add Enzyme">

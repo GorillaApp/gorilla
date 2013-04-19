@@ -44,6 +44,9 @@ populateTable = (features) ->
 reset_features_form = ->
   $('feature-form').each -> $(this).reset()
 
+reset_library_form = ->
+  $('library-form').each -> $(this).reset()
+
 window.setup_features = ->
   $('#featuredialog').dialog
     autoOpen: false
@@ -93,6 +96,50 @@ window.bind_features = ->
 
   $('#addFeature').unbind('click').click ->
     $('#featuredialog').dialog("open")
+
+
+
+#  $('#library_name').change ->
+#    selected = $('#library_name :selected').text()
+#    $('.input.boolean.optional').show() if selected is value
+#
+#  $('#library_name').onchange(updateFeatures(this.options[this.selectedIndex]))
+
+  $('#library_name').change = () ->
+    index = $('#library_name').selectedIndex
+    $('#library_name').options(index).value
+
+
+
+  $('#library-form').unbind('submit').submit (event) ->
+    event.preventDefault()
+    formData = $(this).serializeArray()
+    save = true
+    Libname = null
+    uID = null
+
+    for datum in formData
+      if datum.value == ""
+        $('.issues').text('You must fill in all items').show()
+        save = false
+      if datum.name == "name"
+        Libname = datum.value
+      if datum.name == "user_id"
+        uID = datum.value
+
+    if save
+      $.post "/feature_library/add",
+            $(this).serialize(),
+            ->
+              notify("Successfully saved library", "success")
+              $("#allfeaturedialog").dialog("close")
+              reset_library_form()
+
+
+  updateFeatures = (library_id) ->
+    $.get "/feature/getAll", {library_id: lib}, (data) ->
+      window.allFeatures = data.features
+      populateTable(window.allFeatures)
 
   $('#listFeatures').unbind('click').click ->
     if window.allFeatures != null

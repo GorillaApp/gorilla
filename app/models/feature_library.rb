@@ -12,12 +12,14 @@ class FeatureLibrary < ActiveRecord::Base
   UNEXPECTED_EXCEPTION = 5
 
   def self.add(params)
-      return SUCCESS
+    @library = FeatureLibrary.create(params.slice(:user_id, :name))
+    @library.save!
+    return SUCCESS
   end
 
   def self.delete_lib(params)
     @lib = FeatureLibrary.find_by_id(params[:id])
-    objs = FeatureLibrary.find_all_by_library_id(params[:library_id])
+    objs = FeatureLibrary.find_all_by_user_id(params[:library_id])
     objs.each do |o|
       o.destroy
     end
@@ -33,4 +35,19 @@ class FeatureLibrary < ActiveRecord::Base
     end
     return result
   end
+
+  def self.setSelected(params)
+    lib = FeatureLibrary.find_by_id(params[:id])
+    if lib == null
+      return DOES_NOT_EXIST
+    end
+    @@selected_lib = lib
+    return SUCCESS
+  end
+
+  def self.getSelected(params)
+    result = [@@selected_lib]
+    return result
+  end
+
 end

@@ -4,6 +4,8 @@ Gorilla::Application.routes.draw do
 
   post "feature/add"
 
+  post "feature_library/add"
+
   post "enzyme/add"
 
   get "feature/getAll"
