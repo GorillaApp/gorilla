@@ -16,7 +16,7 @@ FEATURES             Location/Qualifiers
                      /ApEinfo_fwdcolor="#6f6f6f" 
                      /label="ColE2"
 ORIGIN
-        1 atc     
+        1 atc
 //
 """
 
@@ -34,46 +34,29 @@ ORIGIN
 """
 
 describe 'Selection methods', ->
-  
-  it 'should capitalize a selection', ->
-    file = new G.GenBank(testFile)
-    genes = file.serializeGenes()
-    genes.should.contain "ORIGIN"
-    genes.should.contain "1 cgtctctgac cagaccaata aaaaacgccc ggcggcaacc gagcgttctg aacaaatcca"
-    genes.should.contain "61 gatggagttc tgaggtcatt actggatcta tcaacaggag tccaagcgag ctcgatatca"
-    genes.should.contain "//"
-
-  it 'should lower case a selection', ->
-    file = new G.GenBank(testFile)
-    features = file.serializeFeatures()
-    features.should.contain "misc_feature    join(1..10,12..12)"
-    features.should.contain "misc_feature    14..14"
 
   it 'should reverse complement a selection', ->
-    file = new G.GenBank(testFile2)
-    file.getGeneSequence().should.equal('cgtctctgaccagaccaata')
+    file = new G.GenBank(simpleFile)
+    G.reverseCompSelection([0,5],file,true)
+    f = file.serialize()
+    f.should.contain("complement(1..1)")
+    f.should.contain("6..15")
 
   it 'should split a feature into three upon revComp in middle of feature', ->
-    file = new G.GenBank(testFile2)
-    features = file.getAnnotatedSequence()
-    features.should.contain "<span id='0-default' style='background-color:#7f7f7f' data-offsets='0:0' data-features='0:0'>cgtctctgac</span>cagaccaata"
-
-
-  it 'should split a feature into two upon revComp from plain text into feature', ->
-    loc = G.GenBank.serializeLocation(
-      strand: 1
-      ranges: [ { start: 0, end: 1, id: 0 }
-                { start: 2, end: 4, id: 1 } ])
-    loc.should.equal "complement(join(1..2,3..5))"
+    file = new G.GenBank(simpleFile)
+    G.reverseCompSelection([6,9],file,true)
+    f = file.serialize()
+    f.should.contain("complement(7..9)")
+    f.should.contain("5..6")
+    f.should.contain("10..15")
 
   it 'should split a feature into two upon revComp from feature into plain text', ->
-    data = G.GenBank.parseLocationData("complement(join(1..2,3..5))")
+    file = new G.GenBank(simpleFile)
+    G.reverseCompSelection([9,17],file,true)
+    f = file.serialize()
+    f.should.contain("complement(12..17)")
+    f.should.contain("5..9")
 
-    data.strand.should.equal 1
 
-  it 'should split overlapping features for which the selection edges cut through', ->
-    data = G.GenBank.parseLocationData("complement(join(1..2,3..5))")
-
-    data.strand.should.equal 1
 
 
