@@ -106,5 +106,7 @@ describe 'GenBank editor', ->
     it 'should correctly return the ranges of lower case indicies,' ->
       seq = "GGTggAGCTgggttCCCt"
       correct_indicies = [3, 4, 9, 10, 11, 12, 13, 17]
+      returned_indicies = G.GenBank.getLowerIndicies(seq)
+      correct_indicies.should.equal returned_indicies
 
 
