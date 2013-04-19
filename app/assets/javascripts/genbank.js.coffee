@@ -530,7 +530,6 @@ window.G.GenBank = class GenBank
 
       # console.log("Feature Sequence", feature.sequence)
 
-      result = @searchString(feature.sequence)
 
       resultIndexes = @indexes(@data.raw_genes, feature.sequence.toLowerCase())
 
@@ -583,7 +582,7 @@ window.G.GenBank = class GenBank
     else
       console.log("start", result)
       range_id = 0
-      lowerIndicies = @getLowerIndicies(feature.sequence, result)
+      lowerIndicies = GenBank.getLowerIndicies(feature.sequence, result)
       for range in lowerIndicies
         range.id = range_id
         range_id = range_id + 1
@@ -597,7 +596,7 @@ window.G.GenBank = class GenBank
     newFeature
 
   # returns an array of all the capitalized charaters within the sequence
-  getLowerIndicies: (sequence, start) ->
+  @getLowerIndicies: (sequence, start) ->
     uppers = []
     for i in [0...sequence.length]
       char = sequence.charAt i

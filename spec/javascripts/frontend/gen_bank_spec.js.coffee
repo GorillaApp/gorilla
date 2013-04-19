@@ -101,3 +101,10 @@ describe 'GenBank editor', ->
         d = G.GenBank.parseLocationData(location)
         newLocation = G.GenBank.serializeLocation(d)
         newLocation.should.equal location
+
+  describe "get lower case ranges", ->
+    it 'should correctly return the ranges of lower case indicies,' ->
+      seq = "GGTggAGCTgggttCCCt"
+      correct_indicies = [3, 4, 9, 10, 11, 12, 13, 17]
+
+
