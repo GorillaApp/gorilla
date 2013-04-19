@@ -26,4 +26,4 @@ class window.Keyboard
 
   @_type_raw: (code, type = "keypress", ctrl = false) ->
     event = jQuery.Event(type, {keyCode:code,ctrlKey:ctrl})
-    jQuery('#ed').trigger(event)
+    jQuery('#ed .editor').trigger(event)

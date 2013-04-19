@@ -7,17 +7,21 @@ Autosave = G.Autosave
 GenBank = G.GenBank
 
 window.G.GorillaEditor = class GorillaEditor
-  constructor: (@editorId, @initialDocument = '', @debugEditor = null) ->
-    console.groupCollapsed("Initializing GorillaEditor: #{editorId}")
+  constructor: (@mainId, @initialDocument = '', @debugEditor = null) ->
+    console.groupCollapsed("Initializing GorillaEditor: #{@mainId}")
+    $(@mainId).html('<div class="numbers"></div><div class="editor"></div><div style="clear:both;"></div>')
+              .addClass('gorilla-container')
+    @editorId = @mainId + ' .editor'
+    @numbersId = @mainId + ' .numbers'
     if @initialDocument != ''
-      @file = new GenBank(@initialDocument, @editorId[1..])
+      @file = new GenBank(@initialDocument, @mainId[1..])
       if @debugEditor != null
         @debugEditor.file = new GenBank(@initialDocument, @debugEditor.editorId[1..])
         @debugEditor.startEditing()
     console.log("GorillaEditor ready!")
     console.groupEnd()
 
-  viewFile: () ->
+  viewFile: (render = true) ->
     console.groupCollapsed("Preparing Editor to be viewed")
 
     me = @
@@ -28,6 +32,9 @@ window.G.GorillaEditor = class GorillaEditor
                 .hover((event) -> me.showHoverDialog(event))
                 .mousemove((event) -> me.showHoverDialog(event))
 
+    if render
+        @renderNumbers('viewing')
+        $(window).resize((event) -> me.renderNumbers('viewing', true))
     console.log("Ready to view")
     console.groupEnd()
 
@@ -35,7 +42,9 @@ window.G.GorillaEditor = class GorillaEditor
     console.groupCollapsed("Preparing Editor to be edited")
     me = @
 
-    @viewFile()
+    @viewFile(false)
+    @renderNumbers('editing')
+    $(window).resize((event) -> me.renderNumbers('editing', true))
     
     $(@editorId).attr('contenteditable','true')
                 .attr('spellcheck','false')
@@ -60,6 +69,9 @@ window.G.GorillaEditor = class GorillaEditor
                 .bind('dragover', (event) -> event.preventDefault())
                 .bind('drop', (event) -> event.preventDefault())
 
+
+
+
     @editorContents = $(@editorId).text()
     @editorHtml = $(@editorId).html()
     @previousEditors = []
@@ -67,6 +79,7 @@ window.G.GorillaEditor = class GorillaEditor
     @previousFiles = []
     @nextFiles = []
     console.log("Editor ready!")
+
     console.groupEnd()
 
   showHoverDialog: (event) ->
@@ -104,7 +117,45 @@ window.G.GorillaEditor = class GorillaEditor
       $(@editorId).html(@file.getAnnotatedSequence())
       @completeEdit()
       
+  # this... This is horrific
+  getCharsWide: (type) ->
+    $('article').append($("""
+    <div id="get-chars-wide-gorilla">
+        <div class="numbers"></div>
+        <div class="editor" contenteditable="true"></div>
+        <div style="clear:both;"></div>
+    </div>"""))
+    $('#get-chars-wide-gorilla').addClass('gorilla-container')
+    $('#get-chars-wide-gorilla .editor').addClass("gorilla-editor #{type}")
+
+    $('#get-chars-wide-gorilla .numbers').html('1<br>2')
+    node = $('#get-chars-wide-gorilla .editor')
+    txt = 'aaaaaaa'
+    node.text(txt)
+    hei = node.height()
+    while hei >= node.height() and txt.length < 2000
+        txt += 'aaaaaaa'
+        node.text(txt)
+    while hei < node.height() and txt.length > 0
+        txt = txt[1..]
+        node.text(txt)
+    $('#get-chars-wide-gorilla').remove()
+    return txt.length - 1
+
+  renderNumbers: (type, resize = false) ->
+    $(@numbersId).html('1')
+    if not @chars? or resize
+        @chars = @getCharsWide(type)
+    lines = $(@editorId).get(0).clientHeight / 16
+    text = ''
+    loc = 1
+    for line in [0...lines]
+        text += loc + '<br>'
+        loc += @chars
+    $(@numbersId).html(text)
+
   trackChanges: ->
+    @renderNumbers()
     Autosave.request(this)
     @previousFiles.push($.extend(true, {}, @file))
 
@@ -172,14 +223,15 @@ window.G.GorillaEditor = class GorillaEditor
       l = document.createRange()
       console.log removedChar
       if removedChar == 0
-        if element.tagName != "SPAN" and element.parentNode.id != $(@editorId).attr('id')
-          element = element.parentNode
+        if element.tagName != "SPAN"
+          if not $(element.parentNode).hasClass('editor')
+              element = element.parentNode
         if element.innerHTML?.length == 0
           delme = element
         element = element.previousSibling
         if element.tagName == "SPAN"
           element = element.childNodes[0]
-        caretPosition = element.length
+          caretPosition = element.length
         l.setStart(element, caretPosition)
       else
         l.setStart(element, removedChar)

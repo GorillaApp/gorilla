@@ -5,10 +5,7 @@
 .gorilla-editor {
     float: left;
 
-    font-family: monospace;
     word-wrap: break-word;
-    line-height: 16px;
-    font-size: 10pt;
 }
 
 .gorilla-editor.viewing {
@@ -17,6 +14,24 @@
 
 .gorilla-editor.editing {
   width: 100%;
+}
+
+.gorilla-container {
+    font-family: monospace;
+    line-height: 16px;
+    letter-spacing: 0px;
+    font-size: 13px;
+    width: 100%;
+
+    .editor {
+        float: left;
+        width: 95%;
+    }
+    .numbers {
+        float: left;
+        text-align: right;
+        width: 5%;
+    }
 }
 
 #hover-box {
