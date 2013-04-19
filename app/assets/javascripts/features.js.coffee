@@ -108,3 +108,4 @@ window.bind_features = ->
     $.get "/feature/getAll", {user_id: user}, (data) ->
       G.main_editor.file.processFeatures(data)
 
+

@@ -513,10 +513,53 @@ window.G.GenBank = class GenBank
 
       if result > 0
         console.log("found reverse complement")
+        console.log(feature.sequence)
 
+        newFeature = {}
+        ranges = []
 
+        if feature.sequence == feature.sequence.toLowerCase()
+
+          console.log("reverse complement all lower case")
+
+          ranges.push
+            start: result
+            end: result + feature.sequence.length - 1
+            id: id
+          # console.log(ranges)
+
+        else
+
+          console.log("reverse complement with capitals")
+
+          lowerIndicies = @getLowerIndicies feature.sequence
+          for range in lowerIndicies
+            ranges.push range
+
+        newFeature.id = id
+        newFeature.location = {ranges: ranges, strand: 1}
+        newFeature.parameters = @generateFeatureParamObject feature
+        newFeatures.push newFeature
+
+        id = id + 1
+
+    @addFeatures(newFeatures)
 
     console.log(newFeatures)
+
+
+  # edits the @data.features to include the new features from the library
+  addFeatures: (featuresArray) ->
+
+    oldFeatures = @getFeatures()
+    console.log("Old Features ", oldFeatures)
+    newFeatures = oldFeatures.concat featuresArray
+    console.log("New Features", newFeatures)
+
+
+    @data.features = newFeatures
+    console.log(@data.features)
+
 
   # returns an array of all the capitalized charaters within the sequence
   getLowerIndicies: (sequence) ->
