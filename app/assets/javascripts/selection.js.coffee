@@ -23,45 +23,67 @@ toLower = (s) ->
   return s.toLowerCase()
 
 reverseCompSelection = () ->
+  debugger
   sel = window.getSelection()
-  [sIndex, eIndex] = GorillaEditor.getSelectionRange(sel)
+  indices = GorillaEditor.getSelectionRange(sel)
+  if indices.length == 2
+    [sIndex, eIndex] = indices
+  else
+    return
   editor = GorillaEditor.getInstance(sel.anchorNode)
   allFeats = editor.file.getTableOfFeatures()
   seenFeatures = {}
-  
-  ###
-  for pair in allFeats[sIndex]
-    feature = pair.feature
-    range = pair.range
-    distanceInRange = sIndex - range.start
-    if sIndex != range.start
-      editor.file.splitFeatureAt(feature.id, range.id, distanceInRange)
+  numSplits = 0
+
+  console.log("Start index %d", sIndex)
+  console.log("End index %d", eIndex)
+
+  if allFeats[sIndex]
+      for pair in allFeats[sIndex]
+        feature = pair.feature
+        range = pair.range
+        distanceInRange = sIndex - range.start - 1
+        console.log("Distance in range: %d", distanceInRange)
+        numSplits += 1
+        if sIndex != range.start
+          editor.file.splitFeatureAt(feature.id, range.id, distanceInRange)
   
   allFeats = editor.file.getTableOfFeatures()
-  for pair in allFeats[eIndex]
-    feature = pair.feature
-    range = pair.range
-    distanceInRange = eIndex - range.start
-    if eIndex != range.end
-      editor.file.splitFeatureAt(feature.id, range.id, distanceInRange)
-      ###
+  if allFeats[eIndex]
+      for pair in allFeats[eIndex]
+        console.log("You dun fucked up")
+        numSplits += 1
+        feature = pair.feature
+        range = pair.range
+        distanceInRange = eIndex - range.start - 1
+        if eIndex != range.end
+          editor.file.splitFeatureAt(feature.id, range.id, distanceInRange)
+
+  console.log("Number splits: %d", numSplits)
   allFeats = editor.file.getTableOfFeatures()
-  console.log("FUCK")
-  console.log([sIndex...eIndex])
+  eIndex -= 1
+  console.log(allFeats[sIndex...eIndex])
   for i in [sIndex...eIndex]
-    for pair in allFeats[i] #gives us a list of feat_id, range_id
-      feature = pair.feature
-      range = pair.range
-      
-      hash = feature.id.toString() + ',' + range.id.toString()
-      if not seenFeatures[hash]
-        seenFeatures[hash] = true
-        rangeLen = range.end - range.start
-        offsetInSel = sIndex - range.start
-        range.start = eIndex - rangeLen - offsetInSel
-        range.end = offsetInSel
-        feature.location.strand ^= 1
-  console.log(seenFeatures)
+    if allFeats[i]
+        for pair in allFeats[i] #gives us a list of feat_id, range_id
+          feature = pair.feature
+          range = pair.range
+          
+          hash = feature.id.toString() + ',' + range.id.toString()
+          if not seenFeatures[hash]
+            seenFeatures[hash] = true
+            console.log("Initial range start %d", range.start)
+            console.log("Initial range end %d", range.end)
+            rangeLen = range.end - range.start
+            offsetInSel = range.start - sIndex
+            console.log("Offset in sel %d", offsetInSel)
+            console.log("Start index %d", sIndex)
+            console.log("End index %d", eIndex)
+            range.start = eIndex - rangeLen + offsetInSel
+            range.end = eIndex - offsetInSel
+            console.log("New range start %d", range.start)
+            console.log("New range end %d", range.end)
+            feature.location.strand ^= 1
   modifySelection(revCompSeq)
 
 revCompSeq = (seq) ->
