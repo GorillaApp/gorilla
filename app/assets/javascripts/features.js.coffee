@@ -79,7 +79,7 @@ window.bind_features = ->
       if datum.value == ""
         $('.issues').text('You must fill in all items').show()
         save = false
-      else if datum.name == "sequence" and ! /^[actg]*$/.test(datum.value)
+      else if datum.name == "sequence" and ! /^[actgACTG]*$/.test(datum.value)
         $('.issues').text('Sequence may only contain actg').show()
         save = false
 
@@ -104,6 +104,7 @@ window.bind_features = ->
       $('#allfeaturesdialog').dialog("open")
 
   $('#featureLibrary').unbind('click').click ->
-    console.log("Testing")
-    callback = G.main_editor.file.processFeatures
-    G.main_editor.file.featureRequest(callback)
+    console.log("Making request to the backend for the list of features associated with this user")
+    $.get "/feature/getAll", {user_id: user}, (data) ->
+      G.main_editor.file.processFeatures(data)
+

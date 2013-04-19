@@ -309,6 +309,7 @@ window.G.GenBank = class GenBank
     retval = ""
     for line in @data.ORIGIN.split(@newline)
       retval += line.split(/[ ]*[0-9]* /)[1..].join("")
+    console.log("Retval ", retval)
     console.debug("Gene sequence constructed")
     console.groupEnd()
     @data.raw_genes = retval
@@ -461,17 +462,120 @@ window.G.GenBank = class GenBank
     console.groupEnd()
     @data.features = retval
 
-  # AJAX request to the backend that gets the list of features associated with this user
-  # is passed a callback function that will process the features that will register the features on the editor
+  searchString: (sequence) ->
 
-  featureRequest: (callback) ->
-    console.log("Making request to the backend for the list of features associated with this user")
-    $.get "/feature/getAll", {user_id: user}, (data) ->
-      console.log("successful retrieval of features from the backend")
-      callback(data)
+    return @data.raw_genes.search(sequence.toLowerCase())
 
-  # features: features array returned from the backend
-
+  # will return an array of features that are parsed correctly
   processFeatures: (features) ->
-    console.log(features)
+
+    window.returnedfeatures = features
+    newFeatures = []
+
+    id = @data.features.length
+
+    # iterate through the returned features
+    for feature in features.features
+
+      result = @searchString(feature.sequence)
+
+      # forward match
+      if result > 0
+        newFeature = {}
+        ranges = []
+
+        # case where the sequence does not contain any capital letters
+        if feature.sequence == feature.sequence.toLowerCase()
+          ranges.push
+            start: result
+            end: result + feature.sequence.length - 1
+            id: id
+          # console.log(ranges)
+
+        else
+          lowerIndicies = @getLowerIndicies feature.sequence
+          for range in lowerIndicies
+            ranges.push range
+
+        newFeature.id = id
+        newFeature.location = {ranges: ranges, strand: 0}
+        newFeature.parameters = @generateFeatureParamObject feature
+        newFeatures.push newFeature
+
+        id = id + 1
+
+        console.log("Forward feature successfully matched")
+
+      result = @searchString(feature.sequence.split("").reverse().join(""))
+
+      if result > 0
+        console.log("found reverse complement")
+
+
+
+    console.log(newFeatures)
+
+  # returns an array of all the capitalized charaters within the sequence
+  getLowerIndicies: (sequence) ->
+    uppers = []
+    for i in [0...sequence.length]
+      char = sequence.charAt i
+      if char == char.toLowerCase()
+        uppers.push i
+
+    console.log(uppers)
+
+    #
+    if uppers.length == 0
+      return uppers
+
+    uppersRange = []
+    range = {}
+    range.start = uppers[0]
+
+    if uppers.length == 1
+      range.end = uppers[0]
+      uppersRange.push range
+      return uppersRange
+
+    # non-continuous range for easier processing later
+    uppersRange = []
+    range = {}
+    range.start = uppers[0]
+
+    # console.log("RANGE: " , range)
+
+    for i in [0...uppers.length-1]
+      # console.log(sequence[uppers[i]])
+      if uppers[i] + 1 != uppers[i+1]
+        range.end = uppers[i]
+        # console.log("PUSHING")
+        uppersRange.push range
+        range = {}
+        range.start = uppers[i+1]
+
+    # the last upper case is part of a continuous sequence
+    if uppers[uppers.length - 1] == uppers[uppers.length - 2] + 1
+      range.end = uppers[uppers.length - 1]
+      uppersRange.push range
+    else
+      range = {}
+      range.start = uppers[uppers.length - 1]
+      range.end = range.start
+      uppersRange.push range
+
+
+    # console.log(uppersRange)
+    uppersRange
+
+  generateFeatureParamObject: (feature) ->
+
+    params = {}
+    params["/ApEinfo_fwdcolor"] = feature.forward_color
+    params["/ApEinfo_graphicformat"] = "arrow_data {{0 1 2 0 0 -1} {} 0}"
+    params["/ApEinfo_label"] = feature.name
+    params["/ApEinfo_revcolor"] = feature.reverse_color
+    params["/label"] = feature.name
+    params
+
 
