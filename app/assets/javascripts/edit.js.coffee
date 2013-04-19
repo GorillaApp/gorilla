@@ -25,6 +25,7 @@ window.G.begin_editing = (editor_selector, autosave_selector) ->
     G.Autosave.start(G.main_editor)
 
     bind_features()
+    bind_selections()
 
     G.main_editor.startEditing()
   console.groupEnd()
