@@ -94,6 +94,18 @@ window.G.GorillaEditor = class GorillaEditor
         element = element.previousSibling
     return pos
 
+  getSelectionRange: (sel) ->
+    if sel.isCollapsed and sel.rangeCount > 0
+        loc = sel.getRangeAt(0)
+        pos = GorillaEditor.cursorPosition(loc.startOffset, loc.startContainer)
+        return [pos]
+    else if sel.rangeCount > 0
+        loc = sel.getRangeAt(0)
+        startPos = GorillaEditor.cursorPosition(loc.startOffset, loc.startContainer)
+        endPos = GorillaEditor.cursorPosition(loc.endOffset, loc.endContainer)
+        return [startPos, endPos]
+    return []
+
   cursorUpdate: (event) ->
     sel = window.getSelection()
     if sel.isCollapsed and sel.rangeCount > 0
