@@ -588,7 +588,7 @@ window.G.GenBank = class GenBank
 
     newFeature.id = id
     newFeature.location = {ranges: ranges, strand: strand}
-    newFeature.parameters = @generateFeatureParamObject feature
+    newFeature.parameters = GenBank.generateFeatureParamObject feature
     newFeature.currentFeature = "misc_feature"
 
     newFeature
@@ -646,7 +646,7 @@ window.G.GenBank = class GenBank
     # console.log(uppersRange)
     uppersRange
 
-  generateFeatureParamObject: (feature) ->
+  @generateFeatureParamObject: (feature) ->
 
     params = {}
     params["/ApEinfo_fwdcolor"] = "#"+feature.forward_color
