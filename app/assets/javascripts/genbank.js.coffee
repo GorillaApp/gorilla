@@ -256,9 +256,7 @@ window.G.GenBank = class GenBank
     newFeat.location.ranges = newFeat.location.ranges[rangeIx..]
     console.log(newFeat.location.ranges[0].start)
     console.log(newFeat.location.ranges[0].end)
-    
-    debugger
-    
+        
     r = f.location.ranges[rangeIx]
     r.end = r.start + newLength
     f.location.ranges = f.location.ranges[..rangeIx]
