@@ -21,7 +21,7 @@ window.G.GorillaEditor = class GorillaEditor
     console.log("GorillaEditor ready!")
     console.groupEnd()
 
-  viewFile: () ->
+  viewFile: (render = true) ->
     console.groupCollapsed("Preparing Editor to be viewed")
 
     me = @
@@ -32,6 +32,9 @@ window.G.GorillaEditor = class GorillaEditor
                 .hover((event) -> me.showHoverDialog(event))
                 .mousemove((event) -> me.showHoverDialog(event))
 
+    if render
+        @renderNumbers('viewing')
+        $(window).resize((event) -> me.renderNumbers('viewing'))
     console.log("Ready to view")
     console.groupEnd()
 
@@ -39,7 +42,9 @@ window.G.GorillaEditor = class GorillaEditor
     console.groupCollapsed("Preparing Editor to be edited")
     me = @
 
-    @viewFile()
+    @viewFile(false)
+    @renderNumbers('editing')
+    $(window).resize((event) -> me.renderNumbers('editing'))
     
     $(@editorId).attr('contenteditable','true')
                 .attr('spellcheck','false')
@@ -74,6 +79,7 @@ window.G.GorillaEditor = class GorillaEditor
     @previousFiles = []
     @nextFiles = []
     console.log("Editor ready!")
+
     console.groupEnd()
 
   showHoverDialog: (event) ->
@@ -111,18 +117,41 @@ window.G.GorillaEditor = class GorillaEditor
       $(@editorId).html(@file.getAnnotatedSequence())
       @completeEdit()
       
-  trackChanges: ->
-    size = getCharSize('monospace', '13px')
-    console.log size
-    chars = $(@editorId).get(0).clientWidth / size.width
+  # this... This is horrific
+  getCharsWide: (type) ->
+    $('article').append($("""
+    <div id="get-chars-wide-gorilla">
+        <div class="numbers"></div>
+        <div class="editor" contenteditable="true"></div>
+        <div style="clear:both;"></div>
+    </div>"""))
+    $('#get-chars-wide-gorilla').addClass('gorilla-container')
+    $('#get-chars-wide-gorilla .editor').addClass("gorilla-editor #{type}")
+
+    $('#get-chars-wide-gorilla .numbers').html('1<br>2')
+    node = $('#get-chars-wide-gorilla .editor')
+    txt = 'a'
+    node.text(txt)
+    hei = node.height()
+    while hei >= node.height() and txt.length < 10000
+        txt += 'a'
+        node.text(txt)
+    $('#get-chars-wide-gorilla').remove()
+    return txt.length - 1
+
+  renderNumbers: (type) ->
+    $(@numbersId).html('1')
+    chars = @getCharsWide(type)
     lines = $(@editorId).get(0).clientHeight / 16
-    console.log chars, lines
     text = ''
     loc = 1
     for line in [0...lines]
         text += loc + '<br>'
         loc += chars
     $(@numbersId).html(text)
+
+  trackChanges: ->
+    @renderNumbers()
     Autosave.request(this)
     @previousFiles.push($.extend(true, {}, @file))
 
@@ -197,7 +226,7 @@ window.G.GorillaEditor = class GorillaEditor
         element = element.previousSibling
         if element.tagName == "SPAN"
           element = element.childNodes[0]
-        caretPosition = element.length
+          caretPosition = element.length
         l.setStart(element, caretPosition)
       else
         l.setStart(element, removedChar)
