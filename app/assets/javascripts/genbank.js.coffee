@@ -15,6 +15,32 @@ String.prototype.padBy = (length) ->
 window.G or= {}
 
 window.G.GenBank = class GenBank
+  @codons:
+    uuu: 'F', uuc: 'F'
+    uua: 'L', uug: 'L', cuu: 'L', cuc: 'L', cua: 'L', cug: 'L'
+    auu: 'I', auc: 'I', aua: 'I'
+    aug: 'M'
+    guu: 'V', guc: 'V', gua: 'V', gug: 'V'
+    ucu: 'S', ucc: 'S', uca: 'S', ucg: 'S'
+    ccu: 'P', ccc: 'P', cca: 'P', ccg: 'P'
+    acu: 'T', acc: 'T', aca: 'T', acg: 'T'
+    gcu: 'A', gcc: 'A', gca: 'A', gcg: 'A'
+    uau: 'Y', uac: 'Y'
+    uaa: '*', uag: '*'
+    cau: 'H', cac: 'H'
+    caa: 'Q', cag: 'Q'
+    aau: 'N', aac: 'N'
+    aaa: 'K', aag: 'K'
+    gau: 'D', gac: 'D'
+    gaa: 'E', gag: 'E'
+    ugu: 'C', ugc: 'C'
+    uga: '*'
+    ugg: 'W'
+    cgu: 'R', cgc: 'R', cga: 'R', cgg: 'R'
+    agu: 'S', agc: 'S'
+    aga: 'R', agg: 'R'
+    ggu: 'G', ggc: 'G', gga: 'G', ggg: 'G'
+
   constructor: (@text, @id = "default") ->
     console.groupCollapsed("GenBank Constructor #{@id}")
     @newline = "\n"
@@ -87,6 +113,19 @@ window.G.GenBank = class GenBank
     mid = sequence[startix..endix]
     console.groupEnd()
     beg + "<span id='#{name}-#{featureId}-#{spanId}-#{@id}' class='#{name}-#{featureId}' style='background-color:#{color}'>" + mid + "</span>" + end
+
+  getCodons: (start, end) ->
+    txt = @getGeneSequence()[start...end]
+    codons = ""
+    while txt.length >= 3
+        selection = txt[..2].replace(/t/g, 'u')
+        cod = GenBank.codons[selection]
+        if cod?
+            codons += cod
+        else
+            codons += 'X'
+        txt = txt[3..]
+    return codons
 
   annotateFeature: (seq, feature) ->
     console.groupCollapsed("Annotating the feature: ", feature)
@@ -301,11 +340,9 @@ window.G.GenBank = class GenBank
     seq
 
   getGeneSequence: () ->
-    console.groupCollapsed("Getting gene sequence")
     if @data.raw_genes?
-      console.log("We already calculated the gene sequence")
-      console.groupEnd()
       return @data.raw_genes
+    console.groupCollapsed("Getting gene sequence")
     retval = ""
     for line in @data.ORIGIN.split(@newline)
       retval += line.split(/[ ]*[0-9]* /)[1..].join("")
