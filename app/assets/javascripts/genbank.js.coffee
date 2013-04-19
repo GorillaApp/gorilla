@@ -570,7 +570,6 @@ window.G.GenBank = class GenBank
   # strand = 0: not a complement | stand = 1: complement
   @generateNewFeatureObject: (feature, strand, id, result) ->
 
-    console.log("Generate New Feature Object", feature)
     newFeature = {}
     ranges = []
 
@@ -595,7 +594,6 @@ window.G.GenBank = class GenBank
     newFeature.parameters = GenBank.generateFeatureParamObject feature
     newFeature.currentFeature = "misc_feature"
 
-    console.log("New Feature Returned", newFeature)
     newFeature
 
   # returns an array of all the capitalized charaters within the sequence

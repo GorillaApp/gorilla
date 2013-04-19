@@ -3,7 +3,6 @@
   | <%= link_to "List of Features", "#", id: :listFeatures %>
   | <%= link_to "Save", "#", id: :save %>
   | <%= link_to "Use Feature Library", "#", id: :featureLibrary %>
-  | <input type="file" id="upload" name="upload">
   <% if development? %>
     <span class="development">
       | <%= link_to "Autosave", "#", id: :autosave %>
@@ -37,7 +36,9 @@
                        :class => 'color') %><br />
     <%= hidden_field_tag(:user_id, current_user.id) %>
     <%= submit_tag("Save Feature") %>
+
   <% end %>
+  <input type="file" id="upload" name="upload">
 </div>
 
 <div id="allfeaturesdialog" class='features' title="All Features">
