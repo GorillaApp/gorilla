@@ -54,7 +54,7 @@ module GorillaHelper
   def _type_raw(code, type = :keypress, ctrl=false)
     page.driver.execute_script <<-SCRIPT
       event = $.Event('#{type.to_s}',{keyCode:#{code},ctrlKey:#{ctrl}});
-      $('#main_editor').trigger(event);
+      $('#main_editor .editor').trigger(event);
     SCRIPT
   end
 end
