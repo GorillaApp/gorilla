@@ -10,6 +10,8 @@ class ApplicationController < ActionController::Base
       if @user
         sign_in(:user, @user)
         redirect_to new_user_session_path
+      else
+        authenticate_user!
       end
     else
       authenticate_user!

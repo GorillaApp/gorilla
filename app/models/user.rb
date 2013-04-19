@@ -11,6 +11,6 @@ class User < ActiveRecord::Base
   # attr_accessible :title, :body
 
   # Added so that authentication token is created on new user account
-  before_save :ensure_authentication_token
+  before_save :ensure_authentication_token!
 
 end
