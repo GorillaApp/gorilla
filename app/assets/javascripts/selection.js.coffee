@@ -23,15 +23,18 @@ toLower = (s) ->
   return s.toLowerCase()
 
 reverseCompSelection = () ->
-  [sIndex, eIndex] = GorillaEditor.getSelectionRange()
+  sel = window.getSelection()
+  [sIndex, eIndex] = GorillaEditor.getSelectionRange(sel)
+  editor = GorillaEditor.getInstance(sel.anchorNode)
   allFeats = editor.file.getTableOfFeatures()
   seenFeatures = {}
+
   for pair in allFeats[sIndex]
     feature = pair.feature
     range = pair.range
     distanceInRange = sIndex - range.start
     if sIndex != range.start
-      splitFeatureAt(feature.id, range.id, distanceInRange)
+      editor.file.splitFeatureAt(feature.id, range.id, distanceInRange)
   
   allFeats = editor.file.getTableOfFeatures()
   for pair in allFeats[eIndex]
@@ -39,7 +42,7 @@ reverseCompSelection = () ->
     range = pair.range
     distanceInRange = eIndex - range.start
     if eIndex != range.end
-      splitFeatureAt(feature.id, range.id, distanceInRange)
+      editor.file.splitFeatureAt(feature.id, range.id, distanceInRange)
   
   allFeats = editor.file.getTableOfFeatures()
   for i in [sIndex..eIndex]
