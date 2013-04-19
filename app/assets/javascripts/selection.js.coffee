@@ -23,10 +23,12 @@ toLower = (s) ->
   return s.toLowerCase()
 
 reverseCompSelection = () ->
+  console.groupCollapsed("handlingRevCompSel")
   sel = window.getSelection()
   indices = GorillaEditor.getSelectionRange(sel)
   if indices.length == 2
     [sIndex, eIndex] = indices
+    eIndex--
   else
     return
   editor = GorillaEditor.getInstance(sel.anchorNode)
@@ -42,7 +44,6 @@ reverseCompSelection = () ->
         feature = pair.feature
         range = pair.range
         distanceInRange = sIndex - range.start - 1
-        console.log("Distance in range: %d", distanceInRange)
         if sIndex != range.start
           editor.file.splitFeatureAt(feature.id, range.id, distanceInRange)
           numSplits += 1
@@ -52,16 +53,14 @@ reverseCompSelection = () ->
       for pair in allFeats[eIndex]
         feature = pair.feature
         range = pair.range
-        distanceInRange = eIndex - range.start - 1
-        if (eIndex-1) != range.end
+        distanceInRange = eIndex - range.start
+        if eIndex != range.end
           editor.file.splitFeatureAt(feature.id, range.id, distanceInRange)
-          console.log("eIndex: %d, range.end: %d", eIndex, range.end)
           numSplits += 1
   console.log("Number splits: %d", numSplits)
   allFeats = editor.file.getTableOfFeatures()
-  eIndex -= 1
   console.log(allFeats[sIndex...eIndex])
-  for i in [sIndex...eIndex]
+  for i in [sIndex .. eIndex]
     if allFeats[i]
         for pair in allFeats[i] #gives us a list of feat_id, range_id
           feature = pair.feature
@@ -83,6 +82,7 @@ reverseCompSelection = () ->
             console.log("New range end %d", range.end)
             feature.location.strand ^= 1
   modifySelection(revCompSeq)
+
 
 revCompSeq = (seq) ->
   #debugger
