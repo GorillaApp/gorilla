@@ -3,8 +3,9 @@ GorillaEditor = window.G.GorillaEditor
 
 modifySelection = (modFunction) ->
   sel = window.getSelection()
-  [sIndex, eIndex] = GorillaEditor.getSelectionRange(sel)
-  if sIndex and eIndex
+  indices = GorillaEditor.getSelectionRange(sel)
+  if indices.length == 2
+    [sIndex, eIndex] = indices
     editor = GorillaEditor.getInstance(sel.anchorNode)
     data = editor.file.getGeneSequence()
     console.log(sIndex)
