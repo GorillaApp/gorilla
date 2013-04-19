@@ -6,6 +6,7 @@ class FeatureController < ApplicationController
   DOES_NOT_EXIST = 4
   UNEXPECTED_EXCEPTION = 5
 
+
 	def add
     #no matter what happens, the result is returned as an error code
 		result = Feature.add(params)

@@ -5,10 +5,10 @@ class FeatureLibraryController < ApplicationController
     render :json => {:errCode => result}
   end
 
-  def add
-
-  end
-
+  #def add
+  #
+  #end
+  #
   def getAll
     result = FeatureLibrary.getAll(params)
     render :json => {:feature_libraries => result}

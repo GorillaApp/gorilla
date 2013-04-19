@@ -40,7 +40,17 @@
 </div>
 
 <div id="allfeaturesdialog" class='features' title="All Features">
+  <div></div>
   <div id="features-table"></div>
+
+  <% form_for @entry do |f| %>
+      <%= f.text_field :name %>
+      <%= f.select(:project_name, FeatureLibrary.getAll([current_user.id]).map {|p| [p.name,p.id]}, :prompt => "Select a Project") %>
+      <%= f.submit %>
+  <% end %>
+
+
+
 </div>
 
 <div id="enzymedialog" class='enzyme' title="Add Enzyme">
