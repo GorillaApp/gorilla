@@ -2,6 +2,7 @@
   <%= link_to "Add a feature", "#", id: :addFeature %>
   | <%= link_to "List of Features", "#", id: :listFeatures %>
   | <%= link_to "Save", "#", id: :save %>
+  | <%= link_to "Use Feature Library", "#", id: :featureLibrary %>
   <% if development? %>
     <span class="development">
       | <%= link_to "Autosave", "#", id: :autosave %>
@@ -27,10 +28,10 @@
     <%= label_tag(:name, "Name: ") %>
     <%= text_field_tag(:name) %><br />
     <%= label_tag(:forward_color, "Forward Color: ") %>
-    <%= text_field_tag(:forward_color, "66FF00", 
+    <%= text_field_tag(:forward_color, "66FF00",
                        :class => 'color') %><br />
     <%= label_tag(:reverse_color, "Reverse Color: ") %>
-    <%= text_field_tag(:reverse_color, "FF5500", 
+    <%= text_field_tag(:reverse_color, "FF5500",
                        :class => 'color') %><br />
     <%= hidden_field_tag(:user_id, current_user.id) %>
     <%= submit_tag("Save Feature") %>

@@ -460,3 +460,18 @@ window.G.GenBank = class GenBank
     console.debug("Here's your features sir!")
     console.groupEnd()
     @data.features = retval
+
+  # AJAX request to the backend that gets the list of features associated with this user
+  # is passed a callback function that will process the features that will register the features on the editor
+
+  featureRequest: (callback) ->
+    console.log("Making request to the backend for the list of features associated with this user")
+    $.get "/feature/getAll", {user_id: user}, (data) ->
+      console.log("successful retrieval of features from the backend")
+      callback(data)
+
+  # features: features array returned from the backend
+
+  processFeatures: (features) ->
+    console.log(features)
+
