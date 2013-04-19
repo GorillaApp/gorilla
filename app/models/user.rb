@@ -9,4 +9,8 @@ class User < ActiveRecord::Base
   # Setup accessible (or protected) attributes for your model
   attr_accessible :email, :password, :password_confirmation, :remember_me
   # attr_accessible :title, :body
+
+  # Added so that authentication token is created on new user account
+  before_save :ensure_authentication_token
+
 end
