@@ -523,33 +523,8 @@ window.G.GenBank = class GenBank
 
       # forward match
       if result > 0
-        newFeature = {}
-        ranges = []
 
-        # case where the sequence does not contain any capital letters
-        if feature.sequence == feature.sequence.toLowerCase()
-          ranges.push
-            start: result
-            end: result + feature.sequence.length - 1
-            id: 0
-          # console.log(ranges)
-
-        else
-          console.log("start", result)
-          range_id = 0
-          lowerIndicies = @getLowerIndicies(feature.sequence, result)
-          console.log("Lower Indicies", lowerIndicies)
-          for range in lowerIndicies
-            range.id = range_id
-            range_id = range_id + 1
-            ranges.push range
-
-        newFeature.id = id
-        newFeature.location = {ranges: ranges, strand: 0}
-        newFeature.parameters = @generateFeatureParamObject feature
-        newFeatures.push newFeature
-        newFeature.currentFeature = "misc_feature"
-
+        newFeatures.push @generateNewFeatureObject(feature, 0, id, result)
         id = id + 1
 
       else
@@ -558,39 +533,13 @@ window.G.GenBank = class GenBank
         feature.sequence = feature.sequence.split("").reverse("").join("")
         result = @searchString(feature.sequence)
 
-
+        # reverse match
         if result > 0
-          console.log("found reverse complement")
-          console.log(feature.sequence)
 
-          newFeature = {}
-          ranges = []
-
-          if feature.sequence == feature.sequence.toLowerCase()
-
-            console.log("reverse complement all lower case")
-
-            ranges.push
-              start: result
-              end: result + feature.sequence.length - 1
-              id: id
-            # console.log(ranges)
-
-          else
-
-            console.log("reverse complement with capitals")
-
-            lowerIndicies = @getLowerIndicies(feature.sequence, result)
-            for range in lowerIndicies
-              ranges.push range
-
-          newFeature.id = id
-          newFeature.location = {ranges: ranges, strand: 1}
-          newFeature.parameters = @generateFeatureParamObject feature
-          newFeatures.push newFeature
-
+          newFeatures.push @generateNewFeatureObject(feature, 1, id, result)
           id = id + 1
 
+    # add the newly generated features to the Genbank object
     @addFeatures(newFeatures)
 
     console.log(newFeatures)
@@ -602,7 +551,40 @@ window.G.GenBank = class GenBank
     oldFeatures = @getFeatures()
     @data.features = oldFeatures.concat featuresArray
 
-  # handle all lower case match
+  # handle creation of new features
+  # strand = 0: not a complement | stand = 1: complement
+  generateNewFeatureObject: (feature, strand, id, result) ->
+
+
+
+    newFeature = {}
+    ranges = []
+
+    # case where the sequence does not contain any capital letters
+    if feature.sequence == feature.sequence.toLowerCase()
+      ranges.push
+        start: result
+        end: result + feature.sequence.length - 1
+        id: 0
+      # console.log(ranges)
+
+    else
+      console.log("start", result)
+      range_id = 0
+      lowerIndicies = @getLowerIndicies(feature.sequence, result)
+      console.log("Lower Indicies", lowerIndicies)
+      for range in lowerIndicies
+        range.id = range_id
+        range_id = range_id + 1
+        ranges.push range
+
+    newFeature.id = id
+    newFeature.location = {ranges: ranges, strand: strand}
+    newFeature.parameters = @generateFeatureParamObject feature
+    newFeature.currentFeature = "misc_feature"
+
+    console.log("New feature generated", newFeature)
+    newFeature
 
   # returns an array of all the capitalized charaters within the sequence
   getLowerIndicies: (sequence, start) ->
