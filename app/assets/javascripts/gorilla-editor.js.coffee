@@ -7,6 +7,8 @@ Autosave = G.Autosave
 GenBank = G.GenBank
 
 window.G.GorillaEditor = class GorillaEditor
+  @_editor_instances: {}
+
   constructor: (@mainId, @initialDocument = '', @debugEditor = null) ->
     console.groupCollapsed("Initializing GorillaEditor: #{@mainId}")
     $(@mainId).html('<div class="numbers"></div><div class="editor"></div><div style="clear:both;"></div>')

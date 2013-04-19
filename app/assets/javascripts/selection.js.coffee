@@ -23,9 +23,11 @@ toUpper = (s) ->
 toLower = (s) ->
   return s.toLowerCase()
 
-reverseCompSelection = (testIndices, testEditor, test = false)->
+reverseCompSelection = (testIndices, testGenbank, test = false)->
     if test
-        revCompSelection(testIndices, testEditor)
+        t = {}
+        t['file'] = testGenbank
+        revCompSelection(testIndices, t)
     else
         console.groupCollapsed("handlingRevCompSel")
         sel = window.getSelection()
