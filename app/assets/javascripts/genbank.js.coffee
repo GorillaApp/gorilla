@@ -711,10 +711,13 @@ window.G.GenBank = class GenBank
         if featText[3].search("#") < 0
           featText[3] = featText[3].replace(/[0-9]/g, '')
 
+
         featText[4] = featText[4].replace(/\s/g,'')
         featText[4] = featText[4].trim()
         if featText[4].search("#") < 0
           featText[4] = featText[4].replace(/[0-9]/g, '')
+
+
 
 
         console.log("Forward color: ", featText[3])
@@ -731,6 +734,9 @@ window.G.GenBank = class GenBank
           f.reverse_color = featText[4]
         else
           f.reverse_color = colors[featText[4]]
+
+        f.forward_color = f.forward_color.replace(/#/g, '')
+        f.reverse_color = f.reverse_color.replace(/#/g, '')
 
         # if f.forward_color == undefined
         #   console.log("Undefined Color: ", featText[3])
