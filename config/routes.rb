@@ -4,6 +4,8 @@ Gorilla::Application.routes.draw do
 
   devise_for :users
 
+  #resources :token_authentication, :only => [:create, :destroy]
+
   post "feature/add"
 
   get "feature/remove"
