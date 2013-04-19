@@ -10,6 +10,9 @@
   <header>
     <h3>Gorilla</h3>
     <div id="header_links">
+      <% if user_signed_in? %>
+        <%= link_to "My Account", edit_user_registration_path %>
+      <% end %>
       <%= yield :links %>
     </div>
   </header>

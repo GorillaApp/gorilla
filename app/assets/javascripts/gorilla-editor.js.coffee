@@ -80,9 +80,6 @@ window.G.GorillaEditor = class GorillaEditor
                 .bind('dragover', (event) -> event.preventDefault())
                 .bind('drop', (event) -> event.preventDefault())
 
-
-
-
     @editorContents = $(@editorId).text()
     @editorHtml = $(@editorId).html()
     @previousEditors = []
@@ -198,7 +195,7 @@ window.G.GorillaEditor = class GorillaEditor
         txt = txt[1..]
         node.text(txt)
     $('#get-chars-wide-gorilla').remove()
-    return txt.length - 1
+    return txt.length
 
   renderNumbers: (type, resize = false) ->
     $(@numbersId).html('1')
