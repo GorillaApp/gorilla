@@ -7,8 +7,6 @@ Autosave = G.Autosave
 GenBank = G.GenBank
 
 window.G.GorillaEditor = class GorillaEditor
-  @_editor_instances: {}
-
   constructor: (@mainId, @initialDocument = '', @debugEditor = null) ->
     console.groupCollapsed("Initializing GorillaEditor: #{@mainId}")
     $(@mainId).html('<div class="numbers"></div><div class="editor"></div><div style="clear:both;"></div>')
@@ -125,13 +123,19 @@ window.G.GorillaEditor = class GorillaEditor
         loc = sel.getRangeAt(0)
         txt = ""
         startPos = GorillaEditor.cursorPosition(loc.startOffset, loc.startContainer)
-        txt += "Start #{startPos} <#{startPos % 3}> "
+        txt += "Start #{startPos} &lt;#{startPos % 3}&gt; "
         endPos = GorillaEditor.cursorPosition(loc.endOffset, loc.endContainer)
-        txt += "End #{endPos} <#{endPos % 3}> "
+        txt += "End #{endPos} &lt;#{endPos % 3}&gt; "
         length = endPos - startPos
-        txt += "Length #{length} <#{length % 3}> "
+        txt += "Length #{length} &lt;#{length % 3}&gt; "
 
-        $('#positionData').text(txt)
+        dispCodons = codons = @file.getCodons(startPos, endPos)
+
+        if codons.length > 50
+            dispCodons = codons[..25] + "..." + codons[(codons.length - 25)..]
+        txt += "<br>" + dispCodons
+
+        $('#positionData').html(txt)
 
 
   showHoverDialog: (event) ->
