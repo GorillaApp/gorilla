@@ -133,7 +133,7 @@ describe 'GenBank editor', ->
     feature.forward_color = "78EDFF"
     feature.reverse_color = "FF4A50"
 
-    newFeature = G.GenBank.generateNewFeatureObject(feature, 0, 1, 494)
+    newFeature = G.GenBank.generateNewFeatureObject(feature, 0, 0, 494)
 
     it 'should correctly return the correct length of ranges', ->
 
@@ -142,6 +142,39 @@ describe 'GenBank editor', ->
     it 'should correctly return the correct ranges of the feature', ->
       newFeature.location.ranges[0].start.should.equal 494
       newFeature.location.ranges[0].end.should.equal 517
+
+  describe "test generate new feature object - capitals reverse match", ->
+
+    feature = {}
+    feature.id = 2
+    feature.name = "reverse-test"
+    feature.sequence = "gGaCaGGt"
+    feature.forward_color = "66FF00"
+    feature.reverse_color = "FF5500"
+
+    newFeature = G.GenBank.generateNewFeatureObject(feature, 1, 0, 1392)
+
+    it 'should correctly return the correct length of ranges', ->
+
+      newFeature.location.ranges.length.should.equal 4
+
+    it 'should correctly return the correct ranges of the feature', ->
+      newFeature.location.ranges[0].start.should.equal 1392
+      newFeature.location.ranges[0].end.should.equal 1392
+
+      newFeature.location.ranges[1].start.should.equal 1394
+      newFeature.location.ranges[1].end.should.equal 1394
+
+      newFeature.location.ranges[2].start.should.equal 1396
+      newFeature.location.ranges[2].end.should.equal 1396
+
+      newFeature.location.ranges[3].start.should.equal 1399
+      newFeature.location.ranges[3].end.should.equal 1399
+
+
+
+
+
 
 
 
