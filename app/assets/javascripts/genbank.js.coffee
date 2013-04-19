@@ -506,8 +506,19 @@ window.G.GenBank = class GenBank
 
     return @data.raw_genes.search(sequence.toLowerCase())
 
+
+  indexes: (source, find) ->
+    result = []
+    for i in [0...source.length]
+      if source.substring(i, i + find.length) == find
+        result.push(i)
+    result
+
+  # params: array of features, [Object, Object, Object] where each Object is a feature representation from the backend
   # will return an array of features that are parsed correctly
   processFeatures: (features) ->
+
+    console.log("THIS IS WHAT THE FUCK FEATURES IS", features)
 
     window.returnedfeatures = features
     newFeatures = []
@@ -515,35 +526,41 @@ window.G.GenBank = class GenBank
     id = @data.features.length
 
     # iterate through the returned features
-    for feature in features.features
+    for feature in features
 
       console.log("Feature Sequence", feature.sequence)
 
       result = @searchString(feature.sequence)
 
-      # forward match
-      if result > 0
+      resultIndexes = @indexes(@data.raw_genes, feature.sequence.toLowerCase())
+      console.log("Indexes: ", resultIndexes)
 
-        newFeatures.push @generateNewFeatureObject(feature, 0, id, result)
-        id = id + 1
+      # forward match
+
+      if resultIndexes.length > 0
+        for result in resultIndexes
+
+          newFeatures.push @generateNewFeatureObject(feature, 0, id, result)
+          id = id + 1
 
       else
 
         # check for the reverse string
         feature.sequence = feature.sequence.split("").reverse("").join("")
-        result = @searchString(feature.sequence)
+        # result = @searchString(feature.sequence)
+        resultIndexes = @indexes(@data.raw_genes, feature.sequence.toLowerCase())
 
-        # reverse match
-        if result > 0
+        for result in resultIndexes
+          # reverse match
+          if result > 0
 
-          newFeatures.push @generateNewFeatureObject(feature, 1, id, result)
-          id = id + 1
+            newFeatures.push @generateNewFeatureObject(feature, 1, id, result)
+            id = id + 1
 
     # add the newly generated features to the Genbank object
     @addFeatures(newFeatures)
 
     console.log(newFeatures)
-
 
   # edits the @data.features to include the new features from the library
   addFeatures: (featuresArray) ->
@@ -555,8 +572,6 @@ window.G.GenBank = class GenBank
   # strand = 0: not a complement | stand = 1: complement
   generateNewFeatureObject: (feature, strand, id, result) ->
 
-
-
     newFeature = {}
     ranges = []
 
@@ -566,13 +581,11 @@ window.G.GenBank = class GenBank
         start: result
         end: result + feature.sequence.length - 1
         id: 0
-      # console.log(ranges)
 
     else
       console.log("start", result)
       range_id = 0
       lowerIndicies = @getLowerIndicies(feature.sequence, result)
-      console.log("Lower Indicies", lowerIndicies)
       for range in lowerIndicies
         range.id = range_id
         range_id = range_id + 1
@@ -583,7 +596,6 @@ window.G.GenBank = class GenBank
     newFeature.parameters = @generateFeatureParamObject feature
     newFeature.currentFeature = "misc_feature"
 
-    console.log("New feature generated", newFeature)
     newFeature
 
   # returns an array of all the capitalized charaters within the sequence
@@ -648,5 +660,43 @@ window.G.GenBank = class GenBank
     params["/ApEinfo_revcolor"] = "#"+feature.reverse_color
     params["/label"] = feature.name
     params
+
+  # methods that implement read from a feature file
+
+  # convertToFeatureObjectArray: (featArray) ->
+
+  #   featsArray = []
+
+  #   count = 0
+  #   for featText in featArray
+
+  #     if featText
+
+  #       f = {}
+  #       console.log("Feature Text String", featText)
+  #       featText = featText.split("\t")
+  #       console.log("Feature Text", featText)
+  #       f.name = featText[0]
+  #       f.sequence = featText[1]
+
+  #       # if it is all UPPERCASE, we will treat is as lowercase
+  #       if f.sequence == f.sequence.toUpperCase()
+  #         f.sequence = f.sequence.toLowerCase()
+  #       f.forward_color = featText[2]
+  #       f.reverse_color = featText[3]
+
+  #       featsArray.push f
+
+  #   window.featsArray = featsArray
+  #   console.log("Feats Array", featsArray)
+  #   @processFeatures(featsArray)
+
+  # # returns an array of text representation of a single feature
+  # parseFeatureFileContents: (fileContents, filename) ->
+  #   console.log("Parsing from File: ", filename)
+  #   console.log("THIS IS WHAT THE FILE SAYS" , fileContents)
+  #   featureArray = fileContents.split("\n")
+  #   console.log("Feature Array", featureArray)
+  #   @convertToFeatureObjectArray(featureArray)
 
 

@@ -76,6 +76,20 @@ window.setup_features = ->
       effect: "drop"
       duration: 1000
 
+# window.handleFileSelect = (evt) ->
+#   file = evt.target.files[0]
+#   reader = new FileReader()
+
+#   window.reader = reader
+
+#   reader.onload = (e) ->
+#     text = e.target.result
+#     G.main_editor.file.parseFeatureFileContents(text, file.name)
+#     $(G.main_editor.editorId).html(G.main_editor.file.getAnnotatedSequence())
+#     G.main_editor.startEditing()
+#   reader.readAsText(file)
+
+
 window.bind_features = ->
   $('#feature-form').unbind('submit').submit (event) ->
     event.preventDefault()
@@ -118,9 +132,16 @@ window.bind_features = ->
   $('#featureLibrary').unbind('click').click ->
     console.log("Making request to the backend for the list of features associated with this user")
     $.get "/feature/getAll", {user_id: user}, (data) ->
-      G.main_editor.file.processFeatures(data)
+
+      # data: Object (features -> Array of features)
+      G.main_editor.file.processFeatures(data.features)
       console.log("Returned Features", data)
       $(G.main_editor.editorId).html(G.main_editor.file.getAnnotatedSequence())
       G.main_editor.startEditing()
+
+
+  # $('#upload').unbind('change').bind('change', window.handleFileSelect)
+
+
 
 
