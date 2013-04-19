@@ -32,7 +32,8 @@ describe "authentication token" do
   		auth_token = user.authentication_token
   		url = "/?auth_token=" + auth_token
   		visit url
-  		page.should have_content("You are already signed in.")
+      confirmation = "Signed in as: " + user.email + "."
+  		page.should have_content(confirmation)
   	end
   end
 
