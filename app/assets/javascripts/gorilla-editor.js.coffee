@@ -55,6 +55,8 @@ window.G.GorillaEditor = class GorillaEditor
                 .keypress((event) -> me.keyPressed(event))
                 .keydown((event) -> me.keyDown(event))
                 .keyup((event) -> me.keyUp(event))
+                .bind('keydown click focus', (event) ->
+                    setTimeout((-> me.cursorUpdate(event)), 10))
                 .bind('dragenter', (event) -> event.preventDefault())
                 .bind('dragleave', (event) -> event.preventDefault())
                 .bind('dragover', (event) -> event.preventDefault())
@@ -68,6 +70,23 @@ window.G.GorillaEditor = class GorillaEditor
     @nextFiles = []
     console.log("Editor ready!")
     console.groupEnd()
+
+  cursorUpdate: (event) ->
+    sel = window.getSelection()
+    if sel.isCollapsed
+        loc = sel.getRangeAt(0)
+        pos = loc.startOffset
+        element = loc.startContainer
+        if element.parentNode.tagName == "SPAN"
+            element = element.parentNode
+        element = element.previousSibling
+
+        while !!element
+            pos += $(element).text().length
+            element = element.previousSibling
+        $('#positionData').text("#{pos} <#{pos % 3}>")
+    else
+
 
   showHoverDialog: (event) ->
     if event.type == "mouseleave"
