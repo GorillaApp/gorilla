@@ -559,7 +559,6 @@ window.G.GenBank = class GenBank
     # add the newly generated features to the Genbank object
     @addFeatures(newFeatures)
 
-    console.log(newFeatures)
 
   # edits the @data.features to include the new features from the library
   addFeatures: (featuresArray) ->
@@ -696,9 +695,9 @@ window.G.GenBank = class GenBank
       if featText
 
         f = {}
-        console.log("Feature Text String", featText)
+        # console.log("Feature Text String", featText)
         featText = featText.split("\t")
-        console.log("Feature Text", featText)
+        # console.log("Feature Text", featText)
         f.name = featText[0]
         f.sequence = featText[1]
 
@@ -706,30 +705,48 @@ window.G.GenBank = class GenBank
         if f.sequence == f.sequence.toUpperCase()
           f.sequence = f.sequence.toLowerCase()
 
+        # remove spaces, numbers between words
+        featText[3] = featText[3].replace(/\s/g,'')
+        featText[3] = featText[3].trim()
+        if featText[3].search("#") < 0
+          featText[3] = featText[3].replace(/[0-9]/g, '')
+
+        featText[4] = featText[4].replace(/\s/g,'')
+        featText[4] = featText[4].trim()
+        if featText[4].search("#") < 0
+          featText[4] = featText[4].replace(/[0-9]/g, '')
+
+
+        console.log("Forward color: ", featText[3])
+
         if colors[featText[3]] == undefined
-          console.log("No match for ", featText[3])
+          # console.log("No match for ", featText[3])
           f.forward_color = featText[3]
         else
-          f.foward_color = colors[featText[3]]
+          f.forward_color = colors[featText[3]]
+
 
         if colors[featText[4]] == undefined
-          console.log("No match for ", featText[4])
+          # console.log("No match for ", featText[4].length)
           f.reverse_color = featText[4]
         else
           f.reverse_color = colors[featText[4]]
+
+        # if f.forward_color == undefined
+        #   console.log("Undefined Color: ", featText[3])
 
         featsArray.push f
 
     window.featsArray = featsArray
     console.log("Feats Array", featsArray)
     @processFeatures(featsArray)
+    featsArray
 
   # returns an array of text representation of a single feature
   parseFeatureFileContents: (fileContents, filename) ->
     console.log("Parsing from File: ", filename)
     console.log("THIS IS WHAT THE FILE SAYS" , fileContents)
     featureArray = fileContents.split("\n")
-    console.log("Feature Array", featureArray)
-    @convertToFeatureObjectArray(featureArray)
+    featureArray
 
 

@@ -84,13 +84,19 @@ window.handleFileSelect = (evt) ->
 
   reader.onload = (e) ->
     text = e.target.result
-    G.main_editor.file.parseFeatureFileContents(text, file.name)
+    fileContents = G.main_editor.file.parseFeatureFileContents(text, file.name)
+    features = G.main_editor.file.convertToFeatureObjectArray(fileContents)
+    populateTable(features)
+    $('#allfeaturesdialog').dialog("open")
     $(G.main_editor.editorId).html(G.main_editor.file.getAnnotatedSequence())
     G.main_editor.startEditing()
+
+
   reader.readAsText(file)
 
 
 window.bind_features = ->
+
   $('#feature-form').unbind('submit').submit (event) ->
     event.preventDefault()
 
