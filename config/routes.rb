@@ -4,7 +4,7 @@ Gorilla::Application.routes.draw do
 
   post "feature/add"
 
-  get "feature/remove"
+  post "feature/remove"
 
   get "feature/getAll"
 
