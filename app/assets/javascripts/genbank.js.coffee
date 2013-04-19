@@ -115,7 +115,7 @@ window.G.GenBank = class GenBank
     beg + "<span id='#{name}-#{featureId}-#{spanId}-#{@id}' class='#{name}-#{featureId}' style='background-color:#{color}'>" + mid + "</span>" + end
 
   getCodons: (start, end) ->
-    txt = @getGeneSequence()[start...end]
+    txt = @getGeneSequence()[start...end].toLowerCase()
     codons = ""
     while txt.length >= 3
         selection = txt[..2].replace(/t/g, 'u')
