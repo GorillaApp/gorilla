@@ -46,7 +46,7 @@ window.G.GorillaEditor = class GorillaEditor
     @viewFile(false)
     @renderNumbers('editing')
     $(window).resize((event) -> me.renderNumbers('editing', true))
-    
+
     $(@editorId).attr('contenteditable','true')
                 .attr('spellcheck','false')
                 .removeClass('viewing')
@@ -151,7 +151,7 @@ window.G.GorillaEditor = class GorillaEditor
       @file = @nextFiles.pop()
       $(@editorId).html(@file.getAnnotatedSequence())
       @completeEdit()
-      
+
   # this... This is horrific
   getCharsWide: (type) ->
     $('article').append($("""
@@ -233,7 +233,7 @@ window.G.GorillaEditor = class GorillaEditor
       if key == "<delete>"
         removedChar = caretPosition
       element.deleteData(removedChar, 1)
-      
+
       if pe.tagName == "SPAN"
         console.log 'caretPosition',caretPosition
         data = GenBank.getSpanData(pe)
@@ -252,7 +252,7 @@ window.G.GorillaEditor = class GorillaEditor
         node = node.nextSibling
 
       sel.removeAllRanges()
-      
+
       delme = null
 
       l = document.createRange()
@@ -401,7 +401,7 @@ window.G.GorillaEditor = class GorillaEditor
                                 split[0] = feat.new.id
                         feats.push(split.join(':'))
                     node.setAttribute('data-features', feats.join(','))
-                    
+
                     for offset in offsets
                         split = offset.split(':')
                         for feat in featuresAffected
@@ -422,7 +422,7 @@ window.G.GorillaEditor = class GorillaEditor
 
           pe.insertBefore(tn, start.nextSibling)
           pe.insertBefore(end, tn.nextSibling)
-         
+
           element = tn
 
         advancedFeatures = {}
