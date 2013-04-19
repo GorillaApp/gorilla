@@ -17,7 +17,7 @@ class FeatureLibrary < ActiveRecord::Base
 
   def self.delete_lib(params)
     @lib = FeatureLibrary.find_by_id(params[:id])
-    objs = FeatureLibrary.all(:conditions => ["library_id = ?", (params[:library_id])])
+    objs = FeatureLibrary.find_all_by_library_id(params[:library_id])
     objs.each do |o|
       o.destroy
     end
@@ -26,12 +26,11 @@ class FeatureLibrary < ActiveRecord::Base
   end
 
   def self.getAll(params)
-    allLibs =  FeatureLibrary.all(:conditions => ["_id = ?", (params[:user_id])])
+    allLibs =  FeatureLibrary.find_all_by_user_id(params[:user_id])
     result = []
     allLibs.each do |feat|
       result.push({:id => feat.id, :name => feat.name})
     end
     return result
   end
-
 end
