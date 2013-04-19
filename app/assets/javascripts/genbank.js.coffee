@@ -266,6 +266,7 @@ window.G.GenBank = class GenBank
                 if selections[i] == undefined
                     selections[i] = []
                 selections[i].push(feature: feature, range: range)
+    selections
 
   getAnnotatedSequence: () ->
     selections = getTableOfFeatures()
