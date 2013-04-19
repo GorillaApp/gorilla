@@ -461,3 +461,13 @@ window.G.GenBank = class GenBank
     console.debug("Here's your features sir!")
     console.groupEnd()
     @data.features = retval
+
+  #Replaces the range with repText does not take negative indicies
+  replaceSequence = (repText, startIndex = 0, endIndex = -1) ->
+    text = getGeneSequence()
+    if endIndex == -1
+      endIndex = text.length - 1
+
+    begin = text.substr(0, startIndex)
+    end =  text.substr(endIndex, text.length - 1)
+    @data.raw_genes = begin + repText + end
