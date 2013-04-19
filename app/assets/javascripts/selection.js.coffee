@@ -15,6 +15,7 @@ modifySelection = (modFunction) ->
     editor.file.replaceSequence(subData, sIndex, eIndex)
     console.log(editor.editorId)
     $(editor.editorId).html(editor.file.getAnnotatedSequence())
+    editor.startEditing()
     sel.collapse(true)
 
 toUpper = (s) ->

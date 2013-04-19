@@ -36,29 +36,26 @@ ORIGIN
 //
 '''
 
-describe "selection methods", ->
-  it "should reverse complement a selection", ->
+describe 'selection methods', ->
+
+  it 'should reverse complement a selection', ->
     file = new G.GenBank(simpleFile)
     G.reverseCompSelection([0,5],file,true)
     f = file.serialize()
     f.should.contain("complement(1..1)")
     f.should.contain("6..15")
-  
-  it "should split a feature into three upon revComp in middle of feature", ->
+
+  it 'should split a feature into three upon revComp in middle of feature', ->
     file = new G.GenBank(simpleFile)
     G.reverseCompSelection([6,9],file,true)
     f = file.serialize()
     f.should.contain("complement(7..9)")
     f.should.contain("5..6")
     f.should.contain("10..15")
-  
-  it "should split a feature into two upon revComp from feature into plain text", ->
+
+  it 'should split a feature into two upon revComp from feature into plain text', ->
     file = new G.GenBank(simpleFile)
     G.reverseCompSelection([9,17],file,true)
     f = file.serialize()
     f.should.contain("complement(12..17)")
     f.should.contain("5..9")
-
-
-
-
