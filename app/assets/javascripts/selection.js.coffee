@@ -19,8 +19,24 @@ toUpper = (inputString) ->
     return inputString.toUpperCase()
 
 reverseCompSelection = () ->
-  #nothing is here yet
+  modifySelection(revCompSeq)
+  [sIndex, eIndex] = GorillaEditor.getSelectionRange()
+  feats = editor.file.getTableOfFeatures()
+  console.log(feats)
+
+revCompSeq = (seq) ->
+  newSeq = ""
+  i = seq.length - 1
+  seqMap = a:"t", t:"a", c:"g", g:"c", n:"n"
+           A:"T", T:"A", C:"G", G:"C", N:"N"
+
+  while i > 0
+    newSeq += seqMap[seq[i]]
+    i--
+  return newSeq
 
 window.G or= {}
-window.G.toUpper = toUpper
-window.G.modifySelection = modifySelection
+
+G.toUpper = toUpper
+G.modifySelection = modifySelection
+G.reverseCompSelection = reverseCompSelection
