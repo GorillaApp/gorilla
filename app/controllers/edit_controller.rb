@@ -4,9 +4,14 @@ require 'open-uri'
 class EditController < ApplicationController
   
   #before_filter :authenticate_user!
-  before_filter :after_token_authentication
+  #before_filter :after_token_authentication
 
   def load
+    @user = User.find_by_authentication_token(params[:auth_token]) 
+    if @user
+      sign_in(:user, @user)
+    end
+
     @file_restore_contents = ''
     file = ''
     @saveURL = params[:saveURL]
