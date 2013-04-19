@@ -34,7 +34,7 @@ window.G.GorillaEditor = class GorillaEditor
 
     if render
         @renderNumbers('viewing')
-        $(window).resize((event) -> me.renderNumbers('viewing'))
+        $(window).resize((event) -> me.renderNumbers('viewing', true))
     console.log("Ready to view")
     console.groupEnd()
 
@@ -44,7 +44,7 @@ window.G.GorillaEditor = class GorillaEditor
 
     @viewFile(false)
     @renderNumbers('editing')
-    $(window).resize((event) -> me.renderNumbers('editing'))
+    $(window).resize((event) -> me.renderNumbers('editing', true))
     
     $(@editorId).attr('contenteditable','true')
                 .attr('spellcheck','false')
@@ -130,24 +130,28 @@ window.G.GorillaEditor = class GorillaEditor
 
     $('#get-chars-wide-gorilla .numbers').html('1<br>2')
     node = $('#get-chars-wide-gorilla .editor')
-    txt = 'a'
+    txt = 'aaaaaaa'
     node.text(txt)
     hei = node.height()
-    while hei >= node.height() and txt.length < 10000
-        txt += 'a'
+    while hei >= node.height() and txt.length < 2000
+        txt += 'aaaaaaa'
+        node.text(txt)
+    while hei < node.height() and txt.length > 0
+        txt = txt[1..]
         node.text(txt)
     $('#get-chars-wide-gorilla').remove()
     return txt.length - 1
 
-  renderNumbers: (type) ->
+  renderNumbers: (type, resize = false) ->
     $(@numbersId).html('1')
-    chars = @getCharsWide(type)
+    if not @chars? or resize
+        @chars = @getCharsWide(type)
     lines = $(@editorId).get(0).clientHeight / 16
     text = ''
     loc = 1
     for line in [0...lines]
         text += loc + '<br>'
-        loc += chars
+        loc += @chars
     $(@numbersId).html(text)
 
   trackChanges: ->
@@ -219,8 +223,9 @@ window.G.GorillaEditor = class GorillaEditor
       l = document.createRange()
       console.log removedChar
       if removedChar == 0
-        if element.tagName != "SPAN" and element.parentNode.id != $(@editorId).attr('id')
-          element = element.parentNode
+        if element.tagName != "SPAN"
+          if not $(element.parentNode).hasClass('editor')
+              element = element.parentNode
         if element.innerHTML?.length == 0
           delme = element
         element = element.previousSibling
