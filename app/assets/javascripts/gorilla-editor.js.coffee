@@ -103,7 +103,7 @@ window.G.GorillaEditor = class GorillaEditor
         element = element.previousSibling
     return pos
 
-  getSelectionRange: (sel) ->
+  @getSelectionRange: (sel) ->
     if sel.isCollapsed and sel.rangeCount > 0
         loc = sel.getRangeAt(0)
         pos = GorillaEditor.cursorPosition(loc.startOffset, loc.startContainer)
