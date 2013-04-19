@@ -26,11 +26,6 @@ class EditController < ApplicationController
     # The view for load grabs the values of file_contents, first_line, and autosaved_file
     @isRestore = false
 
-    p = {:user_id => current_user.id}
-    # puts "Test" , p[:user_id]
-    features = Feature.getAll({:user_id => current_user.id})
-    # puts "Features" , features
-
     if current_user
       id = current_user.id
       @file_restore_contents = Autosave.find_autosaved_file(@first_line, id)
