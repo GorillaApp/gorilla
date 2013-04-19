@@ -47,7 +47,6 @@ populateTable = (features) ->
            id: id,
            ->
              notify("Successfully deleted feature", "success")
-             $("#allfeaturesdialog").dialog("close")
              $.get "/feature/getAll", {user_id: user}, (data) ->
                window.allFeatures = data.features
                populateTable(window.allFeatures)
