@@ -56,7 +56,7 @@ revCompSelection = (indices, editor) ->
         range = pair.range
         distanceInRange = sIndex - range.start - 1
         if sIndex != range.start
-          editor.file.splitFeatureAt(feature.id, range.id, distanceInRange)
+          editor.file.splitFeatureAtInPlace(feature.id, range.id, distanceInRange)
           numSplits += 1
   
   allFeats = editor.file.getTableOfFeatures()
@@ -66,7 +66,7 @@ revCompSelection = (indices, editor) ->
         range = pair.range
         distanceInRange = eIndex - range.start
         if eIndex != range.end
-          editor.file.splitFeatureAt(feature.id, range.id, distanceInRange)
+          editor.file.splitFeatureAtInPlace(feature.id, range.id, distanceInRange)
           numSplits += 1
   console.log("Number splits: %d", numSplits)
   allFeats = editor.file.getTableOfFeatures()
