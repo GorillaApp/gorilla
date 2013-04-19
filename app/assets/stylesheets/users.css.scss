@@ -5,12 +5,16 @@ DIV#user_nav {
 }
 
 #users_form {
-  width: 230px;
+  width: 500px;
   margin: 0px auto;
 }
 
 #users_form INPUT {
-  width: 230px;
+  width: 500px;
+}
+
+#users_form H3 {
+  clear: both;
 }
 
 #users_form INPUT[type=submit]{
@@ -25,4 +29,5 @@ DIV#user_nav {
 #users_form A {
   float: left;
   clear: right;
+  margin-right: 5px;
 }
