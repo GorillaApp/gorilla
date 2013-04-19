@@ -23,16 +23,24 @@ toUpper = (s) ->
 toLower = (s) ->
   return s.toLowerCase()
 
-reverseCompSelection = () ->
-  console.groupCollapsed("handlingRevCompSel")
-  sel = window.getSelection()
-  indices = GorillaEditor.getSelectionRange(sel)
+reverseCompSelection = (testIndices, testEditor, test = false)->
+    if test
+        revCompSelection(testIndices, testEditor)
+    else
+        console.groupCollapsed("handlingRevCompSel")
+        sel = window.getSelection()
+        indices = GorillaEditor.getSelectionRange(sel)
+        editor = GorillaEditor.getInstance(sel.anchorNode)
+        revCompSelection(indices, editor)
+        modifySelection(revCompSeq)
+
+revCompSelection = (indices, editor) ->
   if indices.length == 2
     [sIndex, eIndex] = indices
     eIndex--
   else
     return
-  editor = GorillaEditor.getInstance(sel.anchorNode)
+
   allFeats = editor.file.getTableOfFeatures()
   seenFeatures = {}
   numSplits = 0
@@ -82,7 +90,6 @@ reverseCompSelection = () ->
             console.log("New range start %d", range.start)
             console.log("New range end %d", range.end)
             feature.location.strand ^= 1
-  modifySelection(revCompSeq)
 
 
 revCompSeq = (seq) ->
@@ -115,4 +122,3 @@ window.G or= {}
 G.toUpper = toUpper
 G.modifySelection = modifySelection
 G.reverseCompSelection = reverseCompSelection
-G.revCompSeq = revCompSeq
