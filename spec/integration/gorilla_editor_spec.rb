@@ -162,6 +162,23 @@ EOF
         type(:delete)
         page.should have_content 'cgtctctgacagaccaata'
       end
+
+      it 'should be able to see the cursor position' do
+        click_at('0-main_editor', 3)
+        page.should have_content '3 <0>'
+        click_at('0-main_editor', 4)
+        page.should have_content '4 <1>'
+        click_at('0-main_editor', 5)
+        page.should have_content '5 <2>'
+      end
+
+      it 'should be able to see the selection' do
+        select_from('0-main_editor', 0, '0-main_editor', 5)
+        simulate_click('0-main_editor')
+        page.should have_content 'Start 0 <0>'
+        page.should have_content 'End 5 <2>'
+        page.should have_content 'Length 5 <2>'
+      end
     end
 
     context 'and opens a slightly more complicated file' do
