@@ -26,7 +26,7 @@ populateTable = (features) ->
           #{feat.reverse_color}
         </td>
         <td>
-          <a style="color:red;text-decoration:none" 
+          <a style="color:red;text-decoration:none"
              data-id="#{feat.id}"
              data-user-id="#{user}"
              href="#">X</a>
@@ -76,10 +76,30 @@ window.setup_features = ->
       effect: "drop"
       duration: 1000
 
+window.handleFileSelect = (evt) ->
+  file = evt.target.files[0]
+  reader = new FileReader()
+
+  window.reader = reader
+
+  reader.onload = (e) ->
+    text = e.target.result
+    fileContents = G.main_editor.file.parseFeatureFileContents(text, file.name)
+    features = G.main_editor.file.convertToFeatureObjectArray(fileContents)
+    populateTable(features)
+    $('#allfeaturesdialog').dialog("open")
+    $(G.main_editor.editorId).html(G.main_editor.file.getAnnotatedSequence())
+    G.main_editor.startEditing()
+
+
+  reader.readAsText(file)
+
+
 window.bind_features = ->
+
   $('#feature-form').unbind('submit').submit (event) ->
     event.preventDefault()
-    
+
     $('.issues').hide()
 
     formData = $(this).serializeArray()
@@ -114,3 +134,20 @@ window.bind_features = ->
       window.allFeatures = data.features
       populateTable(window.allFeatures)
       $('#allfeaturesdialog').dialog("open")
+
+  $('#featureLibrary').unbind('click').click ->
+    console.log("Making request to the backend for the list of features associated with this user")
+    $.get "/feature/getAll", {user_id: user}, (data) ->
+
+      # data: Object (features -> Array of features)
+      G.main_editor.file.processFeatures(data.features)
+      console.log("Returned Features", data)
+      $(G.main_editor.editorId).html(G.main_editor.file.getAnnotatedSequence())
+      G.main_editor.startEditing()
+
+
+  $('#upload').unbind('change').bind('change', window.handleFileSelect)
+
+
+
+

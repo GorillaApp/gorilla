@@ -137,7 +137,7 @@ window.G.GenBank = class GenBank
       seq = @annotateOld(seq, span.start, span.end, color, name, span.id, feature.id)
     console.groupEnd()
     seq
- 
+
   annotate: (sequence, start, end, color, features, id) ->
     console.groupCollapsed("Adding annotation #{id} to sequence: (#{start}..#{end})")
     if typeof(start) != "number"
@@ -346,6 +346,7 @@ window.G.GenBank = class GenBank
     retval = ""
     for line in @data.ORIGIN.split(@newline)
       retval += line.split(/[ ]*[0-9]* /)[1..].join("")
+    console.log("Retval ", retval)
     console.debug("Gene sequence constructed")
     console.groupEnd()
     @data.raw_genes = retval
@@ -500,3 +501,257 @@ window.G.GenBank = class GenBank
     console.debug("Here's your features sir!")
     console.groupEnd()
     @data.features = retval
+
+  searchString: (sequence) ->
+
+    return @data.raw_genes.search(sequence.toLowerCase())
+
+
+  indexes: (source, find) ->
+    result = []
+    for i in [0...source.length]
+      if source.substring(i, i + find.length) == find
+        result.push(i)
+    result
+
+  # params: array of features, [Object, Object, Object] where each Object is a feature representation from the backend
+  # will return an array of features that are parsed correctly
+  processFeatures: (features) ->
+
+    console.log("THIS IS WHAT THE FUCK FEATURES IS", features)
+
+    window.returnedfeatures = features
+    newFeatures = []
+
+    id = @data.features.length
+
+    # iterate through the returned features
+    for feature in features
+
+      # console.log("Feature Sequence", feature.sequence)
+
+
+      resultIndexes = @indexes(@data.raw_genes, feature.sequence.toLowerCase())
+
+      # forward match
+
+      if resultIndexes.length > 0
+        for result in resultIndexes
+
+          newFeatures.push @generateNewFeatureObject(feature, 0, id, result)
+          id = id + 1
+
+      else
+
+        # check for the reverse string
+        feature.sequence = feature.sequence.split("").reverse("").join("")
+        # result = @searchString(feature.sequence)
+        resultIndexes = @indexes(@data.raw_genes, feature.sequence.toLowerCase())
+
+        for result in resultIndexes
+          # reverse match
+          if result > 0
+
+            newFeatures.push @generateNewFeatureObject(feature, 1, id, result)
+            id = id + 1
+
+    # add the newly generated features to the Genbank object
+    @addFeatures(newFeatures)
+
+
+  # edits the @data.features to include the new features from the library
+  addFeatures: (featuresArray) ->
+
+    oldFeatures = @getFeatures()
+    @data.features = oldFeatures.concat featuresArray
+
+  # handle creation of new features
+  # strand = 0: not a complement | stand = 1: complement
+  generateNewFeatureObject: (feature, strand, id, result) ->
+
+    newFeature = {}
+    ranges = []
+
+    # case where the sequence does not contain any capital letters
+    if feature.sequence == feature.sequence.toLowerCase()
+      ranges.push
+        start: result
+        end: result + feature.sequence.length - 1
+        id: 0
+
+    else
+      console.log("start", result)
+      range_id = 0
+      lowerIndicies = GenBank.getLowerIndicies(feature.sequence, result)
+      for range in lowerIndicies
+        range.id = range_id
+        range_id = range_id + 1
+        ranges.push range
+
+    newFeature.id = id
+    newFeature.location = {ranges: ranges, strand: strand}
+    newFeature.parameters = @generateFeatureParamObject feature
+    newFeature.currentFeature = "misc_feature"
+
+    newFeature
+
+  # returns an array of all the capitalized charaters within the sequence
+  @getLowerIndicies: (sequence, start) ->
+    uppers = []
+    for i in [0...sequence.length]
+      char = sequence.charAt i
+      if char == char.toLowerCase()
+        uppers.push i + start
+
+    console.log(uppers)
+
+    #
+    if uppers.length == 0
+      return uppers
+
+    uppersRange = []
+    range = {}
+    range.start = uppers[0]
+
+    if uppers.length == 1
+      range.end = uppers[0]
+      uppersRange.push range
+      return uppersRange
+
+    # non-continuous range for easier processing later
+    uppersRange = []
+    range = {}
+    range.start = uppers[0]
+
+    # console.log("RANGE: " , range)
+
+    for i in [0...uppers.length-1]
+      # console.log(sequence[uppers[i]])
+      if uppers[i] + 1 != uppers[i+1]
+        range.end = uppers[i]
+        # console.log("PUSHING")
+        uppersRange.push range
+        range = {}
+        range.start = uppers[i+1]
+
+    # the last upper case is part of a continuous sequence
+    if uppers[uppers.length - 1] == uppers[uppers.length - 2] + 1
+      range.end = uppers[uppers.length - 1]
+      uppersRange.push range
+    else
+      range = {}
+      range.start = uppers[uppers.length - 1]
+      range.end = range.start
+      uppersRange.push range
+
+
+    # console.log(uppersRange)
+    uppersRange
+
+  generateFeatureParamObject: (feature) ->
+
+    params = {}
+    params["/ApEinfo_fwdcolor"] = "#"+feature.forward_color
+    params["/ApEinfo_graphicformat"] = "arrow_data {{0 1 2 0 0 -1} {} 0}"
+    params["/ApEinfo_label"] = feature.name
+    params["/ApEinfo_revcolor"] = "#"+feature.reverse_color
+    params["/label"] = feature.name
+    params
+
+
+  convertToFeatureObjectArray: (featArray) ->
+
+    featsArray = []
+
+    colors = {"aliceblue":"#f0f8ff","antiquewhite":"#faebd7","aqua":"#00ffff","aquamarine":"#7fffd4","azure":"#f0ffff",
+    "beige":"#f5f5dc","bisque":"#ffe4c4","black":"#000000","blanchedalmond":"#ffebcd","blue":"#0000ff","blueviolet":"#8a2be2","brown":"#a52a2a","burlywood":"#deb887",
+    "cadetblue":"#5f9ea0","chartreuse":"#7fff00","chocolate":"#d2691e","coral":"#ff7f50","cornflowerblue":"#6495ed","cornsilk":"#fff8dc","crimson":"#dc143c","cyan":"#00ffff",
+    "darkblue":"#00008b","darkcyan":"#008b8b","darkgoldenrod":"#b8860b","darkgray":"#a9a9a9","darkgreen":"#006400","darkkhaki":"#bdb76b","darkmagenta":"#8b008b","darkolivegreen":"#556b2f",
+    "darkorange":"#ff8c00","darkorchid":"#9932cc","darkred":"#8b0000","darksalmon":"#e9967a","darkseagreen":"#8fbc8f","darkslateblue":"#483d8b","darkslategray":"#2f4f4f","darkturquoise":"#00ced1",
+    "darkviolet":"#9400d3","deeppink":"#ff1493","deepskyblue":"#00bfff","dimgray":"#696969","dodgerblue":"#1e90ff",
+    "firebrick":"#b22222","floralwhite":"#fffaf0","forestgreen":"#228b22","fuchsia":"#ff00ff",
+    "gainsboro":"#dcdcdc","ghostwhite":"#f8f8ff","gold":"#ffd700","goldenrod":"#daa520","gray":"#808080","green":"#008000","greenyellow":"#adff2f",
+    "honeydew":"#f0fff0","hotpink":"#ff69b4",
+    "indianred ":"#cd5c5c","indigo ":"#4b0082","ivory":"#fffff0","khaki":"#f0e68c",
+    "lavender":"#e6e6fa","lavenderblush":"#fff0f5","lawngreen":"#7cfc00","lemonchiffon":"#fffacd","lightblue":"#add8e6","lightcoral":"#f08080","lightcyan":"#e0ffff","lightgoldenrodyellow":"#fafad2",
+    "lightgrey":"#d3d3d3","lightgreen":"#90ee90","lightpink":"#ffb6c1","lightsalmon":"#ffa07a","lightseagreen":"#20b2aa","lightskyblue":"#87cefa","lightslategray":"#778899","lightsteelblue":"#b0c4de",
+    "lightyellow":"#ffffe0","lime":"#00ff00","limegreen":"#32cd32","linen":"#faf0e6",
+    "magenta":"#ff00ff","maroon":"#800000","mediumaquamarine":"#66cdaa","mediumblue":"#0000cd","mediumorchid":"#ba55d3","mediumpurple":"#9370d8","mediumseagreen":"#3cb371","mediumslateblue":"#7b68ee",
+    "mediumspringgreen":"#00fa9a","mediumturquoise":"#48d1cc","mediumvioletred":"#c71585","midnightblue":"#191970","mintcream":"#f5fffa","mistyrose":"#ffe4e1","moccasin":"#ffe4b5",
+    "navajowhite":"#ffdead","navy":"#000080",
+    "oldlace":"#fdf5e6","olive":"#808000","olivedrab":"#6b8e23","orange":"#ffa500","orangered":"#ff4500","orchid":"#da70d6",
+    "palegoldenrod":"#eee8aa","palegreen":"#98fb98","paleturquoise":"#afeeee","palevioletred":"#d87093","papayawhip":"#ffefd5","peachpuff":"#ffdab9","peru":"#cd853f","pink":"#ffc0cb","plum":"#dda0dd","powderblue":"#b0e0e6","purple":"#800080",
+    "red":"#ff0000","rosybrown":"#bc8f8f","royalblue":"#4169e1",
+    "saddlebrown":"#8b4513","salmon":"#fa8072","sandybrown":"#f4a460","seagreen":"#2e8b57","seashell":"#fff5ee","sienna":"#a0522d","silver":"#c0c0c0","skyblue":"#87ceeb","slateblue":"#6a5acd","slategray":"#708090","snow":"#fffafa","springgreen":"#00ff7f","steelblue":"#4682b4",
+    "tan":"#d2b48c","teal":"#008080","thistle":"#d8bfd8","tomato":"#ff6347","turquoise":"#40e0d0",
+    "violet":"#ee82ee",
+    "wheat":"#f5deb3","white":"#ffffff","whitesmoke":"#f5f5f5",
+    "yellow":"#ffff00","yellowgreen":"#9acd32"}
+
+    count = 0
+    for featText in featArray
+
+      if featText
+
+        f = {}
+        # console.log("Feature Text String", featText)
+        featText = featText.split("\t")
+        # console.log("Feature Text", featText)
+        f.name = featText[0]
+        f.sequence = featText[1]
+
+        # if it is all UPPERCASE, we will treat is as lowercase
+        if f.sequence == f.sequence.toUpperCase()
+          f.sequence = f.sequence.toLowerCase()
+
+        # remove spaces, numbers between words
+        featText[3] = featText[3].replace(/\s/g,'')
+        featText[3] = featText[3].trim()
+        if featText[3].search("#") < 0
+          featText[3] = featText[3].replace(/[0-9]/g, '')
+
+
+        featText[4] = featText[4].replace(/\s/g,'')
+        featText[4] = featText[4].trim()
+        if featText[4].search("#") < 0
+          featText[4] = featText[4].replace(/[0-9]/g, '')
+
+
+
+
+        console.log("Forward color: ", featText[3])
+
+        if colors[featText[3]] == undefined
+          # console.log("No match for ", featText[3])
+          f.forward_color = featText[3]
+        else
+          f.forward_color = colors[featText[3]]
+
+
+        if colors[featText[4]] == undefined
+          # console.log("No match for ", featText[4].length)
+          f.reverse_color = featText[4]
+        else
+          f.reverse_color = colors[featText[4]]
+
+        f.forward_color = f.forward_color.replace(/#/g, '')
+        f.reverse_color = f.reverse_color.replace(/#/g, '')
+
+        # if f.forward_color == undefined
+        #   console.log("Undefined Color: ", featText[3])
+
+        featsArray.push f
+
+    window.featsArray = featsArray
+    console.log("Feats Array", featsArray)
+    @processFeatures(featsArray)
+    featsArray
+
+  # returns an array of text representation of a single feature
+  parseFeatureFileContents: (fileContents, filename) ->
+    console.log("Parsing from File: ", filename)
+    console.log("THIS IS WHAT THE FILE SAYS" , fileContents)
+    featureArray = fileContents.split("\n")
+    featureArray
+
+
