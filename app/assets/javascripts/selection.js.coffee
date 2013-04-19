@@ -8,7 +8,3 @@ modifySelection = (modFunction) ->
   editor.file.replaceSequence(data, subData, sIndex, eIndex)
 
 window.G or= {}
-G.getFeatureDataOfSelected = getFeatureDataOfSelected
-G.getSelectionHtml = getSelectionHtml
-G.getNodesFromHtmlText = getNodesFromHtmlText
-
