@@ -517,6 +517,8 @@ window.G.GenBank = class GenBank
     # iterate through the returned features
     for feature in features.features
 
+      console.log("Feature Sequence", feature.sequence)
+
       result = @searchString(feature.sequence)
 
       # forward match
@@ -529,18 +531,24 @@ window.G.GenBank = class GenBank
           ranges.push
             start: result
             end: result + feature.sequence.length - 1
-            id: id
+            id: 0
           # console.log(ranges)
 
         else
-          lowerIndicies = @getLowerIndicies feature.sequence
+          console.log("start", result)
+          range_id = 0
+          lowerIndicies = @getLowerIndicies(feature.sequence, result)
+          console.log("Lower Indicies", lowerIndicies)
           for range in lowerIndicies
+            range.id = range_id
+            range_id = range_id + 1
             ranges.push range
 
         newFeature.id = id
         newFeature.location = {ranges: ranges, strand: 0}
         newFeature.parameters = @generateFeatureParamObject feature
         newFeatures.push newFeature
+        newFeature.currentFeature = "misc_feature"
 
         id = id + 1
 
@@ -569,7 +577,7 @@ window.G.GenBank = class GenBank
 
           console.log("reverse complement with capitals")
 
-          lowerIndicies = @getLowerIndicies feature.sequence
+          lowerIndicies = @getLowerIndicies(feature.sequence, result)
           for range in lowerIndicies
             ranges.push range
 
@@ -589,22 +597,17 @@ window.G.GenBank = class GenBank
   addFeatures: (featuresArray) ->
 
     oldFeatures = @getFeatures()
-    console.log("Old Features ", oldFeatures)
-    newFeatures = oldFeatures.concat featuresArray
-    console.log("New Features", newFeatures)
+    @data.features = oldFeatures.concat featuresArray
 
-
-    @data.features = newFeatures
-    console.log(@data.features)
-
+  # handle all lower case match
 
   # returns an array of all the capitalized charaters within the sequence
-  getLowerIndicies: (sequence) ->
+  getLowerIndicies: (sequence, start) ->
     uppers = []
     for i in [0...sequence.length]
       char = sequence.charAt i
       if char == char.toLowerCase()
-        uppers.push i
+        uppers.push i + start
 
     console.log(uppers)
 
@@ -654,10 +657,10 @@ window.G.GenBank = class GenBank
   generateFeatureParamObject: (feature) ->
 
     params = {}
-    params["/ApEinfo_fwdcolor"] = feature.forward_color
+    params["/ApEinfo_fwdcolor"] = "#"+feature.forward_color
     params["/ApEinfo_graphicformat"] = "arrow_data {{0 1 2 0 0 -1} {} 0}"
     params["/ApEinfo_label"] = feature.name
-    params["/ApEinfo_revcolor"] = feature.reverse_color
+    params["/ApEinfo_revcolor"] = "#"+feature.reverse_color
     params["/label"] = feature.name
     params
 

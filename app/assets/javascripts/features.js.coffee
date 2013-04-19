@@ -119,5 +119,8 @@ window.bind_features = ->
     console.log("Making request to the backend for the list of features associated with this user")
     $.get "/feature/getAll", {user_id: user}, (data) ->
       G.main_editor.file.processFeatures(data)
+      console.log("Returned Features", data)
+      $(G.main_editor.editorId).html(G.main_editor.file.getAnnotatedSequence())
+      G.main_editor.startEditing()
 
 
