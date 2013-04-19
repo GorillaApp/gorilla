@@ -55,6 +55,8 @@ window.G.GorillaEditor = class GorillaEditor
                 .keypress((event) -> me.keyPressed(event))
                 .keydown((event) -> me.keyDown(event))
                 .keyup((event) -> me.keyUp(event))
+                .bind('mouseup mousemove keydown click focus', (event) ->
+                    setTimeout((-> me.cursorUpdate(event)), 10))
                 .bind('dragenter', (event) -> event.preventDefault())
                 .bind('dragleave', (event) -> event.preventDefault())
                 .bind('dragover', (event) -> event.preventDefault())
@@ -68,6 +70,35 @@ window.G.GorillaEditor = class GorillaEditor
     @nextFiles = []
     console.log("Editor ready!")
     console.groupEnd()
+
+  @cursorPosition: (pos, element) ->
+    if element.parentNode.tagName == "SPAN"
+        element = element.parentNode
+    element = element.previousSibling
+
+    while !!element
+        pos += $(element).text().length
+        element = element.previousSibling
+    return pos
+
+  cursorUpdate: (event) ->
+    sel = window.getSelection()
+    if sel.isCollapsed and sel.rangeCount > 0
+        loc = sel.getRangeAt(0)
+        pos = GorillaEditor.cursorPosition(loc.startOffset, loc.startContainer)
+        $('#positionData').text("#{pos} <#{pos % 3}>")
+    else if sel.rangeCount > 0
+        loc = sel.getRangeAt(0)
+        txt = ""
+        startPos = GorillaEditor.cursorPosition(loc.startOffset, loc.startContainer)
+        txt += "Start #{startPos} <#{startPos % 3}> "
+        endPos = GorillaEditor.cursorPosition(loc.endOffset, loc.endContainer)
+        txt += "End #{endPos} <#{endPos % 3}> "
+        length = endPos - startPos
+        txt += "Length #{length} <#{length % 3}> "
+
+        $('#positionData').text(txt)
+
 
   showHoverDialog: (event) ->
     if event.type == "mouseleave"
