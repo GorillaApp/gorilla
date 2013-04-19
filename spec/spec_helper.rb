@@ -17,7 +17,7 @@ Spork.prefork do
   require 'rspec/autorun'
   require 'capybara/rspec'
 
-  #Capybara.javascript_driver = :webkit
+  # Capybara.javascript_driver = :webkit
 
   # Requires supporting ruby files with custom matchers and macros, etc,
   # in spec/support/ and its subdirectories.
