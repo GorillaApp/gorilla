@@ -507,7 +507,7 @@ window.G.GenBank = class GenBank
     return @data.raw_genes.search(sequence.toLowerCase())
 
 
-  indexes: (source, find) ->
+  @indexes: (source, find) ->
     result = []
     for i in [0...source.length]
       if source.substring(i, i + find.length) == find
@@ -529,7 +529,7 @@ window.G.GenBank = class GenBank
       # console.log("Feature Sequence", feature.sequence)
 
 
-      resultIndexes = @indexes(@data.raw_genes, feature.sequence.toLowerCase())
+      resultIndexes = GenBank.indexes(@data.raw_genes, feature.sequence.toLowerCase())
 
       # forward match
 
@@ -544,7 +544,7 @@ window.G.GenBank = class GenBank
         # check for the reverse string
         feature.sequence = feature.sequence.split("").reverse("").join("")
         # result = @searchString(feature.sequence)
-        resultIndexes = @indexes(@data.raw_genes, feature.sequence.toLowerCase())
+        resultIndexes = GenBank.indexes(@data.raw_genes, feature.sequence.toLowerCase())
 
         for result in resultIndexes
           # reverse match
@@ -601,7 +601,7 @@ window.G.GenBank = class GenBank
       if char == char.toLowerCase()
         uppers.push i + start
 
-    console.log(uppers)
+    # console.log(uppers)
 
     #
     if uppers.length == 0

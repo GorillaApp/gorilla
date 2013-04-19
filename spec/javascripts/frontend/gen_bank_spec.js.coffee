@@ -103,10 +103,30 @@ describe 'GenBank editor', ->
         newLocation.should.equal location
 
   describe "get lower case ranges", ->
-    it 'should correctly return the ranges of lower case indicies,' ->
-      seq = "GGTggAGCTgggttCCCt"
-      correct_indicies = [3, 4, 9, 10, 11, 12, 13, 17]
-      returned_indicies = G.GenBank.getLowerIndicies(seq)
-      correct_indicies.should.equal returned_indicies
+    seq = "GGTggAGCTgggttCCCt"
+    returned_indicies = G.GenBank.getLowerIndicies(seq, 0)
+
+    it 'should correctly return correct length of ranges of lower case indicies', ->
+
+      returned_indicies.length.should.equal 3
+
+    it 'should correctly identify the first range', ->
+
+      returned_indicies = G.GenBank.getLowerIndicies(seq, 0)
+      returned_indicies[0].start.should.equal 3
+      returned_indicies[0].end.should.equal 4
+
+  describe "check indexes method", ->
+    it 'should correctly identify all the occurences of the substring in the source', ->
+      seq = "GGTggggAGCTgggttCCCt"
+      find = "ggg"
+
+      indexes = G.GenBank.indexes(seq, find)
+      indexes.length.should.equal 3
+
+  describe "test generate new features", ->
+    it 'should correctly return the correct range of the feature', ->
+
+
 
 
