@@ -2,7 +2,9 @@ require 'bio'
 require 'open-uri'
 
 class EditController < ApplicationController
-  before_filter :authenticate_user!
+  
+  #before_filter :authenticate_user!
+  before_filter :after_token_authentication
 
   def load
     @file_restore_contents = ''
