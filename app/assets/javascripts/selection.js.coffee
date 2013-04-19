@@ -79,7 +79,7 @@ reverseCompSelection = () ->
             console.log("Offset in sel %d", offsetInSel)
             console.log("Start index %d", sIndex)
             console.log("End index %d", eIndex)
-            range.start = eIndex - rangeLen + offsetInSel
+            range.start = eIndex - rangeLen - offsetInSel
             range.end = eIndex - offsetInSel
             console.log("New range start %d", range.start)
             console.log("New range end %d", range.end)
