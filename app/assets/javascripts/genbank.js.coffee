@@ -661,42 +661,42 @@ window.G.GenBank = class GenBank
     params["/label"] = feature.name
     params
 
-  # methods that implement read from a feature file
+  methods that implement read from a feature file
 
-  # convertToFeatureObjectArray: (featArray) ->
+  convertToFeatureObjectArray: (featArray) ->
 
-  #   featsArray = []
+    featsArray = []
 
-  #   count = 0
-  #   for featText in featArray
+    count = 0
+    for featText in featArray
 
-  #     if featText
+      if featText
 
-  #       f = {}
-  #       console.log("Feature Text String", featText)
-  #       featText = featText.split("\t")
-  #       console.log("Feature Text", featText)
-  #       f.name = featText[0]
-  #       f.sequence = featText[1]
+        f = {}
+        console.log("Feature Text String", featText)
+        featText = featText.split("\t")
+        console.log("Feature Text", featText)
+        f.name = featText[0]
+        f.sequence = featText[1]
 
-  #       # if it is all UPPERCASE, we will treat is as lowercase
-  #       if f.sequence == f.sequence.toUpperCase()
-  #         f.sequence = f.sequence.toLowerCase()
-  #       f.forward_color = featText[2]
-  #       f.reverse_color = featText[3]
+        # if it is all UPPERCASE, we will treat is as lowercase
+        if f.sequence == f.sequence.toUpperCase()
+          f.sequence = f.sequence.toLowerCase()
+        f.forward_color = featText[2]
+        f.reverse_color = featText[3]
 
-  #       featsArray.push f
+        featsArray.push f
 
-  #   window.featsArray = featsArray
-  #   console.log("Feats Array", featsArray)
-  #   @processFeatures(featsArray)
+    window.featsArray = featsArray
+    console.log("Feats Array", featsArray)
+    @processFeatures(featsArray)
 
-  # # returns an array of text representation of a single feature
-  # parseFeatureFileContents: (fileContents, filename) ->
-  #   console.log("Parsing from File: ", filename)
-  #   console.log("THIS IS WHAT THE FILE SAYS" , fileContents)
-  #   featureArray = fileContents.split("\n")
-  #   console.log("Feature Array", featureArray)
-  #   @convertToFeatureObjectArray(featureArray)
+  # returns an array of text representation of a single feature
+  parseFeatureFileContents: (fileContents, filename) ->
+    console.log("Parsing from File: ", filename)
+    console.log("THIS IS WHAT THE FILE SAYS" , fileContents)
+    featureArray = fileContents.split("\n")
+    console.log("Feature Array", featureArray)
+    @convertToFeatureObjectArray(featureArray)
 
 
