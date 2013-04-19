@@ -254,7 +254,7 @@ window.G.GenBank = class GenBank
         return range
     return null
 
-  getAnnotatedSequence: () ->
+  getTableOfFeatures: () ->
     console.groupCollapsed("Getting Annotated Sequence")
     seq = @getGeneSequence()
     features = @getFeatures()
@@ -266,6 +266,9 @@ window.G.GenBank = class GenBank
                 if selections[i] == undefined
                     selections[i] = []
                 selections[i].push(feature: feature, range: range)
+
+  getAnnotatedSequence: () ->
+    selections = getTableOfFeatures()
     ranges = []
     previous = undefined
     sel = start: 0, end: 0
