@@ -88,7 +88,6 @@ window.handleFileSelect = (evt) ->
     features = G.main_editor.file.convertToFeatureObjectArray(fileContents)
     populateTable(features)
     $('#allfeaturesdialog').dialog("open")
-    $(G.main_editor.editorId).html(G.main_editor.file.getAnnotatedSequence())
     G.main_editor.startEditing()
 
 
@@ -142,12 +141,9 @@ window.bind_features = ->
       # data: Object (features -> Array of features)
       G.main_editor.file.processFeatures(data.features)
       console.log("Returned Features", data)
-      $(G.main_editor.editorId).html(G.main_editor.file.getAnnotatedSequence())
       G.main_editor.startEditing()
 
-
   $('#upload').unbind('change').bind('change', window.handleFileSelect)
-
 
 
 

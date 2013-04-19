@@ -518,8 +518,6 @@ window.G.GenBank = class GenBank
   # will return an array of features that are parsed correctly
   processFeatures: (features) ->
 
-    console.log("THIS IS WHAT THE FUCK FEATURES IS", features)
-
     window.returnedfeatures = features
     newFeatures = []
 
