@@ -124,8 +124,27 @@ describe 'GenBank editor', ->
       indexes = G.GenBank.indexes(seq, find)
       indexes.length.should.equal 3
 
-  describe "test generate new features", ->
-    it 'should correctly return the correct range of the feature', ->
+  describe "test generate new feature object - all lowercase forward match", ->
+
+    feature = {}
+    feature.id = 2
+    feature.name = "Test-Feature"
+    feature.sequence = "atggaaaacggtgtaacaagggtg"
+    feature.forward_color = "78EDFF"
+    feature.reverse_color = "FF4A50"
+
+    newFeature = G.GenBank.generateNewFeatureObject(feature, 0, 1, 494)
+
+    it 'should correctly return the correct length of ranges', ->
+
+      newFeature.location.ranges.length.should.equal 1
+
+    it 'should correctly return the correct ranges of the feature', ->
+      newFeature.location.ranges[0].start.should.equal 494
+      newFeature.location.ranges[0].end.should.equal 517
+
+
+
 
 
 

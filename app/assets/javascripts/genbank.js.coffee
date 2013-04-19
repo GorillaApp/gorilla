@@ -534,9 +534,12 @@ window.G.GenBank = class GenBank
       # forward match
 
       if resultIndexes.length > 0
+
         for result in resultIndexes
 
-          newFeatures.push @generateNewFeatureObject(feature, 0, id, result)
+          console.log("RESULT", result)
+
+          newFeatures.push GenBank.generateNewFeatureObject(feature, 0, id, result)
           id = id + 1
 
       else
@@ -550,7 +553,7 @@ window.G.GenBank = class GenBank
           # reverse match
           if result > 0
 
-            newFeatures.push @generateNewFeatureObject(feature, 1, id, result)
+            newFeatures.push GenBank.generateNewFeatureObject(feature, 1, id, result)
             id = id + 1
 
     # add the newly generated features to the Genbank object
@@ -565,8 +568,9 @@ window.G.GenBank = class GenBank
 
   # handle creation of new features
   # strand = 0: not a complement | stand = 1: complement
-  generateNewFeatureObject: (feature, strand, id, result) ->
+  @generateNewFeatureObject: (feature, strand, id, result) ->
 
+    console.log("Generate New Feature Object", feature)
     newFeature = {}
     ranges = []
 
@@ -591,6 +595,7 @@ window.G.GenBank = class GenBank
     newFeature.parameters = GenBank.generateFeatureParamObject feature
     newFeature.currentFeature = "misc_feature"
 
+    console.log("New Feature Returned", newFeature)
     newFeature
 
   # returns an array of all the capitalized charaters within the sequence
