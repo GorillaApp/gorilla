@@ -269,7 +269,8 @@ window.G.GenBank = class GenBank
     selections
 
   getAnnotatedSequence: () ->
-    selections = getTableOfFeatures()
+    seq = @getGeneSequence()
+    selections = @getTableOfFeatures()
     ranges = []
     previous = undefined
     sel = start: 0, end: 0
@@ -470,11 +471,14 @@ window.G.GenBank = class GenBank
     @data.features = retval
 
   #Replaces the range with repText does not take negative indicies
-  replaceSequence = (repText, startIndex = 0, endIndex = -1) ->
-    text = getGeneSequence()
+  replaceSequence: (repText, startIndex = 0, endIndex = -1) ->
+    text = @getGeneSequence()
     if endIndex == -1
-      endIndex = text.length - 1
+      endIndex = text.length
 
-    begin = text.substr(0, startIndex)
-    end =  text.substr(endIndex, text.length - 1)
+    begin = text.substring(0, startIndex)
+    end =  text.substring(endIndex, text.length)
+    
     @data.raw_genes = begin + repText + end
+    console.log(@data.raw_genes)
+    @data.raw_genes

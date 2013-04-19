@@ -2,16 +2,25 @@ GenBank = window.G.GenBank #Import
 GorillaEditor = window.G.GorillaEditor
 
 modifySelection = (modFunction) ->
-  [sIndex, eIndex] = GE.getSelectionRange()
+  sel = window.getSelection()
+  [sIndex, eIndex] = GorillaEditor.getSelectionRange(sel)
   if sIndex and eIndex
-    sel = window.getSelection()
     editor = GorillaEditor.getInstance(sel.anchorNode)
     data = editor.file.getGeneSequence()
-    subData = data.substr(sIndex, eIndex).modFunction()
+    console.log(sIndex)
+    console.log(eIndex)
+    console.log(data.substring(sIndex, eIndex))
+    subData = modFunction(data.substring(sIndex, eIndex))
     editor.file.replaceSequence(subData, sIndex, eIndex)
-    $(editor.editorID).html(GenBank.getAnnotatedSequence())
+    console.log(editor.editorId)
+    $(editor.editorId).html(editor.file.getAnnotatedSequence())
+
+toUpper = (inputString) ->
+    return inputString.toUpperCase()
 
 reverseCompSelection = () ->
   #nothing is here yet
 
 window.G or= {}
+window.G.toUpper = toUpper
+window.G.modifySelection = modifySelection
