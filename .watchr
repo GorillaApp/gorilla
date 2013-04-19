@@ -4,8 +4,8 @@ def run_spec(file)
     return
   end
 
-  puts "Running "#{file}"
-  system "bundle exec rspec #{file}"
+  puts "Running #{file}"
+  system "bundle exec rake spec SPEC=#{file}"
   puts
 end
 

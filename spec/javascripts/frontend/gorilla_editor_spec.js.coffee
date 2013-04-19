@@ -34,13 +34,14 @@ describe "Gorilla Editor", ->
     beforeEach ->
       $('body').html('<div id="ed"></div>')
       @ge = new G.GorillaEditor("#ed", testFile)
+      @editorId = '#ed .editor'
 
     context 'while viewing', ->
       beforeEach ->
         @ge.viewFile()
 
       it 'should be able to load the file', ->
-        $('#ed').text().should.equal("cgtctctgaccagaccaata")
+        $(@editorId).text().should.equal("cgtctctgaccagaccaata")
         $('#0-ed').text().should.equal("cgtctctgac")
 
     context "while editing", ->
@@ -48,7 +49,7 @@ describe "Gorilla Editor", ->
         @ge.startEditing()
         
       it 'should be able to load file', ->
-        $('#ed').text().should.equal("cgtctctgaccagaccaata")
+        $(@editorId).text().should.equal("cgtctctgaccagaccaata")
         $('#0-ed').text().should.equal("cgtctctgac")
 
       it 'should allow insertion', ->
@@ -69,5 +70,5 @@ describe "Gorilla Editor", ->
     it 'should be able to serialize properly after deleting', ->
         Mouse.setCursorAt('0-ed', 0)
         Keyboard.type('<delete>')
-        $('#ed').text().should.equal('c')
+        $(@editorId).text().should.equal('c')
         @ge.file.serialize().should.not.contain('ColE1')

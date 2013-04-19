@@ -13,6 +13,30 @@ module GorillaHelper
     SCRIPT
   end
 
+  def select_from(startId, startLocation, endId, endLocation)
+    page.driver.execute_script <<-SCRIPT
+      sel = window.getSelection();
+      startId = document.getElementById('#{startId}').childNodes[0]
+      endId = document.getElementById('#{endId}').childNodes[0]
+      sel.removeAllRanges();
+      l = document.createRange();
+      l.setStart(startId, #{startLocation});
+      l.setEnd(endId, #{endLocation});
+      sel.addRange(l);
+    SCRIPT
+  end
+
+  def simulate_click(id)
+    page.driver.execute_script <<-SCRIPT
+      $('##{id}').trigger('click');
+    SCRIPT
+  end
+
+  def click_at(id, location)
+    set_cursor_at(id, location)
+    simulate_click(id)
+  end
+
   def get_cursor_location()
     page.driver.evaluate_script <<-SCRIPT
     SCRIPT
@@ -54,7 +78,7 @@ module GorillaHelper
   def _type_raw(code, type = :keypress, ctrl=false)
     page.driver.execute_script <<-SCRIPT
       event = $.Event('#{type.to_s}',{keyCode:#{code},ctrlKey:#{ctrl}});
-      $('#main_editor').trigger(event);
+      $('#main_editor .editor').trigger(event);
     SCRIPT
   end
 end
