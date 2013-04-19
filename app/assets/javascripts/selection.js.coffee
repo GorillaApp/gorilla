@@ -20,9 +20,40 @@ toUpper = (inputString) ->
     return inputString.toUpperCase()
 
 reverseCompSelection = () ->
-  modifySelection(revCompSeq)
   [sIndex, eIndex] = GorillaEditor.getSelectionRange()
-  feats = editor.file.getTableOfFeatures()
+  allFeats = editor.file.getTableOfFeatures()
+  seenFeatures = {}
+  for pair in allFeats[sIndex]
+    feature = pair.feature
+    range = pair.range
+    distanceInRange = sIndex - range.start
+    if sIndex != range.start
+      splitFeatureAt(feature.id, range.id, distanceInRange)
+  
+  allFeats = editor.file.getTableOfFeatures()
+  for pair in allFeats[eIndex]
+    feature = pair.feature
+    range = pair.range
+    distanceInRange = eIndex - range.start
+    if eIndex != range.end
+      splitFeatureAt(feature.id, range.id, distanceInRange)
+  
+  allFeats = editor.file.getTableOfFeatures()
+  for i in [sIndex..eIndex]
+    for pair in allFeats[i] #gives us a list of feat_id, range_id
+      feature = pair.feature
+      range = pair.range
+      
+      hash = feature.id.toString() + ',' + range.id.toString()
+      if not seenFeatures[hash]
+        seenFeatures[hash] = true
+        rangeLen = range.end - range.start
+        offsetInSel = sIndex - range.start
+        range.start = eIndex - rangeLen - offsetInSel
+        range.end = offsetInSel
+        feature.location.strand ^= 1
+      
+  modifySelection(revCompSeq)
   console.log(feats)
 
 revCompSeq = (seq) ->
