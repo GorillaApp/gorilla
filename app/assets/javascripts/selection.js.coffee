@@ -71,6 +71,10 @@ revCompSeq = (seq) ->
   seqMap = 
     a:"t", t:"a", c:"g", g:"c", n:"n"
     A:"T", T:"A", C:"G", G:"C", N:"N"
+    y:"r", r:"y", b:"v", v:"b", s:"s"
+    Y:"R", R:"Y", B:"V", V:"B", S:"S"
+    d:"h", h:"d", m:"k", k:"m", w:"w"
+    D:"H", H:"D", M:"K", K:"M", W:"W"
 
   while i >= 0
     newSeq += seqMap[seq[i]]
@@ -80,6 +84,10 @@ revCompSeq = (seq) ->
 window.bind_selections = ->
   $('#reverseComplement').unbind('click').click ->
     reverseCompSelection()
+  $('#toUpper').unbind('click').click ->
+    modifySelection(toUpper)
+  $('#toLower').unbind('click').click ->
+    modifySelection(toLower)
 
 window.G or= {}
 
