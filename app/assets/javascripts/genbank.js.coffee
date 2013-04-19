@@ -351,12 +351,15 @@ window.G.GenBank = class GenBank
 
   serializeFeatures: () ->
     console.groupCollapsed("Serializing Features")
-    features = "FEATURES             Location/Qualifiers" + @newline
-    for feat in @getFeatures()
-      if feat.location.ranges.length > 0
-        features += "     " + feat.currentFeature.padBy(16) + GenBank.serializeLocation(feat.location) + @newline
-        for own key, value of feat.parameters
-          features += "                     " + "#{key}=\"#{value}\" " + @newline
+    feats = @getFeatures()
+    features = ""
+    if feats.length > 0
+      features = "FEATURES             Location/Qualifiers" + @newline
+      for feat in feats
+        if feat.location.ranges.length > 0
+          features += "     " + feat.currentFeature.padBy(16) + GenBank.serializeLocation(feat.location) + @newline
+          for own key, value of feat.parameters
+            features += "                     " + "#{key}=\"#{value}\" " + @newline
     console.groupEnd()
     features
 
@@ -415,11 +418,9 @@ window.G.GenBank = class GenBank
       ranges: ranges
 
   getFeatures: () ->
-    console.groupCollapsed("Getting features")
     if @data.features?
-      console.debug("We already parsed the features!")
-      console.groupEnd()
       return @data.features
+    console.groupCollapsed("Getting features")
     retval = []
     currentFeature = ""
     components = ""
@@ -428,7 +429,9 @@ window.G.GenBank = class GenBank
     id = 0
 
     console.groupCollapsed("Looking at each feature")
-    for line in @data.FEATURES.split(@newline)[1..]
+    lines = []
+    lines = @data.FEATURES.split(@newline)[1..] if @data.FEATURES?
+    for line in lines
       if line.trim()[0] != "/"
         console.debug("This is the start of a new feature")
         if currentFeature != ""
@@ -451,7 +454,7 @@ window.G.GenBank = class GenBank
         parts[s[0]] = s[1][1..-2]
 
     console.groupEnd()
-    if parts != {}
+    if currentFeature != ""
       retval.push
         currentFeature: currentFeature
         location: components

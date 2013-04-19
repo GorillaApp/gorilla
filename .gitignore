@@ -27,3 +27,5 @@ passenger-standalone
 coverage
 public/assets/
 html/
+
+.DS_Store
