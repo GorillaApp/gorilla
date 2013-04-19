@@ -16,8 +16,11 @@ modifySelection = (modFunction) ->
     console.log(editor.editorId)
     $(editor.editorId).html(editor.file.getAnnotatedSequence())
 
-toUpper = (inputString) ->
-    return inputString.toUpperCase()
+toUpper = (s) ->
+  return s.toUpperCase()
+
+toLower = (s) ->
+  return s.toLowerCase()
 
 reverseCompSelection = () ->
   modifySelection(revCompSeq)
@@ -26,12 +29,14 @@ reverseCompSelection = () ->
   console.log(feats)
 
 revCompSeq = (seq) ->
+  #debugger
   newSeq = ""
   i = seq.length - 1
-  seqMap = a:"t", t:"a", c:"g", g:"c", n:"n"
-           A:"T", T:"A", C:"G", G:"C", N:"N"
+  seqMap = 
+    a:"t", t:"a", c:"g", g:"c", n:"n"
+    A:"T", T:"A", C:"G", G:"C", N:"N"
 
-  while i > 0
+  while i >= 0
     newSeq += seqMap[seq[i]]
     i--
   return newSeq
@@ -41,3 +46,4 @@ window.G or= {}
 G.toUpper = toUpper
 G.modifySelection = modifySelection
 G.reverseCompSelection = reverseCompSelection
+G.revCompSeq = revCompSeq
