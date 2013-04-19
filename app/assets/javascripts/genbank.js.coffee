@@ -255,10 +255,8 @@ window.G.GenBank = class GenBank
     return null
 
   getTableOfFeatures: () ->
-    console.groupCollapsed("Getting Annotated Sequence")
     seq = @getGeneSequence()
     features = @getFeatures()
-    console.debug("Adding each feature to the sequence")
     selections = new Array(seq.length)
     for feature in features
         for range in feature.location.ranges
