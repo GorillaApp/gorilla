@@ -40,6 +40,14 @@ populateTable = (features) ->
   """
 
   $("#features-table").html(tableData)
+  $('#features-table').find('a').unbind('click').click (event) ->
+    event.preventDefault()
+    id = $(this).data('id')
+    $.post "/feature/remove",
+           id: id,
+           ->
+             notify("Successfully deleted feature", "success")
+             $("#allfeaturesdialog").dialog("close")
 
 reset_features_form = ->
   $('feature-form').each -> $(this).reset()
@@ -79,8 +87,8 @@ window.bind_features = ->
       if datum.value == ""
         $('.issues').text('You must fill in all items').show()
         save = false
-      else if datum.name == "sequence" and ! /^[actg]*$/.test(datum.value)
-        $('.issues').text('Sequence may only contain actg').show()
+      else if datum.name == "sequence" and ! /^[actgnACTGN]*$/.test(datum.value)
+        $('.issues').text('Sequence may only contain actgn').show()
         save = false
 
     if save
@@ -98,6 +106,7 @@ window.bind_features = ->
     if window.allFeatures != null
       populateTable(window.allFeatures)
       $('#allfeaturesdialog').dialog("open")
+
     $.get "/feature/getAll", {user_id: user}, (data) ->
       window.allFeatures = data.features
       populateTable(window.allFeatures)
