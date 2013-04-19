@@ -212,19 +212,19 @@ window.G.GenBank = class GenBank
     f = @getFeatures()[featId]
     rangeIx = GenBank.rangeIndex(f, rangeId)
     newFeat = $.extend(true, {}, f)
-    newFeat.id = f.id+1
-        #@getFeatures().length
+    newFeat.id = @getFeatures().length
+    #f.id +1
     newFeat.location.ranges[rangeIx].start += newLength + 1
     newFeat.location.ranges = newFeat.location.ranges[rangeIx..]
     console.log(newFeat.location.ranges[0].start)
     console.log(newFeat.location.ranges[0].end)
     
     
-    #@getFeatures().push(newFeat)
+    @getFeatures().push(newFeat)
     r = f.location.ranges[rangeIx]
     r.end = r.start + newLength
     f.location.ranges = f.location.ranges[..rangeIx]
-
+    ###
     pre = @getFeatures()[..featId]
 
     post = @getFeatures()[featId+1...]
@@ -234,7 +234,7 @@ window.G.GenBank = class GenBank
     features = @getFeatures() 
     features.push newFeat
     @data.features = pre.concat post
-
+    ###
     console.groupEnd()
     new: newFeat
     old: f
