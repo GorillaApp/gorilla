@@ -23,7 +23,6 @@ toLower = (s) ->
   return s.toLowerCase()
 
 reverseCompSelection = () ->
-  debugger
   sel = window.getSelection()
   indices = GorillaEditor.getSelectionRange(sel)
   if indices.length == 2
@@ -44,21 +43,20 @@ reverseCompSelection = () ->
         range = pair.range
         distanceInRange = sIndex - range.start - 1
         console.log("Distance in range: %d", distanceInRange)
-        numSplits += 1
         if sIndex != range.start
           editor.file.splitFeatureAt(feature.id, range.id, distanceInRange)
+          numSplits += 1
   
   allFeats = editor.file.getTableOfFeatures()
   if allFeats[eIndex]
       for pair in allFeats[eIndex]
-        console.log("You dun fucked up")
-        numSplits += 1
         feature = pair.feature
         range = pair.range
         distanceInRange = eIndex - range.start - 1
-        if eIndex != range.end
+        if (eIndex-1) != range.end
           editor.file.splitFeatureAt(feature.id, range.id, distanceInRange)
-
+          console.log("eIndex: %d, range.end: %d", eIndex, range.end)
+          numSplits += 1
   console.log("Number splits: %d", numSplits)
   allFeats = editor.file.getTableOfFeatures()
   eIndex -= 1
