@@ -28,7 +28,7 @@ reverseCompSelection = (testIndices, testGenbank, test = false)->
     if test
         t = {}
         t['file'] = testGenbank
-        revCompSelection(testIndices, t)
+        revCompSelectionLogic(testIndices, t)
     else
         console.groupCollapsed("handlingRevCompSel")
         sel = window.getSelection()
