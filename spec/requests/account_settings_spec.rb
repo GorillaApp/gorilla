@@ -15,7 +15,7 @@ describe "account settings" do
       fill_in "user_password",    :with => "password"
 
       click_button "Sign in"
-      page.should have_content("My Account")
+      page.should have_content("Account Settings")
     end
   end
 
