@@ -1,4 +1,8 @@
 class MainController < ApplicationController
-  def index
-  end
+	
+	#before_filter :after_token_authentication
+	
+	def index
+	end
+
 end
