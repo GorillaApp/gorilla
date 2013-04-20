@@ -34,10 +34,10 @@ reverseCompSelection = (testIndices, testGenbank, test = false)->
         sel = window.getSelection()
         indices = GorillaEditor.getSelectionRange(sel)
         editor = GorillaEditor.getInstance(sel.anchorNode)
-        revCompSelection(indices, editor)
+        revCompSelectionLogic(indices, editor)
         modifySelection(revCompSeq)
 
-revCompSelection = (indices, editor) ->
+revCompSelectionLogic = (indices, editor) ->
   if indices.length == 2
     [sIndex, eIndex] = indices
     eIndex--
