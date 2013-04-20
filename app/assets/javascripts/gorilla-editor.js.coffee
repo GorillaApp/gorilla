@@ -7,11 +7,13 @@ Autosave = G.Autosave
 GenBank = G.GenBank
 
 window.G.GorillaEditor = class GorillaEditor
+  @_editor_instances: {}
 
   constructor: (@mainId, @initialDocument = '', @debugEditor = null) ->
     console.groupCollapsed("Initializing GorillaEditor: #{@mainId}")
     $(@mainId).html('<div class="numbers"></div><div class="editor"></div><div style="clear:both;"></div>')
               .addClass('gorilla-container')
+    GorillaEditor._editor_instances[@mainId[1..]] = @
     @editorId = @mainId + ' .editor'
     @numbersId = @mainId + ' .numbers'
     if @initialDocument != ''
@@ -21,6 +23,12 @@ window.G.GorillaEditor = class GorillaEditor
         @debugEditor.startEditing()
     console.log("GorillaEditor ready!")
     console.groupEnd()
+
+  @getInstance: (node) ->
+    while !!node
+        if $(node).hasClass('gorilla-container')
+            return GorillaEditor._editor_instances[node.id]
+        node = node.parentNode
 
   viewFile: (render = true) ->
     console.groupCollapsed("Preparing Editor to be viewed")
@@ -91,6 +99,18 @@ window.G.GorillaEditor = class GorillaEditor
         pos += $(element).text().length
         element = element.previousSibling
     return pos
+
+  @getSelectionRange: (sel) ->
+    if sel.isCollapsed and sel.rangeCount > 0
+        loc = sel.getRangeAt(0)
+        pos = GorillaEditor.cursorPosition(loc.startOffset, loc.startContainer)
+        return [pos]
+    else if sel.rangeCount > 0
+        loc = sel.getRangeAt(0)
+        startPos = GorillaEditor.cursorPosition(loc.startOffset, loc.startContainer)
+        endPos = GorillaEditor.cursorPosition(loc.endOffset, loc.endContainer)
+        return [startPos, endPos]
+    return []
 
   cursorUpdate: (event) ->
     sel = window.getSelection()

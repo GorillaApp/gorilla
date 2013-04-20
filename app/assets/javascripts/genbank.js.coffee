@@ -12,6 +12,7 @@ String.prototype.padBy = (length) ->
     pad -= 1
   retval
 
+
 window.G or= {}
 
 window.G.GenBank = class GenBank
@@ -245,6 +246,35 @@ window.G.GenBank = class GenBank
       data[split[0]]['span'] = parseInt(split[1])
     return data
 
+  splitFeatureAtInPlace: (featId, rangeId, newLength) ->
+    console.groupCollapsed("Splitting feature",featId,rangeId,"at",newLength)
+    f = @getFeatures()[featId]
+    rangeIx = GenBank.rangeIndex(f, rangeId)
+    newFeat = $.extend(true, {}, f)
+    newFeat.id = f.id + 1
+    newFeat.location.ranges[rangeIx].start += newLength + 1
+    newFeat.location.ranges = newFeat.location.ranges[rangeIx..]
+    console.log(newFeat.location.ranges[0].start)
+    console.log(newFeat.location.ranges[0].end)
+        
+    r = f.location.ranges[rangeIx]
+    r.end = r.start + newLength
+    f.location.ranges = f.location.ranges[..rangeIx]
+    
+    pre = @getFeatures()[..featId]
+
+    post = @getFeatures()[featId+1..]
+    for feat in post
+      feat.id += 1
+    pre.push newFeat
+    features = @getFeatures() 
+    
+    @data.features = pre.concat post
+
+    console.groupEnd()
+    new: newFeat
+    old: f
+
   splitFeatureAt: (featId, rangeId, newLength) ->
     console.groupCollapsed("Splitting feature",featId,rangeId,"at",newLength)
     f = @getFeatures()[featId]
@@ -292,11 +322,9 @@ window.G.GenBank = class GenBank
         return range
     return null
 
-  getAnnotatedSequence: () ->
-    console.groupCollapsed("Getting Annotated Sequence")
+  getTableOfFeatures: () ->
     seq = @getGeneSequence()
     features = @getFeatures()
-    console.debug("Adding each feature to the sequence")
     selections = new Array(seq.length)
     for feature in features
         for range in feature.location.ranges
@@ -304,6 +332,11 @@ window.G.GenBank = class GenBank
                 if selections[i] == undefined
                     selections[i] = []
                 selections[i].push(feature: feature, range: range)
+    selections
+
+  getAnnotatedSequence: () ->
+    seq = @getGeneSequence()
+    selections = @getTableOfFeatures()
     ranges = []
     previous = undefined
     sel = start: 0, end: 0
@@ -501,6 +534,19 @@ window.G.GenBank = class GenBank
     console.debug("Here's your features sir!")
     console.groupEnd()
     @data.features = retval
+
+  #Replaces the range with repText does not take negative indicies
+  replaceSequence: (repText, startIndex = 0, endIndex = -1) ->
+    text = @getGeneSequence()
+    if endIndex == -1
+      endIndex = text.length
+
+    begin = text.substring(0, startIndex)
+    end =  text.substring(endIndex, text.length)
+    
+    @data.raw_genes = begin + repText + end
+    console.log(@data.raw_genes)
+    @data.raw_genes
 
   searchString: (sequence) ->
 
@@ -751,5 +797,3 @@ window.G.GenBank = class GenBank
 
     featureArray = fileContents.split("\n")
     featureArray
-
-
