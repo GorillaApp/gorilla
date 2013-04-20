@@ -1,10 +1,11 @@
 <%= content_for :links do %>
-  <%= link_to "Add a feature", "#", id: :addFeature %>
+  | <%= link_to "Add a feature", "#", id: :addFeature %>
   | <%= link_to "List of Features", "#", id: :listFeatures %>
   | <%= link_to "Reverse Complement", "#", id: :reverseComplement %>
   | <%= link_to "To Upper", "#", id: :toUpper %>
   | <%= link_to "To Lower", "#", id: :toLower %>
   | <%= link_to "Save", "#", id: :save %>
+  | <%= link_to "Use Feature Library", "#", id: :featureLibrary %>
   <% if development? %>
     <span class="development">
       | <%= link_to "Autosave", "#", id: :autosave %>
@@ -31,14 +32,16 @@
     <%= label_tag(:name, "Name: ") %>
     <%= text_field_tag(:name) %><br />
     <%= label_tag(:forward_color, "Forward Color: ") %>
-    <%= text_field_tag(:forward_color, "66FF00", 
+    <%= text_field_tag(:forward_color, "66FF00",
                        :class => 'color') %><br />
     <%= label_tag(:reverse_color, "Reverse Color: ") %>
-    <%= text_field_tag(:reverse_color, "FF5500", 
+    <%= text_field_tag(:reverse_color, "FF5500",
                        :class => 'color') %><br />
     <%= hidden_field_tag(:user_id, current_user.id) %>
     <%= submit_tag("Save Feature") %>
+
   <% end %>
+  <input type="file" id="upload" name="upload">
 </div>
 
 <div id="allfeaturesdialog" class='features' title="All Features">
@@ -55,7 +58,11 @@ saveURL = <%= @saveURL.to_json.html_safe %>;
 allFeatures = null;
 user = <%= (current_user.nil? ? -1 : current_user.id) %>;
 
+
 $(document).ready(function () {
   G.begin_editing("#main_editor", "#autosaved_editor");
 });
+
+
+
 </script>

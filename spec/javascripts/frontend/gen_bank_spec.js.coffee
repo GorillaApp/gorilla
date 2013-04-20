@@ -101,3 +101,85 @@ describe 'GenBank editor', ->
         d = G.GenBank.parseLocationData(location)
         newLocation = G.GenBank.serializeLocation(d)
         newLocation.should.equal location
+
+  describe "get lower case ranges", ->
+    seq = "GGTggAGCTgggttCCCt"
+    returned_indicies = G.GenBank.getLowerIndicies(seq, 0)
+
+    it 'should correctly return correct length of ranges of lower case indicies', ->
+
+      returned_indicies.length.should.equal 3
+
+    it 'should correctly identify the first range', ->
+
+      returned_indicies = G.GenBank.getLowerIndicies(seq, 0)
+      returned_indicies[0].start.should.equal 3
+      returned_indicies[0].end.should.equal 4
+
+  describe "check indexes method", ->
+    it 'should correctly identify all the occurences of the substring in the source', ->
+      seq = "GGTggggAGCTgggttCCCt"
+      find = "ggg"
+
+      indexes = G.GenBank.indexes(seq, find)
+      indexes.length.should.equal 3
+
+  describe "test generate new feature object - all lowercase forward match", ->
+
+    feature = {}
+    feature.id = 2
+    feature.name = "Test-Feature"
+    feature.sequence = "atggaaaacggtgtaacaagggtg"
+    feature.forward_color = "78EDFF"
+    feature.reverse_color = "FF4A50"
+
+    newFeature = G.GenBank.generateNewFeatureObject(feature, 0, 0, 494)
+
+    it 'should correctly return the correct length of ranges', ->
+
+      newFeature.location.ranges.length.should.equal 1
+
+    it 'should correctly return the correct ranges of the feature', ->
+      newFeature.location.ranges[0].start.should.equal 494
+      newFeature.location.ranges[0].end.should.equal 517
+
+  describe "test generate new feature object - capitals reverse match", ->
+
+    feature = {}
+    feature.id = 2
+    feature.name = "reverse-test"
+    feature.sequence = "gGaCaGGt"
+    feature.forward_color = "66FF00"
+    feature.reverse_color = "FF5500"
+
+    newFeature = G.GenBank.generateNewFeatureObject(feature, 1, 0, 1392)
+
+    it 'should correctly return the correct length of ranges', ->
+
+      newFeature.location.ranges.length.should.equal 4
+
+    it 'should correctly return the correct ranges of the feature', ->
+      newFeature.location.ranges[0].start.should.equal 1392
+      newFeature.location.ranges[0].end.should.equal 1392
+
+      newFeature.location.ranges[1].start.should.equal 1394
+      newFeature.location.ranges[1].end.should.equal 1394
+
+      newFeature.location.ranges[2].start.should.equal 1396
+      newFeature.location.ranges[2].end.should.equal 1396
+
+      newFeature.location.ranges[3].start.should.equal 1399
+      newFeature.location.ranges[3].end.should.equal 1399
+
+
+
+
+
+
+
+
+
+
+
+
+

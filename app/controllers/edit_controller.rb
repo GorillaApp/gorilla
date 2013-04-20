@@ -2,7 +2,9 @@ require 'bio'
 require 'open-uri'
 
 class EditController < ApplicationController
-  before_filter :authenticate_user!
+  
+  #before_filter :authenticate_user!
+  before_filter :after_token_authentication
 
   def load
     @file_restore_contents = ''
@@ -16,6 +18,7 @@ class EditController < ApplicationController
     if not params[:file].blank?
       file = params[:file]
     elsif not params[:fileURL].blank?
+      # puts "Reading from URL"
       file = open(params[:fileURL]).read()
     end
 
@@ -50,7 +53,7 @@ class EditController < ApplicationController
   def delete
     id = params[:id]
     user = params[:user]
-    
+
     Autosave.delete_save(id, user)
 
     render json: {success: 1}
