@@ -2,25 +2,30 @@
 # All this logic will automatically be available in application.js.
 # You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script/
 #
+#= require autosave
 
-window.begin_editing = (editor_selector, autosave_selector) ->
+window.G or= {}
+
+window.G.begin_editing = (editor_selector, autosave_selector) ->
   console.groupCollapsed("Preparing to edit a file")
   setup_features()
 
   if window.isRestore
     console.groupCollapsed("An autosaved version exists")
-    Autosave.handle(editor_selector, autosave_selector, ->
-      begin_editing(editor_selector, autosave_selector))
+    G.Autosave.handle(editor_selector, autosave_selector, ->
+      G.begin_editing(editor_selector, autosave_selector))
     console.groupEnd()
   else
     $(autosave_selector).hide()
 
-    #window.debug_editor = new GorillaEditor(autosave_selector)
-    window.main_editor = new GorillaEditor(editor_selector, doc)
+    # G.debug_editor = new G.GorillaEditor(autosave_selector)
+    G.main_editor = new G.GorillaEditor(editor_selector, doc, G.debug_editor)
+    $(autosave_selector).show()
 
-    Autosave.start(main_editor)
+    G.Autosave.start(G.main_editor)
 
     bind_features()
+    bind_selections()
 
-    main_editor.startEditing()
+    G.main_editor.startEditing()
   console.groupEnd()
