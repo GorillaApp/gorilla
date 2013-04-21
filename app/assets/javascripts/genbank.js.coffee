@@ -156,6 +156,8 @@ class window.GenBank
       f.location.ranges.splice(GenBank.rangeIndex(f, rangeId), 1)
     console.groupEnd()
 
+  
+
   advanceFeature: (featId, rangeId, amount) ->
     console.groupCollapsed("Advancing #{featId}-#{rangeId}")
     f = @getFeatures()[featId]

@@ -140,11 +140,55 @@ class window.GorillaEditor
       if delme != null
         $(delme).remove()
 
-      sel.addRange l
-
+      sel.addRange 
       @completeEdit()
     else
-      console.error "How Dare You"
+      indicies = getSelectionRange(window.getSelection())
+      if indicies.length == 2
+        @file.replaceSequence("", sIndex, eIndex)
+        deleteSelection([sInded, eIndex])
+        $(editor.editorId).html(editor.file.getAnnotatedSequence())
+        editor.startEditing()
+        sel.collapse(true)
+      else
+        console.error "How Dare You"
+
+  deleteSelection: (indicies) ->
+    removalAmount = 0
+    if indices.length == 2
+      [sIndex, eIndex] = indicies
+      removalAmount = eIndex - sIndex
+      eIndex--
+    else
+      return
+
+    iterateOverFileRange(sIndex, sIndex, (feature, range) ->
+      distanceInRange = sIndex - range.start - 1
+      if sIndex != range.start
+        @file.splitFeatureAtInPlace(feature.id, range.id, distanceInRange))
+
+    iterateOverFileRange(eIndex, eIndex, (feature, range) ->
+      distanceInRange = eIndex - range.start
+      if eIndex != range.end
+        @file.splitFeatureAtInPlace(feature.id, range.id, distanceInRange))
+    
+    iterateOverFileRange(sIndex, eIndex, (feature, range) ->
+      @file.removeRange(feature.id, range.id))
+
+    iterateOverFileRange(eIndex, allFeats.length - 1, (feature, range) -> 
+      @file.advanceFeature(feature, range, -1 * removalAmount))
+
+  #Iterates over a specified range in             
+  iterateOverFileRange: (start, end, funct) ->
+    seenFeatures = {}
+    allFeats = @file.getTableOfFeatures() 
+    for i in [start .. end]
+      if allFeats[i]
+        for pair in allFeats[i]
+          hash = pair.feature.id.toString() + ',' + pair.range.id.toString()
+          if not seenFeatures[hash]
+            seenFeatures[hash] = true
+            funct(pair.feature, pair.range)
 
   keyDown: (event) ->
     if event.keyCode == 8
