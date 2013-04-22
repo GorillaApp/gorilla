@@ -298,52 +298,57 @@ window.G.GorillaEditor = class GorillaEditor
       sel.addRange 
       @completeEdit()
     else
-      indicies = getSelectionRange(window.getSelection())
+      indicies = GorillaEditor.getSelectionRange(window.getSelection())
       if indicies.length == 2
+        [sIndex, eIndex] = indicies
         @file.replaceSequence("", sIndex, eIndex)
-        deleteSelection([sInded, eIndex])
-        $(editor.editorId).html(editor.file.getAnnotatedSequence())
-        editor.startEditing()
+        @deleteSelection(indicies)
+        $(@editorId).html(@file.getAnnotatedSequence())
+        @startEditing()
         sel.collapse(true)
       else
         console.error "How Dare You"
 
   deleteSelection: (indicies) ->
     removalAmount = 0
-    if indices.length == 2
+    if indicies.length == 2
       [sIndex, eIndex] = indicies
       removalAmount = eIndex - sIndex
       eIndex--
     else
       return
 
-    iterateOverFileRange(sIndex, sIndex, (feature, range) ->
+    @iterateOverFileRange(sIndex, sIndex, (feature, range, file) ->
       distanceInRange = sIndex - range.start - 1
       if sIndex != range.start
-        @file.splitFeatureAtInPlace(feature.id, range.id, distanceInRange))
+        file.splitFeatureAtInPlace(feature.id, range.id, distanceInRange))
 
-    iterateOverFileRange(eIndex, eIndex, (feature, range) ->
+    @iterateOverFileRange(eIndex, eIndex, (feature, range, file) ->
       distanceInRange = eIndex - range.start
       if eIndex != range.end
-        @file.splitFeatureAtInPlace(feature.id, range.id, distanceInRange))
-    
-    iterateOverFileRange(sIndex, eIndex, (feature, range) ->
-      @file.removeRange(feature.id, range.id))
+        file.splitFeatureAtInPlace(feature.id, range.id, distanceInRange))
 
-    iterateOverFileRange(eIndex, allFeats.length - 1, (feature, range) -> 
-      @file.advanceFeature(feature, range, -1 * removalAmount))
+    @iterateOverFileRange(sIndex, eIndex, (feature, range, file) ->
+      file.removeFeature(feature.id))
 
-  #Iterates over a specified range in             
+    @iterateOverFileRange(eIndex, -1 , (feature, range, file) -> 
+      file.advanceFeature(feature.id, range.id, -1 * removalAmount))
+
+
+  #Iterates over a specified range in the file
+  #if end is -1 then the range goes to the end of the file           
   iterateOverFileRange: (start, end, funct) ->
     seenFeatures = {}
     allFeats = @file.getTableOfFeatures() 
+    if end == -1
+       end = allFeats.length - 1
     for i in [start .. end]
       if allFeats[i]
         for pair in allFeats[i]
           hash = pair.feature.id.toString() + ',' + pair.range.id.toString()
           if not seenFeatures[hash]
             seenFeatures[hash] = true
-            funct(pair.feature, pair.range)
+            funct(pair.feature, pair.range, @file)
 
   keyDown: (event) ->
     if event.keyCode == 8

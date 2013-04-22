@@ -765,9 +765,6 @@ window.G.GenBank = class GenBank
         if featText[4].search("#") < 0
           featText[4] = featText[4].replace(/[0-9]/g, '')
 
-
-
-
         console.log("Forward color: ", featText[3])
 
         if colors[featText[3]] == undefined
@@ -775,7 +772,6 @@ window.G.GenBank = class GenBank
           f.forward_color = featText[3]
         else
           f.forward_color = colors[featText[3]]
-
 
         if colors[featText[4]] == undefined
           # console.log("No match for ", featText[4].length)
@@ -799,3 +795,16 @@ window.G.GenBank = class GenBank
 
     featureArray = fileContents.split("\n")
     featureArray
+
+  removeFeature: (fIds) ->
+      feats = @getFeatures()
+
+      i = 0
+      for fId in fIds
+        feats.splice(fId - i, fId - i)
+        for f in feats[fId - i ..]
+          f.id -= 1
+        i++
+
+      
+      @data.features = feats

@@ -44,10 +44,11 @@ revCompSelectionLogic = (indices, editor) ->
   else
     return
 
-  allFeats = editor.file.getTableOfFeatures()
+
+  
   seenFeatures = {}
   numSplits = 0
-
+  allFeats = editor.file.getTableOfFeatures()
   console.log("Start index %d", sIndex)
   console.log("End index %d", eIndex)
 
