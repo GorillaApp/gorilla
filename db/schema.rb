@@ -22,22 +22,6 @@ ActiveRecord::Schema.define(:version => 20130422210202) do
     t.datetime "updated_at", :null => false
   end
 
-  create_table "enzymes", :force => true do |t|
-    t.string   "name"
-    t.string   "site"
-    t.string   "comment"
-    t.integer  "user_id"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-  end
-
-  create_table "feature_libraries", :force => true do |t|
-    t.integer  "user_id"
-    t.string   "name"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-  end
-
   create_table "features", :force => true do |t|
     t.integer  "user_id"
     t.string   "name"
@@ -59,10 +43,12 @@ ActiveRecord::Schema.define(:version => 20130422210202) do
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
+    t.string   "authentication_token"
     t.datetime "created_at",                             :null => false
     t.datetime "updated_at",                             :null => false
   end
 
+  add_index "users", ["authentication_token"], :name => "index_users_on_authentication_token", :unique => true
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
 
