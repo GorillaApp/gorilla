@@ -15,7 +15,6 @@ ActiveRecord::Schema.define(:version => 20130422210202) do
 
   create_table "autosaves", :force => true do |t|
     t.string   "name"
-    t.datetime "save_date"
     t.integer  "user_id"
     t.text     "contents"
     t.datetime "created_at", :null => false
