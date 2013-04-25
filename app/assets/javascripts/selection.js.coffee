@@ -44,7 +44,7 @@ revCompSelectionLogic = (indices, editor) ->
   else
     return
 
-
+  debugger
   
   seenFeatures = {}
   numSplits = 0
@@ -70,6 +70,7 @@ revCompSelectionLogic = (indices, editor) ->
         if eIndex != range.end
           editor.file.splitFeatureAtInPlace(feature.id, range.id, distanceInRange)
           numSplits += 1
+
   console.log("Number splits: %d", numSplits)
   allFeats = editor.file.getTableOfFeatures()
   console.log(allFeats[sIndex...eIndex])

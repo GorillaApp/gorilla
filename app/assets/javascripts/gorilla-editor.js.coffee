@@ -318,6 +318,8 @@ window.G.GorillaEditor = class GorillaEditor
     else
       return
 
+    debugger
+
     @iterateOverFileRange(sIndex, sIndex, (feature, range, file) ->
       distanceInRange = sIndex - range.start - 1
       if sIndex != range.start
@@ -329,9 +331,9 @@ window.G.GorillaEditor = class GorillaEditor
         file.splitFeatureAtInPlace(feature.id, range.id, distanceInRange))
 
     @iterateOverFileRange(sIndex, eIndex, (feature, range, file) ->
-      file.removeFeature(feature.id))
+      file.removeRange(feature.id, range.id))
 
-    @iterateOverFileRange(eIndex, -1 , (feature, range, file) -> 
+    @iterateOverFileRange(eIndex, -1 , (feature, range, file) ->
       file.advanceFeature(feature.id, range.id, -1 * removalAmount))
 
 

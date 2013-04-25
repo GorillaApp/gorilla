@@ -796,15 +796,20 @@ window.G.GenBank = class GenBank
     featureArray = fileContents.split("\n")
     featureArray
 
-  removeFeature: (fIds) ->
-      feats = @getFeatures()
+  removeFeature: (feat) ->
+    feats = @getFeatures()
 
-      i = 0
-      for fId in fIds
-        feats.splice(fId - i, fId - i)
-        for f in feats[fId - i ..]
-          f.id -= 1
-        i++
+    fId = f.id
+    feats.splice(fId, fId)
+    for f in feats[fId ..]
+      f.id -= 1
 
+    @data.features = feats
+
+  removeRange: (feat, range) ->
+    if feat.location.ranges.length == 1
+      @removeFeature(feat)
+    else
+      r = feat.location.ranges
+      r.remove(range)
       
-      @data.features = feats
