@@ -399,7 +399,7 @@ window.G.GorillaEditor = class GorillaEditor
             # Populate new span with appropriate information
             newGuy = document.createElement("SPAN")
             newid = $(@editorId).find('span').length
-            newGuy.id = "#{newid}-#{@file.id}"
+            newGuy.id = "#{@file.id}-#{newid}"
             newGuy.setAttribute("style", pe.getAttribute('style'))
             newGuy.setAttribute("data-offsets", data_offsets)
             newGuy.setAttribute("data-features", data_features)
