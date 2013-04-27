@@ -2,14 +2,10 @@ Gorilla::Application.routes.draw do
 
   devise_for :users
 
-  post "feature/add"
-
-  post "feature/remove"
-
-  get "feature/getAll"
-
   get "feature/", :to => "feature#feature"
-
+  post "feature/remove"
+  post "feature/add"
+  get "feature/getAll"
   get "feature/getAll"
 
   get "testclient/client"
@@ -17,10 +13,10 @@ Gorilla::Application.routes.draw do
   get "main/index"
 
   match "edit/load"
-
   match "edit/autosave"
-
   match "edit/delete"
+
+  match "bio/align"
 
   root :to => "testclient#client"
 
