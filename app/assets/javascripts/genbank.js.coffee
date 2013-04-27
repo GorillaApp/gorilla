@@ -183,7 +183,7 @@ window.G.GenBank = class GenBank
         data_offsets += "#{feat.id}:#{offset}"
 
     console.groupEnd()
-    beg + "<span id='#{id}-#{@id}' style='background-color:#{color}' data-offsets='#{data_offsets}' data-features='#{data_features}'>" + mid + "</span>" + end
+    beg + "<span id='#{@id}-#{id}' style='background-color:#{color}' data-offsets='#{data_offsets}' data-features='#{data_features}'>" + mid + "</span>" + end
 
   annotateRange: (seq, range, i = 0) ->
     console.groupCollapsed("Annotating range: ", range)

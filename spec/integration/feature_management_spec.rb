@@ -7,7 +7,7 @@ describe "A user", :js => true do
         before :each do
             visit '/'
 
-            find("#users_form").click_link "Sign up"
+            find_by_id("users_form").click_link "Sign up"
 
             @user = FactoryGirl.attributes_for(:user)
             fill_in :user_email, with: @user[:email]
@@ -24,7 +24,7 @@ describe "A user", :js => true do
             before :each do
                 visit '/'
 
-                find('#file').set <<-EOF
+                find_by_id('file').set <<-EOF
 LOCUS pGG001 20 bp ds-DNA circular UNK 01-JAN-1980
 FEATURES             Location/Qualifiers
      misc_feature    complement(1..10)
@@ -41,7 +41,7 @@ EOF
 
                 page.should have_content "cgtctctgaccagaccaata"
 
-                find('#0-main_editor').should have_content "cgtctctgac"
+                find_by_id('main_editor-0').should have_content "cgtctctgac"
             end
 
             it 'should be able add a new feature' do
@@ -73,9 +73,9 @@ EOF
                
                 page.should have_content 'gattacaN'
 
-                find("#features-table")
-                    .find("tr[contains('gattacaN')]")
-                    .click_link('X')
+                t = find("#features-table")
+                tr = t.find("tr[data-contents=gattacaN]")
+                tr.click_link('X')
 
                 page.should have_content 'Successfully deleted feature'
             end
