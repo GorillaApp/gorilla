@@ -80,6 +80,9 @@ window.G.GorillaEditor = class GorillaEditor
                 .bind('dragover', (event) -> event.preventDefault())
                 .bind('drop', (event) -> event.preventDefault())
 
+    G.LocalStorage.store(G.request_id, 'sequence', @file.getGeneSequence())
+    G.LocalStorage.store(G.request_id, 'filename', @file.data.LOCUS.name)
+
     @editorContents = $(@editorId).text()
     @editorHtml = $(@editorId).html()
     @previousEditors = []
@@ -216,6 +219,7 @@ window.G.GorillaEditor = class GorillaEditor
 
   completeEdit: ->
     @file.updateSequence($(@editorId).text())
+    G.LocalStorage.store(G.request_id, 'sequence', @file.getGeneSequence())
     if @debugEditor != null
       @debugEditor.file = new G.GenBank(@file.serialize())
       @debugEditor.viewFile()

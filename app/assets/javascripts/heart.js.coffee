@@ -8,10 +8,10 @@ class Heart
     setInterval (() -> Heart.beat(id)), 500
 
   @beat: (id) ->
-    LocalStorage.store(id, 'alive', new Date().getTime())
+    LocalStorage.store(id, 'heartbeat', new Date().getTime())
 
   @isAlive: (id) ->
-    lastSeen = LocalStorage.get(id, 'alive')
+    lastSeen = LocalStorage.get(id, 'heartbeat')
     if lastSeen?
       if ((new Date().getTime()) - lastSeen) < 1000
         return true
