@@ -2,6 +2,13 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
 
   # before_filter :after_token_authentication
+  before_filter :get_request_id
+
+  def get_request_id
+    session[:request_id] ||= 0
+    session[:request_id] += 1
+    @request_id = session[:request_id]
+  end
 
   def after_token_authentication
     auth_token = params[:auth_token]

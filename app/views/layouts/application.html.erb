@@ -7,6 +7,10 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
+  <script>
+    G || (G = {});
+    G.request_id = <%= @request_id || 0 %>;
+  </script>
   <header>
     <h3>Gorilla</h3>
     <div id="header_links">

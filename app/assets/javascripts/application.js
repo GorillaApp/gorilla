@@ -18,6 +18,6 @@
 
 $(document).ready(function(){
   register_notifications()
-
+  G.Heart.start(G.request_id)
   $('#user_nav').registerSlideHide(30)
 });
