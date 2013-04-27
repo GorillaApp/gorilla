@@ -1,6 +1,7 @@
 #= require genbank
 #= require autosave
 #= require util
+#= require local-storage
 
 window.G or= {}
 Autosave = G.Autosave

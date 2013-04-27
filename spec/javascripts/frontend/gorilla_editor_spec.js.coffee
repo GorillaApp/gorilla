@@ -1,5 +1,4 @@
 #= require gorilla-editor
-#= require genbank
 #= require jquery
 #= require helpers/keyboard_helper
 
