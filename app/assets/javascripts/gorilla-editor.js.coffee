@@ -318,23 +318,50 @@ window.G.GorillaEditor = class GorillaEditor
     else
       return
 
-    debugger
+    handledRange = {}
 
     @iterateOverFileRange(sIndex, sIndex, (feature, range, file) ->
       distanceInRange = sIndex - range.start - 1
       if sIndex != range.start
-        file.splitFeatureAtInPlace(feature.id, range.id, distanceInRange))
+        if feature.location.ranges.length > 1
+          hash = feature.id.toString() + ',' + range.id.toString()
+          handledRange[hash] = true
+          if eIndex > range.end
+            range.end = sIndex - 1
+          else
+            range.end -= 1 + eIndex - sIndex
+        else
+          file.splitFeatureAtInPlace(feature.id, range.id, distanceInRange))
 
     @iterateOverFileRange(eIndex, eIndex, (feature, range, file) ->
       distanceInRange = eIndex - range.start
       if eIndex != range.end
-        file.splitFeatureAtInPlace(feature.id, range.id, distanceInRange))
+        hash = feature.id.toString() + ',' + range.id.toString()
+        if feature.location.ranges.length > 1 and not handledRange[hash]
+          handledRange[hash] = true
+          if sIndex < range.start
+            range.start = sIndex
+            range.end = sIndex - 1 + (range.end - eIndex)
+        else
+          file.splitFeatureAtInPlace(feature.id, range.id, distanceInRange))
 
-    @iterateOverFileRange(sIndex, eIndex, (feature, range, file) ->
-      file.removeRange(feature.id, range.id))
+    seenFeatures = {}
+    allFeats = @file.getTableOfFeatures()
+    featRangePairs = [] 
+    for i in [sIndex .. eIndex]
+      if allFeats[i]
+        for pair in allFeats[i]
+          hash = pair.feature.id.toString() + ',' + pair.range.id.toString()
+          if not seenFeatures[hash]
+            seenFeatures[hash] = true
+            if not handledRange[hash]
+              featRangePairs.push([pair.feature, pair.range])
+    @file.removeRanges(featRangePairs)
 
-    @iterateOverFileRange(eIndex, -1 , (feature, range, file) ->
-      file.advanceFeature(feature.id, range.id, -1 * removalAmount))
+    @iterateOverFileRange(sIndex, -1 , (feature, range, file) ->
+      hash = feature.id.toString() + ',' + range.id.toString()
+      if not handledRange[hash]
+        file.advanceFeature(feature.id, range.id, -1 * removalAmount))
 
 
   #Iterates over a specified range in the file
@@ -344,6 +371,8 @@ window.G.GorillaEditor = class GorillaEditor
     allFeats = @file.getTableOfFeatures() 
     if end == -1
        end = allFeats.length - 1
+    if start > end
+      return
     for i in [start .. end]
       if allFeats[i]
         for pair in allFeats[i]

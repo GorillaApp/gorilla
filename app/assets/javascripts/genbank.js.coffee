@@ -254,6 +254,7 @@ window.G.GenBank = class GenBank
     newFeat.id = f.id + 1
     newFeat.location.ranges[rangeIx].start += newLength + 1
     newFeat.location.ranges = newFeat.location.ranges[rangeIx..]
+    newFeat.strand = f.strand
     console.log(newFeat.location.ranges[0].start)
     console.log(newFeat.location.ranges[0].end)
         
@@ -283,6 +284,7 @@ window.G.GenBank = class GenBank
     newFeat.id = @getFeatures().length
     newFeat.location.ranges[rangeIx].start += newLength + 1
     newFeat.location.ranges = newFeat.location.ranges[rangeIx..]
+    newFeat.strand = f.strand
     @getFeatures().push(newFeat)
     r = f.location.ranges[rangeIx]
     r.end = r.start + newLength
@@ -796,20 +798,28 @@ window.G.GenBank = class GenBank
     featureArray = fileContents.split("\n")
     featureArray
 
-  removeFeature: (feat) ->
+  removeFeatures: (featList) ->
     feats = @getFeatures()
 
-    fId = f.id
-    feats.splice(fId, fId)
-    for f in feats[fId ..]
-      f.id -= 1
+    # debugger
+
+    featList.sort (a,b) -> a.id - b.id
+
+    for feat in featList
+      fId = feat.id
+      feats.splice(fId, 1)
+      for f in feats[fId ..]
+        f.id -= 1
 
     @data.features = feats
 
-  removeRange: (feat, range) ->
-    if feat.location.ranges.length == 1
-      @removeFeature(feat)
-    else
-      r = feat.location.ranges
-      r.remove(range)
+  removeRanges: (featRangePairs) ->
+    featsToDelete = []
+    for [feat, range] in featRangePairs
+      if feat.location.ranges.length == 1
+        featsToDelete.push(feat)
+      else
+        feat.location.ranges.splice(range.id,1)
+    @removeFeatures(featsToDelete)
+
       
