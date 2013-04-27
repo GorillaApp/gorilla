@@ -42,7 +42,7 @@ EOF
 
       page.should have_content "cgtctctgaccagaccaata"
 
-      find('#0-main_editor').should have_content "cgtctctgac"
+      find('#main_editor-0').should have_content "cgtctctgac"
     end
 
     context 'and opens a file' do
@@ -64,32 +64,32 @@ ORIGIN
 EOF
         click_button "Open File"
 
-        find('#0-main_editor').should have_content "cgtctctgac"
+        find('#main_editor-0').should have_content "cgtctctgac"
       end
 
       it 'should be able to insert text' do
-        set_cursor_at('0-main_editor', 3)
+        set_cursor_at('main_editor-0', 3)
 
         type('a')
         
-        find('#1-main_editor').should have_content 'ctctgac'
-        find('#0-main_editor').should have_content 'cgt'
-        find(:xpath, "//span[@id='0-main_editor']/following-sibling::*").should have_content 'a'
+        find('#main_editor-1').should have_content 'ctctgac'
+        find('#main_editor-0').should have_content 'cgt'
+        find(:xpath, "//span[@id='main_editor-0']/following-sibling::*").should have_content 'a'
       end
 
       it 'should be able to insert a, c, t, g, and n' do
-        set_cursor_at('0-main_editor', 3)
+        set_cursor_at('main_editor-0', 3)
 
         type('actgn')
         
-        find('#1-main_editor').should have_content 'ctctgac'
-        find('#0-main_editor').should have_content 'cgt'
+        find('#main_editor-1').should have_content 'ctctgac'
+        find('#main_editor-0').should have_content 'cgt'
 
         page.should have_content 'cgtactgnctctgac'
       end
 
       it 'should not be able to enter any other characters' do
-        set_cursor_at('0-main_editor', 5)
+        set_cursor_at('main_editor-0', 5)
 
         type('abcdefghijklmnopqrstuvwxyz')
         
@@ -97,30 +97,30 @@ EOF
       end
 
       it 'should be able to backspace text' do
-        set_cursor_at('0-main_editor', 5)
+        set_cursor_at('main_editor-0', 5)
         type(:backspace)
         type(:backspace)
         type(:backspace)
-        find("#0-main_editor").should have_content "cgctgac"
+        find("#main_editor-0").should have_content "cgctgac"
       end
 
       it 'should be able to backspace from text into span' do
-        set_cursor_after('0-main_editor', 1)
+        set_cursor_after('main_editor-0', 1)
         type(:backspace)
         type(:backspace)
-        find("#0-main_editor").should have_content "cgtctctga"
+        find("#main_editor-0").should have_content "cgtctctga"
       end
 
       it 'should be able to delete text' do
-        set_cursor_at('0-main_editor', 2)
+        set_cursor_at('main_editor-0', 2)
         type(:delete)
         type(:delete)
         type(:delete)
-        find('#0-main_editor').should have_content "cgctgac"
+        find('#main_editor-0').should have_content "cgctgac"
       end
 
       it 'should autosave after editing' do
-        set_cursor_at('0-main_editor', 5)
+        set_cursor_at('main_editor-0', 5)
 
         type('ag')
 
@@ -130,7 +130,7 @@ EOF
       end
 
       it 'should be able to undo' do
-        set_cursor_at('0-main_editor', 0)
+        set_cursor_at('main_editor-0', 0)
 
         type('t')
 
@@ -142,7 +142,7 @@ EOF
       end
 
       it 'should be able to redo' do
-        set_cursor_at('0-main_editor', 0)
+        set_cursor_at('main_editor-0', 0)
 
         type('t')
 
@@ -158,23 +158,23 @@ EOF
       end
 
       it 'should be able to delete past the end of a feature' do
-        set_cursor_at('0-main_editor', 10)
+        set_cursor_at('main_editor-0', 10)
         type(:delete)
         page.should have_content 'cgtctctgacagaccaata'
       end
 
       it 'should be able to see the cursor position' do
-        click_at('0-main_editor', 3)
+        click_at('main_editor-0', 3)
         page.should have_content '3 <0>'
-        click_at('0-main_editor', 4)
+        click_at('main_editor-0', 4)
         page.should have_content '4 <1>'
-        click_at('0-main_editor', 5)
+        click_at('main_editor-0', 5)
         page.should have_content '5 <2>'
       end
 
       it 'should be able to see the selection' do
-        select_from('0-main_editor', 0, '0-main_editor', 5)
-        simulate_click('0-main_editor')
+        select_from('main_editor-0', 0, 'main_editor-0', 5)
+        simulate_click('main_editor-0')
         page.should have_content 'Start 0 <0>'
         page.should have_content 'End 5 <2>'
         page.should have_content 'Length 5 <2>'
@@ -206,17 +206,17 @@ ORIGIN
 EOF
         click_button "Open File"
 
-        find('#0-main_editor').should have_content "cgtctctgac"
+        find('#main_editor-0').should have_content "cgtctctgac"
       end
 
       it 'should be able to delete past the end of a feature' do
-        set_cursor_at('0-main_editor', 10)
+        set_cursor_at('main_editor-0', 10)
         type(:delete)
         page.should have_content 'cgtctctgacagaccaata'
       end
 
       it 'should be able to delete over an empty text element' do
-        set_cursor_at('0-main_editor', 10)
+        set_cursor_at('main_editor-0', 10)
         type(:delete)
         type(:delete)
         type(:delete)
@@ -224,7 +224,7 @@ EOF
       end
 
       it 'should be able to delete from a text node to a span' do
-        set_cursor_after('0-main_editor', 1)
+        set_cursor_after('main_editor-0', 1)
         type(:delete)
         type(:delete)
         page.should have_content 'cgtctctgaccaccaata'

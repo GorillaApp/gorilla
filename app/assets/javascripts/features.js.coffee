@@ -15,7 +15,7 @@ populateTable = (features) ->
 
   for feat,i in features
     tableData += """
-      <tr>
+      <tr data-contents="#{feat.sequence}">
         <td>#{i+1}</td>
         <td>#{feat.name}</td>
         <td>#{feat.sequence}</td>
