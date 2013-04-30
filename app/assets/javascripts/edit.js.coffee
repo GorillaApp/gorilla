@@ -20,7 +20,6 @@ window.G.begin_editing = (editor_selector, autosave_selector) ->
 
     # G.debug_editor = new G.GorillaEditor(autosave_selector)
     G.main_editor = new G.GorillaEditor(editor_selector, doc, G.debug_editor)
-    $(autosave_selector).show()
 
     G.Autosave.start(G.main_editor)
 
