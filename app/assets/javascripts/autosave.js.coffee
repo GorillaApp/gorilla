@@ -12,6 +12,7 @@ window.G.Autosave = class Autosave
 
   @handle: (editor_selector, autosave_selector, callback) ->
     $("#autosavechoice").hide()
+    $("#header_links").hide()
     d = new G.GenBank(doc)
     dr = new G.GenBank(doc_restored)
 
@@ -30,13 +31,16 @@ window.G.Autosave = class Autosave
         $('#opened').click ->
           window.isRestore = false
           callback()
+          $("#header_links").show()
         $('#autosaved').click ->
           window.doc = window.doc_restored
           window.isRestore = false
           callback()
+          $("#header_links").show()
         return
       else
         Autosave.delete()
+        $("#header_links").show()
     window.isRestore = false
     callback()
 
