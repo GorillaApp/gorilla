@@ -256,19 +256,19 @@ window.G.GenBank = class GenBank
     newFeat.location.ranges = newFeat.location.ranges[rangeIx..]
     console.log(newFeat.location.ranges[0].start)
     console.log(newFeat.location.ranges[0].end)
-        
+
     r = f.location.ranges[rangeIx]
     r.end = r.start + newLength
     f.location.ranges = f.location.ranges[..rangeIx]
-    
+
     pre = @getFeatures()[..featId]
 
     post = @getFeatures()[featId+1..]
     for feat in post
       feat.id += 1
     pre.push newFeat
-    features = @getFeatures() 
-    
+    features = @getFeatures()
+
     @data.features = pre.concat post
 
     console.groupEnd()
@@ -543,7 +543,7 @@ window.G.GenBank = class GenBank
 
     begin = text.substring(0, startIndex)
     end =  text.substring(endIndex, text.length)
-    
+
     @data.raw_genes = begin + repText + end
     console.log(@data.raw_genes)
     @data.raw_genes
@@ -619,8 +619,10 @@ window.G.GenBank = class GenBank
     newFeature = {}
     ranges = []
 
-    # case where the sequence does not contain any capital letters
-    if feature.sequence == feature.sequence.toLowerCase()
+    console.log("Feature: ", feature)
+
+    # case where the sequence does not contain any lower case letters
+    if feature.sequence == feature.sequence.toUpperCase()
       ranges.push
         start: result
         end: result + feature.sequence.length - 1
@@ -629,7 +631,7 @@ window.G.GenBank = class GenBank
     else
       console.log("start", result)
       range_id = 0
-      lowerIndicies = GenBank.getLowerIndicies(feature.sequence, result)
+      lowerIndicies = GenBank.getUpperIndicies(feature.sequence, result)
       for range in lowerIndicies
         range.id = range_id
         range_id = range_id + 1
@@ -643,11 +645,11 @@ window.G.GenBank = class GenBank
     newFeature
 
   # returns an array of all the capitalized charaters within the sequence
-  @getLowerIndicies: (sequence, start) ->
+  @getUpperIndicies: (sequence, start) ->
     uppers = []
     for i in [0...sequence.length]
       char = sequence.charAt i
-      if char == char.toLowerCase()
+      if char == char.toUpperCase()
         uppers.push i + start
 
     # console.log(uppers)
