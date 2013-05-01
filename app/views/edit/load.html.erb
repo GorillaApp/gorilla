@@ -49,6 +49,14 @@
 </div>
 
 
+<div>
+  <form id="foo" class="search" action="">
+    <input type="text"/>
+    <input type="reset" value="Reset" />
+    <input type="submit" value="Search" />
+  </form>
+</div>
+
 <script type="text/javascript" >
 doc = <%= @file_contents.to_json.html_safe %>;
 doc_restored = <%= @file_restore_contents.to_json.html_safe %>;
