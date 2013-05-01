@@ -14,6 +14,14 @@
   <% end %>
 <% end %>
 
+ <div id="search">
+      <form id="foo" class="search" action="">
+        <input type="text"/>
+        <input type="reset" value="Reset" />
+        <input type="submit" value="Search" />
+      </form>
+</div>
+
 <div id="autosavechoice">
     <p>Please choose which version you would like to use.</p>
     <button type = "button" id = "opened"> Opened Version </button>
@@ -49,13 +57,7 @@
 </div>
 
 
-<div>
-  <form id="foo" class="search" action="">
-    <input type="text"/>
-    <input type="reset" value="Reset" />
-    <input type="submit" value="Search" />
-  </form>
-</div>
+
 
 <script type="text/javascript" >
 doc = <%= @file_contents.to_json.html_safe %>;
