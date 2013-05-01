@@ -89,6 +89,20 @@ body {
     }
   }
 
+  #find {
+    float: right;
+    padding-right: 17.5px;
+
+    A {
+      color: black;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    A:hover {
+      text-decoration: underline;
+    }
+  }
 
   #user_nav {
     position: fixed;
