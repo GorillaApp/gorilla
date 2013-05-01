@@ -31,16 +31,13 @@ window.G.Autosave = class Autosave
         $('#opened').click ->
           window.isRestore = false
           callback()
-          $("#header_links").show()
         $('#autosaved').click ->
           window.doc = window.doc_restored
           window.isRestore = false
           callback()
-          $("#header_links").show()
         return
       else
         Autosave.delete()
-        $("#header_links").show()
     window.isRestore = false
     callback()
 
@@ -63,6 +60,7 @@ window.G.Autosave = class Autosave
 
   @start: (editor) ->
     $("#autosavechoice").hide()
+    $("#header_links").show()
 
     $('#autosave').click ->
       Autosave.request(editor)
