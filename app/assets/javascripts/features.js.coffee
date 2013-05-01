@@ -78,7 +78,7 @@ window.setup_features = ->
 
   $('#finddialog').dialog
     autoOpen: false
-    width: 600
+    width: 523
     show:
       effect: "slide"
       duration: 1000
@@ -157,6 +157,18 @@ window.bind_features = ->
 
   $('#find').unbind('click').click ->
     $('#finddialog').dialog("open")
+
+  $('#find-next-button').unbind('click').click ->
+
+  $('#find-prev-button').unbind('click').click ->
+
+  $('#find-all-button').unbind('click').click ->
+
+
+  $('#clear-button').unbind('click').click ->
+
+    console.log("nigga WHATS GOING ON")
+
 
 
 

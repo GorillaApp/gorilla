@@ -15,7 +15,7 @@
 <% end %>
 
 <div id="find">
-  <a href="#">Find...</a>
+  <a href="#">Find</a>
 </div>
 
 <div id="autosavechoice">
@@ -30,10 +30,18 @@
 
 <div id="finddialog" >
   <label for="find_item">Enter sequence to search for: </label>
-  <textarea id="find_item" name = "find_item" rows="4" cols="50"></textarea>
+  <textarea id="find_item" name = "find_item" rows="2" cols="50"></textarea>
   <br>
   <br>
-  <input type="checkbox" name="reverse" value="reverse">Include search for reverse complement<br>
+
+  <input type="checkbox" name="reverse" value="reverse">Include search for reverse complement <br> <br>
+
+  <ul id="findlist">
+    <li><button id="find-next-button" type="button">Find Next</button></li>
+    <li><button id="find-prev-button" type="button">Find Previous</button></li>
+    <li><button id="find-all-button" type="button">Find All</button></li>
+    <li><button id="clear-button" type="button">Clear</button></li>
+  </ul>
 
 </div>
 

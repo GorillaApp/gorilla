@@ -105,6 +105,12 @@ body {
     }
   }
 
+  #findlist li{
+    display: inline;
+    list-style-type: none;
+    padding-right: 6px;
+  }
+
   #user_nav {
     position: fixed;
     bottom: 0px;
