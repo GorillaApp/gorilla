@@ -2,6 +2,10 @@ Gorilla::Application.routes.draw do
 
   devise_for :users
 
+  resources :feature_librarys do
+    resources :features
+  end
+
   post "feature/add"
 
   post "feature_library/add"
@@ -29,6 +33,8 @@ Gorilla::Application.routes.draw do
   match "edit/delete"
 
   root :to => "testclient#client"
+
+
 
 
   # The priority is based upon order of creation:

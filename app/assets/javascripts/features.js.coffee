@@ -45,7 +45,12 @@ reset_features_form = ->
   $('feature-form').each -> $(this).reset()
 
 reset_library_form = ->
-  $('library-form').each -> $(this).reset()
+
+  dropdown = $("#library_name");
+  dropdown.children().reset();
+
+  $('#library-form')[0].reset();
+
 
 window.setup_features = ->
   $('#featuredialog').dialog
@@ -98,16 +103,11 @@ window.bind_features = ->
     $('#featuredialog').dialog("open")
 
 
-
-#  $('#library_name').change ->
-#    selected = $('#library_name :selected').text()
-#    $('.input.boolean.optional').show() if selected is value
-#
-#  $('#library_name').onchange(updateFeatures(this.options[this.selectedIndex]))
-
-  $('#library_name').change = () ->
-    index = $('#library_name').selectedIndex
-    $('#library_name').options(index).value
+  $('#library_name').change () ->
+    index = $("#library_name").find(':selected').index()
+    text = $("#library_name").find(':selected').text()
+    $("#allfeaturesdialog").dialog('option', 'title', text);
+    updateFeatures(hey);
 
 
 
@@ -118,21 +118,20 @@ window.bind_features = ->
     Libname = null
     uID = null
 
-    for datum in formData
-      if datum.value == ""
-        $('.issues').text('You must fill in all items').show()
-        save = false
-      if datum.name == "name"
-        Libname = datum.value
-      if datum.name == "user_id"
-        uID = datum.value
+#    for datum in formData
+#      if datum.value == ""
+#        $('.issues').text('You must fill in all items').show()
+#        save = false
+#      if datum.name == "name"
+#        Libname = datum.value
+#      if datum.name == "user_id"
+#        uID = datum.value
 
     if save
       $.post "/feature_library/add",
             $(this).serialize(),
             ->
               notify("Successfully saved library", "success")
-              $("#allfeaturedialog").dialog("close")
               reset_library_form()
 
 

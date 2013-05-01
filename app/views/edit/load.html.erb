@@ -46,8 +46,6 @@
 
   <%= select("library", "name", FeatureLibrary.getAll(user_id: current_user.id).collect {|n| [n[:name], n[:id]]} ) %>
 
-
-
   <%= form_tag "#", method: "GET", id: 'library-form' do %>
     <%= label_tag(:name, "Name: ") %>
     <%= text_field_tag(:name) %><br />
