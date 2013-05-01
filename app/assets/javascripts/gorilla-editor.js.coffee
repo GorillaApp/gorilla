@@ -35,9 +35,11 @@ window.G.GorillaEditor = class GorillaEditor
 
     me = @
 
+    $(@mainId).addClass('viewing')
     $(@editorId).html(@file.getAnnotatedSequence())
-                .addClass('gorilla-editor viewing')
+                .addClass('gorilla-editor')
                 .find('span')
+                .unbind('mouseenter mouseleave mousemove')
                 .hover((event) -> me.showHoverDialog(event))
                 .mousemove((event) -> me.showHoverDialog(event))
 
@@ -52,13 +54,15 @@ window.G.GorillaEditor = class GorillaEditor
     me = @
 
     @viewFile(false)
+    $(@mainId).removeClass('viewing')
+              .addClass('editing')
+
     @renderNumbers('editing')
-    $(window).resize((event) -> me.renderNumbers('editing', true))
+    $(@editorId).resize((event) -> me.renderNumbers('editing', true))
 
     $(@editorId).attr('contenteditable','true')
                 .attr('spellcheck','false')
-                .removeClass('viewing')
-                .addClass('editing')
+
 
     $(@editorId).find("*").andSelf()
                 .unbind('keypress')
@@ -68,6 +72,7 @@ window.G.GorillaEditor = class GorillaEditor
                 .unbind('dragleave')
                 .unbind('dragover')
                 .unbind('drop')
+                .unbind('mouseup mousemove keydown click focus')
 
     $(@editorId).bind('input', (event) -> me.textChanged(event))
                 .keypress((event) -> me.keyPressed(event))
@@ -180,8 +185,8 @@ window.G.GorillaEditor = class GorillaEditor
         <div class="editor" contenteditable="true"></div>
         <div style="clear:both;"></div>
     </div>"""))
-    $('#get-chars-wide-gorilla').addClass('gorilla-container')
-    $('#get-chars-wide-gorilla .editor').addClass("gorilla-editor #{type}")
+    $('#get-chars-wide-gorilla').addClass("gorilla-container #{type}")
+    $('#get-chars-wide-gorilla .editor').addClass("gorilla-editor")
 
     $('#get-chars-wide-gorilla .numbers').html('1<br>2')
     node = $('#get-chars-wide-gorilla .editor')
@@ -585,7 +590,7 @@ window.G.GorillaEditor = class GorillaEditor
             # Populate new span with appropriate information
             newGuy = document.createElement("SPAN")
             newid = $(@editorId).find('span').length
-            newGuy.id = "#{newid}-#{@file.id}"
+            newGuy.id = "#{@file.id}-#{newid}"
             newGuy.setAttribute("style", pe.getAttribute('style'))
             newGuy.setAttribute("data-offsets", data_offsets)
             newGuy.setAttribute("data-features", data_features)

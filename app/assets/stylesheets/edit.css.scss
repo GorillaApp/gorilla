@@ -8,12 +8,20 @@
     word-wrap: break-word;
 }
 
-.gorilla-editor.viewing {
-  width: 50%;
+.gorilla-container.viewing {
+  width: 48%;
 }
 
-.gorilla-editor.editing {
+.gorilla-container.editing {
   width: 100%;
+}
+
+#main_editor.viewing {
+  float: left;
+}
+
+#autosaved_editor.viewing {
+  float: right;
 }
 
 .gorilla-container {
@@ -22,15 +30,16 @@
     letter-spacing: 0px;
     font-size: 13px;
     width: 100%;
+    float: left;
 
     .editor {
         float: left;
-        width: 95%;
+        width: 93%;
     }
     .numbers {
         float: left;
         text-align: right;
-        width: 5%;
+        width: 7%;
     }
 }
 
