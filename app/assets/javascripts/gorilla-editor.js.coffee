@@ -385,23 +385,18 @@ window.G.GorillaEditor = class GorillaEditor
             seenFeatures[hash] = true
             funct(pair.feature, pair.range, @file)
 
-  iterateOverFileCopyRange: (start, end, funct) ->
-    seenFeatures = {}
-    allFeats = @fileCopy.getTableOfFeatures() 
-    if end == -1
-       end = allFeats.length - 1
-    if start > end
-      return
-    for i in [start .. end]
-      if allFeats[i]
-        for pair in allFeats[i]
-          hash = pair.feature.id.toString() + ',' + pair.range.id.toString()
-          if not seenFeatures[hash]
-            seenFeatures[hash] = true
-            funct(pair.feature, pair.range, @fileCopy)
+  cut: () ->
+    @copy()
+    sel = window.getSelection()
+    indicies = GorillaEditor.getSelectionRange(sel)
+    if indicies.length == 2
+      @trackChanges()
+      @deleteSelection(indicies)
+      $(@editorId).html(@file.getAnnotatedSequence())
+      sel.collapse(true)
+      @completeEdit()    
 
-  copy: () ->
-    
+  copy: () -> 
     indicies = GorillaEditor.getSelectionRange(window.getSelection())
     @fileCopy = $.extend(true, {}, @file)
     if indicies.length < 2
@@ -453,7 +448,6 @@ window.G.GorillaEditor = class GorillaEditor
             seenFeatures[hash] = true
             featRangePairs.push([pair.feature, pair.range])
     
-    debugger
     copiedFeats = {}
     for [f,r] in featRangePairs
       fId = f.id.toString()
@@ -509,7 +503,7 @@ window.G.GorillaEditor = class GorillaEditor
         @paste()
       if event.keyCode == 88
         event.preventDefault()
-        console.groupCollapsed("Handling Paste")
+        console.groupCollapsed("Handling Cut")
         @cut()
     else
       return
