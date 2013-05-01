@@ -76,6 +76,16 @@ window.setup_features = ->
       effect: "drop"
       duration: 1000
 
+  $('#finddialog').dialog
+    autoOpen: false
+    width: 600
+    show:
+      effect: "slide"
+      duration: 1000
+    hide:
+      effect: "drop"
+      duration: 1000
+
 window.handleFileSelect = (evt) ->
   file = evt.target.files[0]
   reader = new FileReader()
@@ -144,6 +154,9 @@ window.bind_features = ->
       G.main_editor.startEditing()
 
   $('#upload').unbind('change').bind('change', window.handleFileSelect)
+
+  $('#find').unbind('click').click ->
+    $('#finddialog').dialog("open")
 
 
 

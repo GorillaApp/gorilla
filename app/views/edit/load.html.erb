@@ -28,6 +28,15 @@
 <div id="main_editor"></div>
 <div id="autosaved_editor"></div>
 
+<div id="finddialog" >
+  <label for="find_item">Enter sequence to search for: </label>
+  <textarea id="find_item" name = "find_item" rows="4" cols="50"></textarea>
+  <br>
+  <br>
+  <input type="checkbox" name="reverse" value="reverse">Include search for reverse complement<br>
+
+</div>
+
 <div id="featuredialog" class='feature' title="Add Feature">
   <%= form_tag "#", method: "GET", id: 'feature-form' do %>
     <div class='issues'></div>
