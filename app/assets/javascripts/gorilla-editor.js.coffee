@@ -210,11 +210,11 @@ window.G.GorillaEditor = class GorillaEditor
     $(@numbersId).html(text)
 
   trackChanges: ->
-    @renderNumbers()
     Autosave.request(this)
     @previousFiles.push($.extend(true, {}, @file))
 
   completeEdit: ->
+    @renderNumbers()
     @file.updateSequence($(@editorId).text())
     if @debugEditor != null
       @debugEditor.file = new G.GenBank(@file.serialize())
@@ -225,8 +225,8 @@ window.G.GorillaEditor = class GorillaEditor
 
     console.log sel
 
+    @trackChanges()
     if sel.isCollapsed
-      @trackChanges()
 
       loc = sel.getRangeAt(0)
 
@@ -296,23 +296,22 @@ window.G.GorillaEditor = class GorillaEditor
         $(delme).remove()
 
       sel.addRange 
-      @completeEdit()
     else
       indicies = GorillaEditor.getSelectionRange(window.getSelection())
       if indicies.length == 2
-        [sIndex, eIndex] = indicies
-        @file.replaceSequence("", sIndex, eIndex)
         @deleteSelection(indicies)
         $(@editorId).html(@file.getAnnotatedSequence())
-        @startEditing()
         sel.collapse(true)
       else
         console.error "How Dare You"
+    @completeEdit()
+    # @startEditing()
 
   deleteSelection: (indicies) ->
     removalAmount = 0
     if indicies.length == 2
       [sIndex, eIndex] = indicies
+      @file.replaceSequence("", sIndex, eIndex)
       removalAmount = eIndex - sIndex
       eIndex--
     else
@@ -381,7 +380,102 @@ window.G.GorillaEditor = class GorillaEditor
             seenFeatures[hash] = true
             funct(pair.feature, pair.range, @file)
 
+  iterateOverFileCopyRange: (start, end, funct) ->
+    seenFeatures = {}
+    allFeats = @fileCopy.getTableOfFeatures() 
+    if end == -1
+       end = allFeats.length - 1
+    if start > end
+      return
+    for i in [start .. end]
+      if allFeats[i]
+        for pair in allFeats[i]
+          hash = pair.feature.id.toString() + ',' + pair.range.id.toString()
+          if not seenFeatures[hash]
+            seenFeatures[hash] = true
+            funct(pair.feature, pair.range, @fileCopy)
+
+  copy: () ->
+    
+    indicies = GorillaEditor.getSelectionRange(window.getSelection())
+    @fileCopy = $.extend(true, {}, @file)
+    if indicies.length < 2
+      return
+
+    if indicies.length == 2
+      [sIndex, eIndex] = indicies
+      eIndex--
+    else
+      return
+
+    allFeats = @fileCopy.getTableOfFeatures()
+    if allFeats[sIndex]
+      for pair in allFeats[sIndex]
+        feature = pair.feature
+        range = pair.range
+        distanceInRange = sIndex - range.start - 1
+        if sIndex != range.start and feature.location.ranges.length == 1
+          @fileCopy.splitFeatureAtInPlace(feature.id, range.id, distanceInRange)
+            
+    allFeats = @fileCopy.getTableOfFeatures()
+    if allFeats[eIndex]
+        for pair in allFeats[eIndex]
+          feature = pair.feature
+          range = pair.range
+          distanceInRange = eIndex - range.start
+          if eIndex != range.end and feature.location.ranges.length == 1
+            @fileCopy.splitFeatureAtInPlace(feature.id, range.id, distanceInRange)
+
+    seenFeatures = {}
+    allFeats = @fileCopy.getTableOfFeatures()
+    for i in [sIndex .. eIndex]
+      if allFeats[i]   
+        for pair in allFeats[i] #gives us a list of feat_id, range_id
+          feature = pair.feature
+          range = pair.range
+          if not seenFeatures[feature] and feature.location.ranges.length > 1
+            seenFeatures[feature] = true
+            @fileCopy.splitJoinedFeature(feature, sIndex, eIndex)
+
+    seenFeatures = {}
+    allFeats = @fileCopy.getTableOfFeatures()
+    featRangePairs = [] 
+    for i in [sIndex .. eIndex]
+      if allFeats[i]
+        for pair in allFeats[i]
+          hash = pair.feature.id.toString() + ',' + pair.range.id.toString()
+          if not seenFeatures[hash]
+            seenFeatures[hash] = true
+            featRangePairs.push([pair.feature, pair.range])
+    
+    debugger
+    copiedFeats = {}
+    for [f,r] in featRangePairs
+      fId = f.id.toString()
+      if copiedFeats[fId] == undefined
+        newRanges = []
+        newLoc = 
+          ranges:newRanges
+          strand:f.location.strand
+        newFeat = 
+          location:newLoc
+          id:f.id
+          currentFeature:f.currentFeature
+          parameters:f.parameters
+        copiedFeats[fId] = newFeat
+      feat = copiedFeats[fId]
+      newRange =
+        start:r.start - sIndex
+        end:r.end - sIndex
+        id:r.id
+      feat.location.ranges.push(newRange)
+    data = @file.getGeneSequence().substring(sIndex, eIndex + 1)
+    @copiedInfo =
+      text:data
+      features:copiedFeats
+
   keyDown: (event) ->
+    console.log(event.keyCode)
     if event.keyCode == 8
       console.groupCollapsed("Handling Backspace")
       event.preventDefault()
@@ -400,6 +494,18 @@ window.G.GorillaEditor = class GorillaEditor
         event.preventDefault()
         console.groupCollapsed("Handling Redo")
         @redo()
+      if event.keyCode == 67
+        event.preventDefault()
+        console.groupCollapsed("Handling Copy")
+        @copy()
+      if event.keyCode == 86
+        event.preventDefault()
+        console.groupCollapsed("Handling Paste")
+        @paste()
+      if event.keyCode == 88
+        event.preventDefault()
+        console.groupCollapsed("Handling Paste")
+        @cut()
     else
       return
     console.groupEnd()

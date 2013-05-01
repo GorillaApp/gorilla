@@ -822,4 +822,67 @@ window.G.GenBank = class GenBank
         feat.location.ranges.splice(range.id,1)
     @removeFeatures(featsToDelete)
 
+  splitJoinedFeature: (oldFeat, start, end) ->
+    #debugger
+    oldFeats = @getFeatures()
+    newRanges = []
+    newLoc = 
+      ranges:newRanges
+      strand:oldFeat.location.strand
+    newFeat = 
+      location:newLoc
+      id:oldFeat.id + 1
+      currentFeature:oldFeat.currentFeature
+      parameters:oldFeat.parameters
+    rangesToRemove = []
+    rangesToAdd = []
+    updateFeats = false
+    i = 0
+    for r in oldFeat.location.ranges
+      if start <= r.end and end >= r.start
+        updateFeats = true      
+        if start <= r.start
+          s = r.start       
+          if end < r.end #shave left
+            r.start = end + 1
+            e = end 
+          else #grab whole piece
+            e = r.end
+            rangesToRemove.push([oldFeat, r])
+        else
+          s = start
+          if end < r.end #grab center slice
+            e = end
+            splitRange = 
+              start:r.start
+              end:s - 1
+              id:oldFeat.location.ranges.length + i
+            rangesToAdd.push(splitRange)
+            r.start = end + 1         
+          else #shave right
+            e = r.end
+            r.end = start - 1
+        newRange = 
+          start:s
+          end:e
+          id:newFeat.location.ranges.length
+        newFeat.location.ranges.push(newRange)
+
+
+    if updateFeats      
+      oldFeat.location.ranges = oldFeat.location.ranges.concat(rangesToAdd)
+      @removeRanges(rangesToRemove)
+      #insert new feature into feats array
+      featId = oldFeat.id
+      pre = oldFeats[..featId]
+
+      post = oldFeats[featId+1..]
+      for feat in post
+        feat.id += 1
+      pre.push newFeat     
+      @data.features = pre.concat post
+    
+      
+
+
       
