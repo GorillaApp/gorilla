@@ -39,9 +39,9 @@ window.G.GorillaEditor = class GorillaEditor
     $(@editorId).html(@file.getAnnotatedSequence())
                 .addClass('gorilla-editor')
                 .find('span')
-                .unbind('mouseenter mouseleave mousemove')
-                .hover((event) -> me.showHoverDialog(event))
-                .mousemove((event) -> me.showHoverDialog(event))
+                  .unbind('mouseenter mouseleave mousemove')
+                  .hover((event) -> me.showHoverDialog(event))
+                  .mousemove((event) -> me.showHoverDialog(event))
 
     if render
         @renderNumbers('viewing')
@@ -72,8 +72,8 @@ window.G.GorillaEditor = class GorillaEditor
                 .unbind('dragleave')
                 .unbind('dragover')
                 .unbind('drop')
-                .unbind('mouseup mousemove keydown click focus')
                 .unbind('copy cut paste')
+                .unbind('mouseup keydown click focus')
 
     $(@editorId).bind('input', (event) -> me.textChanged(event))
                 .keypress((event) -> me.keyPressed(event))
@@ -148,20 +148,21 @@ window.G.GorillaEditor = class GorillaEditor
 
   showHoverDialog: (event) ->
     if event.type == "mouseleave"
-        $('#hover-box').remove()
-        return
+      $('#hover-box').remove()
+      return
     if event.type == "mouseenter"
-        data = GenBank.getSpanData(event.target)
-        text = ""
-        for featureId, content of data
-            if text != ""
-                text += '<br>'
-            feat = @file.getFeatures()[featureId]
-            text += feat.parameters['/label']
-        node = $(event.target)
-        newElement = $('<div>', id: 'hover-box')
-        newElement.html(text)
-        $('body').append(newElement)
+      console.log "enter"
+      data = GenBank.getSpanData(event.target)
+      text = ""
+      for featureId, content of data
+        if text != ""
+          text += '<br>'
+        feat = @file.getFeatures()[featureId]
+        text += feat.parameters['/label']
+      node = $(event.target)
+      newElement = $('<div>', id: 'hover-box')
+      newElement.html(text)
+      $('body').append(newElement)
     $('#hover-box').css('top', event.pageY + 10)
     $('#hover-box').css('left', event.pageX + 10)
 
@@ -370,7 +371,6 @@ window.G.GorillaEditor = class GorillaEditor
       if not handledRange[hash]
         file.advanceFeature(feature.id, range.id, -1 * removalAmount))
 
-
   #Iterates over a specified range in the file
   #if end is -1 then the range goes to the end of the file           
   iterateOverFileRange: (start, end, funct) ->
@@ -401,8 +401,6 @@ window.G.GorillaEditor = class GorillaEditor
     insert = indicies[0]
 
     #Determine which clipboard to use
-    debugger
-
     cb = event.originalEvent.clipboardData.getData('text/plain')
     console.log("Clipboard contains: ",cb)
     console.log("Local Clipboard contains: ",@copiedInfo)
@@ -560,7 +558,6 @@ window.G.GorillaEditor = class GorillaEditor
         id:r.id
       feat.location.ranges.push(newRange)
     data = @file.getGeneSequence().substring(sIndex, eIndex + 1)
-    debugger
     event.originalEvent.clipboardData.setData('text/plain',data)
     @copiedInfo =
       text:data
