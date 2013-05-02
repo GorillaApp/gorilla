@@ -231,7 +231,6 @@ window.G.GorillaEditor = class GorillaEditor
 
   deleteAtCursor: (key = "<backspace>") ->
     sel = window.getSelection()
-
     console.log sel
 
     @trackChanges()
@@ -304,7 +303,7 @@ window.G.GorillaEditor = class GorillaEditor
       if delme != null
         $(delme).remove()
 
-      sel.addRange 
+      sel.addRange l
     else
       indicies = GorillaEditor.getSelectionRange(window.getSelection())
       if indicies.length == 2
