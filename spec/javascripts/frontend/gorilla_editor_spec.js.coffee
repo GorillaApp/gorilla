@@ -72,3 +72,7 @@ describe "Gorilla Editor", ->
         Keyboard.type('<delete>')
         $(@editorId).text().should.equal('c')
         @ge.file.serialize().should.not.contain('ColE1')
+
+
+
+

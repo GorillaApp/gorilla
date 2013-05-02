@@ -165,7 +165,7 @@ window.bind_features = ->
     search = true
     $('.issues').hide()
 
-    sequence = $('#find-sequence').val()
+    sequence = $('#find_sequence').val()
 
     # check that the sequence to find is non-empty
     if sequence == ""

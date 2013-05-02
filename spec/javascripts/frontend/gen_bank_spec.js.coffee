@@ -181,16 +181,3 @@ describe 'GenBank editor', ->
         newLocation = G.GenBank.serializeLocation(d)
         newLocation.should.equal location
 
-
-
-
-
-
-
-
-
-
-
-
-
-
