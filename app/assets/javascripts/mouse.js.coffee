@@ -46,10 +46,8 @@ class Mouse
       return true
     return false
   
-  @_getAbsoluteOffset: (container, node, offset) ->
-    if typeof container == "string"
-      container = $(container).get(0)
-    if node.parentNode != container
+  @_getAbsoluteOffset: (node, offset) ->
+    if node.parentNode.nodeName != "DIV"
       node = node.parentNode
     node = node.previousSibling
 
@@ -59,21 +57,18 @@ class Mouse
     return offset
 
     
-  @getCursorPosition: (container) ->
+  @getCursorPosition: () ->
     sel = window.getSelection()
     if sel.rangeCount > 0
-      range = sel.getRangeAt(0)
+      r = sel.getRangeAt(0)
       retval = {}
-      if range.collapsed
+      if r.collapsed
         retval.type = "caret"
-        retval.start = Mouse._getAbsoluteOffset(container, range.startContainer,
-                                                range.startOffset)
+        retval.start = Mouse._getAbsoluteOffset(r.startContainer, r.startOffset)
       else
         retval.type = "range"
-        retval.start = Mouse._getAbsoluteOffset(container, range.startContainer,
-                                                range.startOffset)
-        retval.end = Mouse._getAbsoluteOffset(container, range.endContainer,
-                                              range.endOffset)
+        retval.start = Mouse._getAbsoluteOffset(r.startContainer, r.startOffset)
+        retval.end = Mouse._getAbsoluteOffset(r.endContainer, r.endOffset)
       return retval
     return false
 
