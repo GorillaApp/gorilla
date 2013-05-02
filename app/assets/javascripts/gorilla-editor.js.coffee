@@ -39,9 +39,9 @@ window.G.GorillaEditor = class GorillaEditor
     $(@editorId).html(@file.getAnnotatedSequence())
                 .addClass('gorilla-editor')
                 .find('span')
-                .unbind('mouseenter mouseleave mousemove')
-                .hover((event) -> me.showHoverDialog(event))
-                .mousemove((event) -> me.showHoverDialog(event))
+                  .unbind('mouseenter mouseleave mousemove')
+                  .hover((event) -> me.showHoverDialog(event))
+                  .mousemove((event) -> me.showHoverDialog(event))
 
     if render
         @renderNumbers('viewing')
@@ -72,7 +72,7 @@ window.G.GorillaEditor = class GorillaEditor
                 .unbind('dragleave')
                 .unbind('dragover')
                 .unbind('drop')
-                .unbind('mouseup mousemove keydown click focus')
+                .unbind('mouseup keydown click focus')
 
     $(@editorId).bind('input', (event) -> me.textChanged(event))
                 .keypress((event) -> me.keyPressed(event))
@@ -144,20 +144,21 @@ window.G.GorillaEditor = class GorillaEditor
 
   showHoverDialog: (event) ->
     if event.type == "mouseleave"
-        $('#hover-box').remove()
-        return
+      $('#hover-box').remove()
+      return
     if event.type == "mouseenter"
-        data = GenBank.getSpanData(event.target)
-        text = ""
-        for featureId, content of data
-            if text != ""
-                text += '<br>'
-            feat = @file.getFeatures()[featureId]
-            text += feat.parameters['/label']
-        node = $(event.target)
-        newElement = $('<div>', id: 'hover-box')
-        newElement.html(text)
-        $('body').append(newElement)
+      console.log "enter"
+      data = GenBank.getSpanData(event.target)
+      text = ""
+      for featureId, content of data
+        if text != ""
+          text += '<br>'
+        feat = @file.getFeatures()[featureId]
+        text += feat.parameters['/label']
+      node = $(event.target)
+      newElement = $('<div>', id: 'hover-box')
+      newElement.html(text)
+      $('body').append(newElement)
     $('#hover-box').css('top', event.pageY + 10)
     $('#hover-box').css('left', event.pageX + 10)
 
