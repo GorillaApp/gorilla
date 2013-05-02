@@ -45,6 +45,37 @@ class Mouse
       Mouse._select(s.node, s.offset, e.node, e.offset)
       return true
     return false
+  
+  @_getAbsoluteOffset: (container, node, offset) ->
+    if typeof container == "string"
+      container = $(container).get(0)
+    if node.parentNode != container
+      node = node.parentNode
+    node = node.previousSibling
+
+    while !!node
+      offset += $(node).text().length
+      node = node.previousSibling
+    return offset
+
+    
+  @getCursorPosition: (container) ->
+    sel = window.getSelection()
+    if sel.rangeCount > 0
+      range = sel.getRangeAt(0)
+      retval = {}
+      if range.collapsed
+        retval.type = "caret"
+        retval.start = Mouse._getAbsoluteOffset(container, range.startContainer,
+                                                range.startOffset)
+      else
+        retval.type = "range"
+        retval.start = Mouse._getAbsoluteOffset(container, range.startContainer,
+                                                range.startOffset)
+        retval.end = Mouse._getAbsoluteOffset(container, range.endContainer,
+                                              range.endOffset)
+      return retval
+    return false
 
 
 G.Mouse = Mouse
