@@ -1,11 +1,11 @@
 <%= content_for :links do %>
-  <%= link_to image_tag("http://www.twitter-buttons.biz/images/icon1-act.gif", title: "Add a Feature"), "#", id: :addFeature %>
-  <%= link_to image_tag("http://www.twitter-buttons.biz/images/icon1-act.gif", title: "List of Features"), "#", id: :listFeatures %>
-  <%= link_to image_tag("http://www.twitter-buttons.biz/images/icon1-act.gif", title: "Reverse Complement"), "#", id: :reverseComplement %>
-  <%= link_to image_tag("http://www.twitter-buttons.biz/images/icon1-act.gif", title: "To Upper"), "#", id: :toUpper %>
-  <%= link_to image_tag("http://www.twitter-buttons.biz/images/icon1-act.gif", title: "To Lower"), "#", id: :toLower %>
-  <%= link_to image_tag("http://www.twitter-buttons.biz/images/icon1-act.gif", title: "Save"), "#", id: :save %>
-  <%= link_to image_tag("http://www.twitter-buttons.biz/images/icon1-act.gif", title: "Use Feature Library"), "#", id: :featureLibrary %>
+  <%= link_to image_tag("addFeature.png", title: "Add a Feature", size: "44x26"), "#", id: :addFeature %>
+  <%= link_to image_tag("features.png", title: "List of Features", size: "44x26"), "#", id: :listFeatures %>
+  <%= link_to image_tag("reverseComplement.png", title: "Reverse Complement", size: "44x26"), "#", id: :reverseComplement %>
+  <%= link_to image_tag("toUpper.png", title: "To Upper", size: "44x26"), "#", id: :toUpper %>
+  <%= link_to image_tag("toLower.png", title: "To Lower", size: "44x26"), "#", id: :toLower %>
+  <%= link_to image_tag("save.png", title: "Save", size: "44x26"), "#", id: :save %>
+  <%= link_to image_tag("featureLibrary.png", title: "Use Feature Library", size: "44x26"), "#", id: :featureLibrary %>
   <% if development? %>
     <span class="development">
       <%= link_to "Autosave", "#", id: :autosave %>

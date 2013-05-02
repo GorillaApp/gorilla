@@ -45,7 +45,8 @@ EOF
             end
 
             it 'should be able add a new feature' do
-                click_link 'Add a feature'
+                #click_link 'Add a feature'
+                find_by_id('addFeature').click
 
                 fill_in :sequence, with: 'gattaca'
                 fill_in :name, with: 'movie!'
@@ -54,13 +55,15 @@ EOF
 
                 page.should have_content "Successfully saved feature"
 
-                click_link 'List of Features'
+                #click_link 'List of Features'
+                find_by_id('listFeatures').click
                
                 page.should have_content 'gattaca'
             end
 
             it 'should be able to delete a feature that it adds' do
-                click_link 'Add a feature'
+                #click_link 'Add a feature'
+                find_by_id('addFeature').click
 
                 fill_in :sequence, with: 'gattacaN'
                 fill_in :name, with: 'movie 2!'
@@ -69,7 +72,8 @@ EOF
 
                 page.should have_content "Successfully saved feature"
 
-                click_link 'List of Features'
+                #click_link 'List of Features'
+                find_by_id('listFeatures').click
                
                 page.should have_content 'gattacaN'
 
