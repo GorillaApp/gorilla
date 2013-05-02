@@ -2,7 +2,7 @@ if !String.prototype.format
   String.prototype.format = () ->
     args = arguments
     return this.replace /{(\d+)}/g, (match, number) ->
-        return if (typeof args[number] != 'undefined') then args[number] else match
+      return if (typeof args[number] != 'undefined') then args[number] else match
 
 String.prototype.padBy = (length) ->
   pad = length - this.length
@@ -806,3 +806,14 @@ window.G.GenBank = class GenBank
 
     featureArray = fileContents.split("\n")
     featureArray
+
+  @getReverseComplement: (sequence) ->
+
+    mappings = {"a": "t", "t": "a", "c": "g", "g": "c", "n": "n", "A": "T", "T": "A", "C": "G", "G": "C", "N": "N"}
+
+    reverseComplement = ''
+    for i in [0...sequence.length]
+      reverseComplement = reverseComplement + mappings[sequence.charAt(i)]
+
+    reverseComplement = reverseComplement.split("").reverse("").join("")
+    reverseComplement
