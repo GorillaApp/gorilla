@@ -607,6 +607,7 @@ window.G.GenBank = class GenBank
             id = id + 1
 
     # add the newly generated features to the Genbank object
+    
     @addFeatures(newFeatures)
 
 

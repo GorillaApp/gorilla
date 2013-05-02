@@ -73,6 +73,7 @@ window.G.GorillaEditor = class GorillaEditor
                 .unbind('dragover')
                 .unbind('drop')
                 .unbind('mouseup mousemove keydown click focus')
+                .unbind('copy cut paste')
 
     $(@editorId).bind('input', (event) -> me.textChanged(event))
                 .keypress((event) -> me.keyPressed(event))
@@ -84,6 +85,9 @@ window.G.GorillaEditor = class GorillaEditor
                 .bind('dragleave', (event) -> event.preventDefault())
                 .bind('dragover', (event) -> event.preventDefault())
                 .bind('drop', (event) -> event.preventDefault())
+                .bind('copy', (event) -> me.copy(event))
+                .bind('cut', (event) -> me.cut(event))
+                .bind('paste', (event) -> me.paste(event))
 
     @editorContents = $(@editorId).text()
     @editorHtml = $(@editorId).html()
@@ -385,8 +389,91 @@ window.G.GorillaEditor = class GorillaEditor
             seenFeatures[hash] = true
             funct(pair.feature, pair.range, @file)
 
-  cut: () ->
-    @copy()
+  paste: (event) ->
+    console.groupCollapsed("Handling Paste")
+    event.preventDefault()
+    sel = window.getSelection()
+    indicies = GorillaEditor.getSelectionRange(sel)
+    @trackChanges()
+    if not sel.isCollapsed
+      if indicies.length == 2
+        @deleteSelection(indicies)
+
+    insert = indicies[0]
+
+    #Determine which clipboard to use
+    debugger
+
+    cb = event.originalEvent.clipboardData.getData('text/plain')
+    console.log("Clipboard contains: ",cb)
+    console.log("Local Clipboard contains: ",@copiedInfo)
+    if @copiedInfo == undefined or @copiedInfo.text != cb
+      #screen input
+      l = cb.length
+      for i in [0 ... l]
+        if "agtcnACTGN".indexOf(cb[i]) == -1
+          console.log("Invalid char on clipboard: ", cb[i])
+          console.groupEnd()
+          return
+      console.log("Text is good to go!")
+      textToPaste = cb
+      useFeats = false
+    else
+      textToPaste = @copiedInfo.text
+      useFeats = true
+
+    #Add copied features in sorted order to the features list, modifying the ranges of each
+    if useFeats
+      featList = []
+      for f in @copiedInfo.features
+        featList.push(f)
+      featList.sort (a,b) -> a.id - b.id
+
+      newFeats = []
+      i = @file.getFeatures().length
+      for f in featList
+        feat = $.extend(true, {}, f)
+        feat.id = i++
+        j = 0
+        for r in feat.location.ranges
+          r.id = j++
+          r.start += insert
+          r.end += insert
+        newFeats.push(feat)
+
+    joined = true
+
+    allFeats = @file.getTableOfFeatures()
+    #split feats at insert
+    if insert != 0 and insert != @file.getGeneSequence().length
+      if allFeats[insert]   
+        for p in allFeats[insert]
+          f = p.feature
+          r = p.range
+          if r.start < insert
+            if joined          
+              newRange =
+                start:insert
+                end:r.end
+                id:f.location.ranges.length
+              r.end = insert - 1
+              f.location.ranges.push(newRange)
+
+    #shift all feats after insert
+    @iterateOverFileRange(insert, -1 , (feature, range, file) ->
+      file.advanceFeature(feature.id, range.id, textToPaste.length))
+
+    #update info and complete the edit
+    @file.replaceSequence(textToPaste, insert, insert)
+    if useFeats
+      @file.addFeatures(newFeats)
+    $(@editorId).html(@file.getAnnotatedSequence())
+    @completeEdit()
+    console.groupEnd()
+
+  cut: (event) ->
+    console.groupCollapsed("Handling Cut")
+    @copy(event)
     sel = window.getSelection()
     indicies = GorillaEditor.getSelectionRange(sel)
     if indicies.length == 2
@@ -395,8 +482,11 @@ window.G.GorillaEditor = class GorillaEditor
       $(@editorId).html(@file.getAnnotatedSequence())
       sel.collapse(true)
       @completeEdit()    
+    console.groupEnd()
 
-  copy: () -> 
+  copy: (event) -> 
+    console.groupCollapsed("Handling Copy")
+    event.preventDefault()
     indicies = GorillaEditor.getSelectionRange(window.getSelection())
     @fileCopy = $.extend(true, {}, @file)
     if indicies.length < 2
@@ -448,10 +538,11 @@ window.G.GorillaEditor = class GorillaEditor
             seenFeatures[hash] = true
             featRangePairs.push([pair.feature, pair.range])
     
-    copiedFeats = {}
+    copiedFeatsHash = {}
+    copiedFeats = []
     for [f,r] in featRangePairs
       fId = f.id.toString()
-      if copiedFeats[fId] == undefined
+      if copiedFeatsHash[fId] == undefined
         newRanges = []
         newLoc = 
           ranges:newRanges
@@ -461,20 +552,23 @@ window.G.GorillaEditor = class GorillaEditor
           id:f.id
           currentFeature:f.currentFeature
           parameters:f.parameters
-        copiedFeats[fId] = newFeat
-      feat = copiedFeats[fId]
+        copiedFeatsHash[fId] = newFeat
+        copiedFeats.push(newFeat)
+      feat = copiedFeatsHash[fId]
       newRange =
         start:r.start - sIndex
         end:r.end - sIndex
         id:r.id
       feat.location.ranges.push(newRange)
     data = @file.getGeneSequence().substring(sIndex, eIndex + 1)
+    debugger
+    event.originalEvent.clipboardData.setData('text/plain',data)
     @copiedInfo =
       text:data
       features:copiedFeats
+    console.groupEnd()
 
   keyDown: (event) ->
-    console.log(event.keyCode)
     if event.keyCode == 8
       console.groupCollapsed("Handling Backspace")
       event.preventDefault()
@@ -493,18 +587,7 @@ window.G.GorillaEditor = class GorillaEditor
         event.preventDefault()
         console.groupCollapsed("Handling Redo")
         @redo()
-      if event.keyCode == 67
-        event.preventDefault()
-        console.groupCollapsed("Handling Copy")
-        @copy()
-      if event.keyCode == 86
-        event.preventDefault()
-        console.groupCollapsed("Handling Paste")
-        @paste()
-      if event.keyCode == 88
-        event.preventDefault()
-        console.groupCollapsed("Handling Cut")
-        @cut()
+
     else
       return
     console.groupEnd()
