@@ -2,6 +2,7 @@ source 'http://rubygems.org'
 
 gem 'bio'
 gem 'jquery-ui-rails'
+gem 'jquery_context_menu-rails'
 gem 'jscolor-rails'
 gem 'rack', '1.4.1'
 gem 'rails', '3.2.8'
