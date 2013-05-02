@@ -29,12 +29,12 @@
 <div id="autosaved_editor"></div>
 
 <div id="finddialog" >
-  <label for="find_item">Enter sequence to search for: </label>
-  <textarea id="find_item" name = "find_item" rows="2" cols="50"></textarea>
+  <label for="find-text">Enter sequence to search for: </label>
+  <textarea id="find-text" name = "find-text" rows="2" cols="50"></textarea>
   <br>
   <br>
 
-  <input type="checkbox" name="reverse" value="reverse">Include search for reverse complement <br> <br>
+  <input id = "find-text" type="checkbox" name="reverse" value="reverse">Include search for reverse complement <br> <br>
 
   <ul id="findlist">
     <li><button id="find-next-button" type="button">Find Next</button></li>
@@ -79,6 +79,13 @@ first_line = <%= @first_line.to_json.html_safe %>;
 isRestore = <%= @isRestore.to_json %>;
 saveURL = <%= @saveURL.to_json.html_safe %>;
 allFeatures = null;
+
+// array of starting indexes for each substring that is found by search
+foundSequences = null;
+
+// current index for find next and find prev for search
+currentSequence = null;
+
 user = <%= (current_user.nil? ? -1 : current_user.id) %>;
 
 

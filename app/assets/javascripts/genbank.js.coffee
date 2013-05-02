@@ -555,9 +555,15 @@ window.G.GenBank = class GenBank
 
   @indexes: (source, find) ->
     result = []
-    for i in [0...source.length]
+    i = 0
+    while i < source.length
       if source.substring(i, i + find.length) == find
         result.push(i)
+
+        # move the current index to the end of the found substring
+        i = i + find.length
+      else
+        i = i + 1
     result
 
   # params: array of features, [Object, Object, Object] where each Object is a feature representation from the backend
@@ -576,6 +582,7 @@ window.G.GenBank = class GenBank
 
 
       resultIndexes = GenBank.indexes(@data.raw_genes, feature.sequence.toLowerCase())
+      console.log("Result indexes", resultIndexes)
 
       # forward match
 
@@ -583,7 +590,7 @@ window.G.GenBank = class GenBank
 
         for result in resultIndexes
 
-          console.log("RESULT", result)
+          # console.log("RESULT", result)
 
           newFeatures.push GenBank.generateNewFeatureObject(feature, 0, id, result)
           id = id + 1
@@ -619,7 +626,7 @@ window.G.GenBank = class GenBank
     newFeature = {}
     ranges = []
 
-    console.log("Feature: ", feature)
+    # console.log("Feature: ", feature)
 
     # case where the sequence does not contain any lower case letters
     if feature.sequence == feature.sequence.toUpperCase()

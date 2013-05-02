@@ -158,17 +158,17 @@ window.bind_features = ->
   $('#find').unbind('click').click ->
     $('#finddialog').dialog("open")
 
+
+  # buttons for search
   $('#find-next-button').unbind('click').click ->
+
 
   $('#find-prev-button').unbind('click').click ->
 
   $('#find-all-button').unbind('click').click ->
 
-
   $('#clear-button').unbind('click').click ->
-
-    console.log("nigga WHATS GOING ON")
-
+    $('#find-text').val("")
 
 
 
