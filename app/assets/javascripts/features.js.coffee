@@ -162,6 +162,27 @@ window.bind_features = ->
   # buttons for search
   $('#find-next-button').unbind('click').click ->
 
+    search = true
+    $('.issues').hide()
+
+    sequence = $('#find-sequence').val()
+
+    # check that the sequence to find is non-empty
+    if sequence == ""
+      $('.issues').text("You must specify a sequence to find").show()
+      $('.issues').append("<br> <br>")
+      search = false
+
+    # check that all characters in the sequence are valid
+    else if ! /^[actgnACTGN]*$/.test(sequence)
+      $('.issues').text("Invalid characters in sequence").show()
+      $('.issues').append("<br> <br>")
+      search = false
+
+
+    if search
+      isChecked = $('#find-text').is(":checked")
+
 
   $('#find-prev-button').unbind('click').click ->
 
