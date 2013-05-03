@@ -59,3 +59,6 @@ describe 'selection methods', ->
     f = file.serialize()
     f.should.contain("complement(12..17)")
     f.should.contain("5..9")
+
+
+

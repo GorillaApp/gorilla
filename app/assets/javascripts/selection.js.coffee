@@ -1,7 +1,7 @@
 GenBank = window.G.GenBank #Import
 GorillaEditor = window.G.GorillaEditor
 
-modifySelection = (modFunction, sel) ->
+modifySelection = (modFunction, trackChanges = true, sel = null) ->
   if sel
     indices = [sel.start, sel.end]
     collapseFlag = false
@@ -15,21 +15,21 @@ modifySelection = (modFunction, sel) ->
     [sIndex, eIndex] = indices
   else
     [sIndex, eIndex] = [0, editor.file.getGeneSequence().length]
-    
+
+  editor = GorillaEditor.getInstance(sel.anchorNode)
+  if trackChanges
+    editor.trackChanges()
+
   data = editor.file.getGeneSequence()
-  console.log(sIndex)
-  console.log(eIndex)
-  console.log(data.substring(sIndex, eIndex))
   subData = modFunction(data.substring(sIndex, eIndex))
   editor.file.replaceSequence(subData, sIndex, eIndex)
-  console.log(editor.editorId)
+
   $(editor.editorId).html(editor.file.getAnnotatedSequence())
+  editor.completeEdit()
   editor.startEditing()
   
   if collapseFlag
     sel.collapse(true)
-
-
 
 toUpper = (s) ->
   return s.toUpperCase()
@@ -51,8 +51,9 @@ reverseCompSelection = (testIndices, testGenbank, test = false, sel)->
           sel = window.getSelection()
           indices = GorillaEditor.getSelectionRange(sel)
           editor = GorillaEditor.getInstance(sel.anchorNode)
+        editor.trackChanges()
         revCompSelectionLogic(indices, editor)
-        modifySelection(revCompSeq)
+        modifySelection(revCompSeq, false)
         console.groupEnd()
 
 revCompSelectionLogic = (indices, editor) ->
@@ -62,10 +63,11 @@ revCompSelectionLogic = (indices, editor) ->
   else
     return
 
-  allFeats = editor.file.getTableOfFeatures()
+  #debugger
+  
   seenFeatures = {}
   numSplits = 0
-
+  allFeats = editor.file.getTableOfFeatures()
   console.log("Start index %d", sIndex)
   console.log("End index %d", eIndex)
 
@@ -74,7 +76,7 @@ revCompSelectionLogic = (indices, editor) ->
         feature = pair.feature
         range = pair.range
         distanceInRange = sIndex - range.start - 1
-        if sIndex != range.start
+        if sIndex != range.start and feature.location.ranges.length == 1
           editor.file.splitFeatureAtInPlace(feature.id, range.id, distanceInRange)
           numSplits += 1
   
@@ -84,9 +86,23 @@ revCompSelectionLogic = (indices, editor) ->
         feature = pair.feature
         range = pair.range
         distanceInRange = eIndex - range.start
-        if eIndex != range.end
+        if eIndex != range.end and feature.location.ranges.length == 1
           editor.file.splitFeatureAtInPlace(feature.id, range.id, distanceInRange)
           numSplits += 1
+
+  allFeats = editor.file.getTableOfFeatures()
+  for i in [sIndex .. eIndex]
+    if allFeats[i]   
+      for pair in allFeats[i] #gives us a list of feat_id, range_id
+        feature = pair.feature
+        range = pair.range
+        if not seenFeatures[feature] and feature.location.ranges.length > 1
+          seenFeatures[feature] = true
+          editor.file.splitJoinedFeature(feature, sIndex, eIndex)
+
+
+  seenFeatureRanges = {}
+  seenFeats = {}
   console.log("Number splits: %d", numSplits)
   allFeats = editor.file.getTableOfFeatures()
   console.log(allFeats[sIndex...eIndex])
@@ -97,8 +113,8 @@ revCompSelectionLogic = (indices, editor) ->
           range = pair.range
           
           hash = feature.id.toString() + ',' + range.id.toString()
-          if not seenFeatures[hash]
-            seenFeatures[hash] = true
+          if not seenFeatureRanges[hash]
+            seenFeatureRanges[hash] = true
             console.log("Initial range start %d", range.start)
             console.log("Initial range end %d", range.end)
             rangeLen = range.end - range.start
@@ -110,8 +126,10 @@ revCompSelectionLogic = (indices, editor) ->
             range.end = eIndex - offsetInSel
             console.log("New range start %d", range.start)
             console.log("New range end %d", range.end)
-            feature.location.strand ^= 1
-
+            notherHash = feature.id.toString()
+            if not seenFeats[notherHash]
+              seenFeats[notherHash] = true
+              feature.location.strand ^= 1
 
 revCompSeq = (seq) ->
   #debugger
