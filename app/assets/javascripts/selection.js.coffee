@@ -1,9 +1,15 @@
 GenBank = window.G.GenBank #Import
 GorillaEditor = window.G.GorillaEditor
 
-modifySelection = (modFunction) ->
-  sel = window.getSelection()
-  indices = GorillaEditor.getSelectionRange(sel)
+modifySelection = (modFunction, sel) ->
+  if sel
+    indices = [sel.start, sel.end]
+    collapseFlag = false
+  else
+    sel = window.getSelection()
+    indices = GorillaEditor.getSelectionRange(sel)
+    collapseFlag = true
+
   editor = window.G.main_editor
   if indices.length == 2
     [sIndex, eIndex] = indices
@@ -19,7 +25,9 @@ modifySelection = (modFunction) ->
   console.log(editor.editorId)
   $(editor.editorId).html(editor.file.getAnnotatedSequence())
   editor.startEditing()
-  sel.collapse(true)
+  
+  if collapseFlag
+    sel.collapse(true)
 
 
 
@@ -129,5 +137,6 @@ window.bind_selections = ->
 window.G or= {}
 
 G.toUpper = toUpper
+G.toLower = toLower
 G.modifySelection = modifySelection
 G.reverseCompSelection = reverseCompSelection

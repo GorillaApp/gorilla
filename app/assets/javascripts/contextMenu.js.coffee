@@ -5,28 +5,42 @@ $ ->
       m = "global: " + key
       window.console and console.log(m) or alert(m)
     build: ->
-      window.textSel = window.getSelection().toString()
+      window.textSelString = window.getSelection().toString()
+      window.textSel = window.G.Mouse.getCursorPosition()
+
     items:
       add_feature:
         name: "Add Feature"
         
         callback: (key, options) ->
-          m = "Clicked Add Features"
-          window.G.load_features_form_with_seq(window.textSel)
+          m = "Clicked Add Features" 
+          console.log(window.textSel)
+          window.G.load_features_form_with_seq(window.textSelString)
 
+      rev_comp:
+        name: "Reverse Complement"
 
-      list_features:
-        name: "List of Features"
+        callback: (key, options) ->
+          window.G.modifySelection(window.G.reverseCompSelection, window.textSel)
+
+      to_upper:
+        name: "To Uppercase"
+
+        callback: (key, options) ->
+          window.G.modifySelection(window.G.toUpper, window.textSel)
+
+      to_lower:
+        name: "To Lowercase"
+
+        callback: (key, options) ->
+          window.G.modifySelection(window.G.toLower, window.textSel)
+
+      sep1: "---------"
+      cut:
+        name: "Cut"
 
       copy:
         name: "Copy"
 
       paste:
         name: "Paste"
-
-      delete:
-        name: "Delete"
-
-      sep1: "---------"
-      quit:
-        name: "Quit"
