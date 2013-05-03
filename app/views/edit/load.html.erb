@@ -48,8 +48,10 @@
   <div id="features-table"></div>
 </div>
 
-
-
+<!-- added this for testing purposes-->
+<div class="context-menu-one box menu-1">
+    <strong>right click me</strong>
+</div>
 
 <script type="text/javascript" >
 doc = <%= @file_contents.to_json.html_safe %>;
@@ -64,7 +66,6 @@ user = <%= (current_user.nil? ? -1 : current_user.id) %>;
 $(document).ready(function () {
   G.begin_editing("#main_editor", "#autosaved_editor");
 });
-
 
 
 </script>
