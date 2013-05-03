@@ -380,7 +380,7 @@ window.G.GorillaEditor = class GorillaEditor
             seenFeatures[hash] = true
             funct(pair.feature, pair.range, @file)
 
-  paste: (event) ->
+  paste: (event, isRevComp = false) ->
     console.groupCollapsed("Handling Paste")
     event.preventDefault()
     sel = window.getSelection()
@@ -399,13 +399,19 @@ window.G.GorillaEditor = class GorillaEditor
     if @copiedInfo == undefined or @copiedInfo.text != cb
       #screen input
       l = cb.length
+      filteredText = ""
       for i in [0 ... l]
+        invalidChar = false
         if "agtcnACTGN".indexOf(cb[i]) == -1
-          console.log("Invalid char on clipboard: ", cb[i])
-          console.groupEnd()
-          return
+          invalidChar = true
+          #need to add option here to let them remove invalid chars or to replace them with N or to cancel the paste
+          replaceWithN = false #default for the moment is to strip out invalid chars
+          if replaceWithN
+            filteredText += "N"
+        else
+          filteredText += cb[i]
       console.log("Text is good to go!")
-      textToPaste = cb
+      textToPaste = filteredText
       useFeats = false
     else
       textToPaste = @copiedInfo.text
@@ -413,6 +419,15 @@ window.G.GorillaEditor = class GorillaEditor
 
     #Add copied features in sorted order to the features list, modifying the ranges of each
     if useFeats
+      end = textToPaste.length - 1
+      if isRevComp
+        for f in @copiedInfo.features
+          f.location.strand ^= 1
+          for r in f.location.ranges
+            rangeLen = r.end - r.start
+            r.start = end - rangeLen - r.start
+            r.end = end - r.start
+
       featList = []
       for f in @copiedInfo.features
         featList.push(f)
@@ -429,6 +444,7 @@ window.G.GorillaEditor = class GorillaEditor
           r.start += insert
           r.end += insert
         newFeats.push(feat)
+
 
     joined = true
 
@@ -557,6 +573,7 @@ window.G.GorillaEditor = class GorillaEditor
     console.groupEnd()
 
   keyDown: (event) ->
+    console.log("Key code: ", event.keyCode)
     if event.keyCode == 8
       console.groupCollapsed("Handling Backspace")
       event.preventDefault()
@@ -591,6 +608,13 @@ window.G.GorillaEditor = class GorillaEditor
 
     if "agtcnACTGN".indexOf(char) != -1
       console.log("ooh, exciting!")
+
+      s = Mouse.getCursorPosition()
+      if s.type = "range"
+        @deleteSelection([s.start,s.end])
+        $(@editorId).html(@file.getAnnotatedSequence())
+        Mouse.setCaretIndex(@editorId, s.start)
+
       sel = window.getSelection()
 
       if sel.isCollapsed
