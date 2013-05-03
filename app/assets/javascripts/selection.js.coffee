@@ -37,16 +37,20 @@ toUpper = (s) ->
 toLower = (s) ->
   return s.toLowerCase()
 
-reverseCompSelection = (testIndices, testGenbank, test = false)->
+reverseCompSelection = (testIndices, testGenbank, test = false, sel)->
     if test
         t = {}
         t['file'] = testGenbank
         revCompSelectionLogic(testIndices, t)
     else
         console.groupCollapsed("handlingRevCompSel")
-        sel = window.getSelection()
-        indices = GorillaEditor.getSelectionRange(sel)
-        editor = GorillaEditor.getInstance(sel.anchorNode)
+        if sel
+          indices = [sel.start, sel.end]
+          editor = G.main_editor
+        else
+          sel = window.getSelection()
+          indices = GorillaEditor.getSelectionRange(sel)
+          editor = GorillaEditor.getInstance(sel.anchorNode)
         revCompSelectionLogic(indices, editor)
         modifySelection(revCompSeq)
         console.groupEnd()
