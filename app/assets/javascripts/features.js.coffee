@@ -177,7 +177,7 @@ window.bind_features = ->
         indexes = G.GenBank.indexes(G.main_editor.file.data.raw_genes, sequence)
 
         if isChecked
-          reverseSequence = G.GenBank.getReverseComplement(sequence)
+          reverseSequence = G.revCompSeq(sequence)
           rIndexes = G.GenBank.indexes(G.main_editor.file.data.raw_genes, reverseSequence)
 
           console.log("Reverse indexes", rIndexes)
@@ -223,7 +223,7 @@ window.bind_features = ->
         indexes = G.GenBank.indexes(G.main_editor.file.data.raw_genes, sequence)
 
         if isChecked
-          reverseSequence = G.GenBank.getReverseComplement(sequence)
+          reverseSequence = G.revCompSeq(sequence)
           rIndexes = G.GenBank.indexes(G.main_editor.file.data.raw_genes, reverseSequence)
 
           console.log("Reverse indexes", rIndexes)

@@ -812,16 +812,6 @@ window.G.GenBank = class GenBank
 
 
   # --------- METHODS FOR SEARCH -------------
-  @getReverseComplement: (sequence) ->
-
-    mappings = {"a": "t", "t": "a", "c": "g", "g": "c", "n": "n", "A": "T", "T": "A", "C": "G", "G": "C", "N": "N"}
-
-    reverseComplement = ''
-    for i in [0...sequence.length]
-      reverseComplement = reverseComplement + mappings[sequence.charAt(i)]
-
-    reverseComplement = reverseComplement.split("").reverse("").join("")
-    reverseComplement
 
   # generate new feature objects from found indexes
 
