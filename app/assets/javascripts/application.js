@@ -17,6 +17,10 @@
 //= require jscolor
 //= require jquery.contextMenu.js
 
+if (!$.curCSS) {
+	$.curCSS = $.css;
+}
+
 $(document).ready(function(){
   register_notifications()
 
