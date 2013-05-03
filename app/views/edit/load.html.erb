@@ -76,8 +76,9 @@
 doc = <%= @file_contents.to_json.html_safe %>;
 doc_restored = <%= @file_restore_contents.to_json.html_safe %>;
 first_line = <%= @first_line.to_json.html_safe %>;
-isRestore = <%= @isRestore.to_json %>;
+isRestore = <%= @isRestore.to_json.html_safe %>;
 saveURL = <%= @saveURL.to_json.html_safe %>;
+extra = <%= @extra.to_json.html_safe %>;
 allFeatures = null;
 
 // array of starting indexes for each substring that is found by search

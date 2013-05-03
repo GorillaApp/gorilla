@@ -87,6 +87,21 @@ window.G.GorillaEditor = class GorillaEditor
                 .bind('dragover', (event) -> event.preventDefault())
                 .bind('drop', (event) -> event.preventDefault())
 
+    $('#save').click ->
+      if saveURL == ""
+        notify "No Save URL Specified", "error"
+      else
+        $.ajax
+          type: "POST",
+          url: saveURL,
+          data:
+            extra: extra
+            file: me.file.serialize()
+          success: ->
+            notify "File Saved Successfully", "success"
+          error: ->
+            notify "Unable to save file", "error"
+
     @editorContents = $(@editorId).text()
     @editorHtml = $(@editorId).html()
     @previousEditors = []

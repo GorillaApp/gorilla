@@ -128,7 +128,7 @@ ORIGIN
 
   describe "GET 'load' with file" do
     it "returns the javascript with doc set to file" do
-      get 'load', :fileURL => "public/test1.ape"
+      get 'load', :fileURL => "zmbush.com/test1.ape"
       assigns[:file_contents] == file_contents
     end
   end

@@ -7,6 +7,14 @@ class EditController < ApplicationController
   before_filter :after_token_authentication
 
   def load
+
+    def fixFileURL(url)
+      if !(url[0..6] == 'http://')
+        url = 'http://' + url
+      end
+      return url
+    end
+
     @file_restore_contents = ''
     file = ''
     @saveURL = params[:saveURL]
@@ -18,8 +26,8 @@ class EditController < ApplicationController
     if not params[:file].blank?
       file = params[:file]
     elsif not params[:fileURL].blank?
-      # puts "Reading from URL"
-      file = open(params[:fileURL]).read()
+      fixedFileURL = fixFileURL(params[:fileURL])
+      file = open(fixedFileURL).read()
     end
 
     @file_contents = file
@@ -37,6 +45,7 @@ class EditController < ApplicationController
       @isRestore = true
     end
 
+    @extra = params[:extra] || {}
   end
 
   def autosave
