@@ -1,6 +1,6 @@
 $ ->
   $.contextMenu
-    selector: ".context-menu-one"
+    selector: '.editor.gorilla-editor'
     callback: (key, options) ->
       m = "global: " + key
       window.console and console.log(m) or alert(m)
