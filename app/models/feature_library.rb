@@ -37,8 +37,8 @@ class FeatureLibrary < ActiveRecord::Base
   end
 
   def self.setSelected(params)
-    lib = FeatureLibrary.find_by_id(params[:id])
-    if lib == null
+    lib = FeatureLibrary.find_by_name(params[:name])
+    if lib == nil
       return DOES_NOT_EXIST
     end
     @@selected_lib = lib
@@ -46,8 +46,16 @@ class FeatureLibrary < ActiveRecord::Base
   end
 
   def self.getSelected(params)
-    result = [@@selected_lib]
-    return result
+    #result = [@@selected_lib.id]
+    #return result
+    result = []
+    lib = FeatureLibrary.find_by_name(params[:name])
+    if lib == nil
+      return DOES_NOT_EXIST
+    end
+    #@@selected_lib = lib
+    #return SUCCESS
+    return lib.id
   end
 
 end

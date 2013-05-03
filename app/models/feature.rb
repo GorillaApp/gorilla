@@ -56,6 +56,15 @@ class Feature < ActiveRecord::Base
   	return SUCCESS
   end
 
+  def self.index()
+    allFeat =  Feature.all(:conditions => ['id = ? AND user_id = ?', params[:feature_library_id], params[:user_id]])
+    result = []
+    allFeat.each do |feat|
+      result.push({:id => feat.id, :name => feat.name, :sequence => feat.sequence, :forward_color => feat.forward_color, :reverse_color => feat.reverse_color})
+    end
+    return result
+  end
+
   def self.getAll(params)
     #returns an array of all features that match the user_id
   	allFeat =  Feature.all(:conditions => ["user_id = ?", (params[:user_id])])

@@ -2,13 +2,17 @@ Gorilla::Application.routes.draw do
 
   devise_for :users
 
-  resources :feature_librarys do
-    resources :features
+  resources :feature_libraries do
+    resources :feature
   end
 
   post "feature/add"
 
   post "feature_library/add"
+
+  post "feature_library/setSelected"
+
+  get "feature_library/getSelected"
 
   post "enzyme/add"
 

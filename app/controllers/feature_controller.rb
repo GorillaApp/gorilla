@@ -27,7 +27,13 @@ class FeatureController < ApplicationController
     #returns an array of features
      result = Feature.getAll(params)
      render :json => {:features => result}
-	end
+  end
+
+  def index
+    #returns an array of features
+    result = Feature.getAll(params)
+    render :json => {:features => result}
+  end
 
 	def getFeature
     result = Feature.getFeature(params)

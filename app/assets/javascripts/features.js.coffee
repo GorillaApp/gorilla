@@ -74,6 +74,7 @@ window.setup_features = ->
       duration: 1000
 
 window.bind_features = ->
+
   $('#feature-form').unbind('submit').submit (event) ->
     event.preventDefault()
     
@@ -106,8 +107,13 @@ window.bind_features = ->
   $('#library_name').change () ->
     index = $("#library_name").find(':selected').index()
     text = $("#library_name").find(':selected').text()
+    window.selected = text
+    lib_id = -1
+    $.get "/feature_library/getSelected",{ name: text}, (data) ->
+
+      updateFeatures(data.selected);
+
     $("#allfeaturesdialog").dialog('option', 'title', text);
-    updateFeatures(hey);
 
 
 
@@ -136,7 +142,7 @@ window.bind_features = ->
 
 
   updateFeatures = (library_id) ->
-    $.get "/feature/getAll", {library_id: lib}, (data) ->
+    $.get "/feature_libraries/" + library_id + "/feature", {feature_library_id: library_id, user_id: user },(data) ->
       window.allFeatures = data.features
       populateTable(window.allFeatures)
 

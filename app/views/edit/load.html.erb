@@ -34,6 +34,7 @@
     <%= label_tag(:reverse_color, "Reverse Color: ") %>
     <%= text_field_tag(:reverse_color, "FF5500", 
                        :class => 'color') %><br />
+    <%= select("library", "id", FeatureLibrary.getAll(user_id: current_user.id).collect {|n| [n[:name], n[:id]]} ) %>
     <%= hidden_field_tag(:user_id, current_user.id) %>
     <%= submit_tag("Save Feature") %>
   <% end %>

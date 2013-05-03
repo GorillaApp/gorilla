@@ -15,7 +15,6 @@ ActiveRecord::Schema.define(:version => 20130417234342) do
 
   create_table "autosaves", :force => true do |t|
     t.string   "name"
-    t.datetime "save_date"
     t.integer  "user_id"
     t.text     "contents"
     t.datetime "created_at", :null => false
@@ -44,6 +43,7 @@ ActiveRecord::Schema.define(:version => 20130417234342) do
     t.string   "sequence"
     t.string   "forward_color"
     t.string   "reverse_color"
+    t.integer  "library_id"
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
   end
