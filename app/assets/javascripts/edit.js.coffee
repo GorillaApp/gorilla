@@ -19,13 +19,17 @@ window.G.begin_editing = (editor_selector, autosave_selector) ->
   else
     $(autosave_selector).hide()
 
-    #window.debug_editor = new GorillaEditor(autosave_selector)
-    G.main_editor = new G.GorillaEditor(editor_selector, doc)
+    # G.debug_editor = new G.GorillaEditor(autosave_selector)
+    G.main_editor = new G.GorillaEditor(editor_selector, doc, G.debug_editor)
 
     G.Autosave.start(G.main_editor)
 
     bind_features()
+
     bind_enzymes()
+
+    bind_selections()
+
 
     G.main_editor.startEditing()
   console.groupEnd()
