@@ -92,12 +92,13 @@ window.handleFileSelect = (evt) ->
   window.reader = reader
 
   reader.onload = (e) ->
+    G.main_editor.trackChanges()
     text = e.target.result
     fileContents = G.main_editor.file.parseFeatureFileContents(text, file.name)
     features = G.main_editor.file.convertToFeatureObjectArray(fileContents)
     populateTable(features)
     $('#allfeaturesdialog').dialog("open")
-    G.main_editor.startEditing()
+    G.main_editor.completeEdit()
 
 
   reader.readAsText(file)

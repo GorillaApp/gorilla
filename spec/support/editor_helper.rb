@@ -26,6 +26,15 @@ module GorillaHelper
     SCRIPT
   end
 
+  def serialize_file()
+    page.driver.execute_script <<-SCRIPT
+      val = G.main_editor.file.serialize();
+      l = document.createTextNode(val);
+      para = document.getElementById("main_editor");
+      para.appendChild(l);
+    SCRIPT
+  end
+
   def simulate_click(id)
     page.driver.execute_script <<-SCRIPT
       $('##{id}').trigger('click');
@@ -65,6 +74,12 @@ module GorillaHelper
         _type_raw(90, :keydown, true)
       when :redo
         _type_raw(89, :keydown, true)
+      when :copy
+        _trigger_event(:copy)
+      when :cut
+        _trigger_event(:cut)
+      when :paste
+        _trigger_event(:paste)
       end
     elsif thing.kind_of? Integer
       _type_raw(thing, type, ctrl)
@@ -73,6 +88,12 @@ module GorillaHelper
         _type_raw(char.ord, type, ctrl)
       end
     end
+  end
+
+  def _trigger_event(type)
+    page.driver.execute_script <<-SCRIPT
+      $('#main_editor .editor').trigger('#{type.to_s}');
+    SCRIPT
   end
 
   def _type_raw(code, type = :keypress, ctrl=false)
