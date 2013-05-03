@@ -47,7 +47,7 @@ describe "Gorilla Editor", ->
     context "while editing", ->
       beforeEach ->
         @ge.startEditing()
-        
+
       it 'should be able to load file', ->
         $(@editorId).text().should.equal("cgtctctgaccagaccaata")
         $('#ed-0').text().should.equal("cgtctctgac")
@@ -72,3 +72,7 @@ describe "Gorilla Editor", ->
         Keyboard.type('<delete>')
         $(@editorId).text().should.equal('c')
         @ge.file.serialize().should.not.contain('ColE1')
+
+
+
+

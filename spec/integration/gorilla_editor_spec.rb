@@ -4,7 +4,7 @@ require 'support/editor_helper'
 describe "A user", :js => true do
   include Capybara::DSL
   include GorillaHelper
-  
+
   context "that is logged" do
     before :each do
       visit '/'
@@ -29,11 +29,11 @@ describe "A user", :js => true do
 LOCUS pGG001 20 bp ds-DNA circular UNK 01-JAN-1980
 FEATURES             Location/Qualifiers
      misc_feature    complement(1..10)
-                     /ApEinfo_revcolor="#7f7f7f" 
-                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}" 
-                     /ApEinfo_label="ColE1" 
-                     /ApEinfo_fwdcolor="#7f7f7f" 
-                     /label="ColE1" 
+                     /ApEinfo_revcolor="#7f7f7f"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}"
+                     /ApEinfo_label="ColE1"
+                     /ApEinfo_fwdcolor="#7f7f7f"
+                     /label="ColE1"
 ORIGIN
         1 cgtctctgac cagaccaata
 //
@@ -53,11 +53,11 @@ EOF
 LOCUS pGG001 20 bp ds-DNA circular UNK 01-JAN-1980
 FEATURES             Location/Qualifiers
      misc_feature    complement(1..10)
-                     /ApEinfo_revcolor="#7f7f7f" 
-                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}" 
-                     /ApEinfo_label="ColE1" 
-                     /ApEinfo_fwdcolor="#7f7f7f" 
-                     /label="ColE1" 
+                     /ApEinfo_revcolor="#7f7f7f"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}"
+                     /ApEinfo_label="ColE1"
+                     /ApEinfo_fwdcolor="#7f7f7f"
+                     /label="ColE1"
 ORIGIN
         1 cgtctctgac cagaccaata
 //
@@ -71,7 +71,7 @@ EOF
         set_cursor_at('main_editor-0', 3)
 
         type('a')
-        
+
         find('#main_editor-1').should have_content 'ctctgac'
         find('#main_editor-0').should have_content 'cgt'
         find(:xpath, "//span[@id='main_editor-0']/following-sibling::*").should have_content 'a'
@@ -81,7 +81,7 @@ EOF
         set_cursor_at('main_editor-0', 3)
 
         type('actgn')
-        
+
         find('#main_editor-1').should have_content 'ctctgac'
         find('#main_editor-0').should have_content 'cgt'
 
@@ -92,7 +92,7 @@ EOF
         set_cursor_at('main_editor-0', 5)
 
         type('abcdefghijklmnopqrstuvwxyz')
-        
+
         page.should have_content 'cgtctacgntctgac'
       end
 
@@ -189,17 +189,17 @@ EOF
 LOCUS pGG001 20 bp ds-DNA circular UNK 01-JAN-1980
 FEATURES             Location/Qualifiers
      misc_feature    complement(1..10)
-                     /ApEinfo_revcolor="#7f7f7f" 
-                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}" 
-                     /ApEinfo_label="ColE1" 
-                     /ApEinfo_fwdcolor="#7f7f7f" 
-                     /label="ColE1" 
+                     /ApEinfo_revcolor="#7f7f7f"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}"
+                     /ApEinfo_label="ColE1"
+                     /ApEinfo_fwdcolor="#7f7f7f"
+                     /label="ColE1"
      misc_feature    13..20
-                     /ApEinfo_revcolor="#7f7f7f" 
-                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}" 
-                     /ApEinfo_label="ColE1" 
-                     /ApEinfo_fwdcolor="#7f7f7f" 
-                     /label="ColE1" 
+                     /ApEinfo_revcolor="#7f7f7f"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}"
+                     /ApEinfo_label="ColE1"
+                     /ApEinfo_fwdcolor="#7f7f7f"
+                     /label="ColE1"
 ORIGIN
         1 cgtctctgac cagaccaata
 //
@@ -230,5 +230,78 @@ EOF
         page.should have_content 'cgtctctgaccaccaata'
       end
     end
+
+    context 'and uses the search functionality' do
+
+      before(:each) do
+        visit '/testclient/client'
+
+        find('#file').set <<-EOF
+LOCUS pGG001 20 bp ds-DNA circular UNK 01-JAN-1980
+FEATURES             Location/Qualifiers
+     misc_feature    complement(1..10)
+                     /ApEinfo_revcolor="#7f7f7f"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}"
+                     /ApEinfo_label="ColE1"
+                     /ApEinfo_fwdcolor="#7f7f7f"
+                     /label="ColE1"
+     misc_feature    13..20
+                     /ApEinfo_revcolor="#7f7f7f"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}"
+                     /ApEinfo_label="ColE1"
+                     /ApEinfo_fwdcolor="#7f7f7f"
+                     /label="ColE1"
+ORIGIN
+        1 cgtctctgac cagaccaata
+//
+EOF
+        click_button "Open File"
+
+        find('#main_editor-0').should have_content "cgtctctgac"
+      end
+
+      it 'should throw an error message when attempting to search for a blank sequence' do
+        click_link 'find'
+        click_button 'Find Next'
+        page.should have_content "You must specify a sequence to find"
+      end
+
+      it 'should throw an error message when attemping to search for a non-valid sequence' do
+
+        click_link 'find'
+        fill_in :find_sequence, with: 'test'
+        click_button 'Find Next'
+        page.should have_content "Invalid characters in sequence"
+
+      end
+
+      it 'should throw an error message when attempting to search for a sequence that is not found' do
+        click_link 'find'
+        fill_in :find_sequence, with: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaattttttttttttt'
+        click_button 'Find Next'
+        page.should have_content "No Matches Found"
+      end
+
+      it 'should say no match found when searching for a sequence that does not exist after searching for one that does exist' do
+        click_link 'find'
+        fill_in :find_sequence, with: "at"
+        click_button 'Find Next'
+        page.should_not have_content "No Matches Found"
+
+        fill_in :find_sequence, with: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaattttttttttttt"
+        click_button 'Find Next'
+        page.should have_content "No Matches Found"
+      end
+
+      it 'should correctly find a match of a sequence' do
+        click_link 'findA'
+        fill_in :find_sequence, with: "cgtct"
+        click_button 'Find Next'
+        page.should_not have_content "No Matches Found"
+
+      end
+    end
+
+
   end
 end
