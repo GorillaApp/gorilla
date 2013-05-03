@@ -11,7 +11,8 @@ $ ->
         
         callback: (key, options) ->
           m = "Clicked Add Features"
-          window.console and console.log(m) or alert(m)
+          window.G.load_features_form_with_seq(window.getSelection().toString())
+
 
       list_features:
         name: "List of Features"
