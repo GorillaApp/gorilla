@@ -267,12 +267,10 @@ EOF
       end
 
       it 'should throw an error message when attemping to search for a non-valid sequence' do
+
         click_link 'find'
-
         fill_in :find_sequence, with: 'test'
-
         click_button 'Find Next'
-
         page.should have_content "Invalid characters in sequence"
 
       end

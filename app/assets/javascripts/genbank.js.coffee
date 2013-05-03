@@ -115,6 +115,7 @@ window.G.GenBank = class GenBank
     console.groupEnd()
     beg + "<span id='#{name}-#{featureId}-#{spanId}-#{@id}' class='#{name}-#{featureId}' style='background-color:#{color}'>" + mid + "</span>" + end
 
+
   getCodons: (start, end) ->
     txt = @getGeneSequence()[start...end].toLowerCase()
     codons = ""
@@ -196,6 +197,7 @@ window.G.GenBank = class GenBank
         color = feat.parameters['/ApEinfo_revcolor']
     name = feat.parameters["/label"]
     seq = @annotate(seq, range.selection.start, range.selection.end, color, range.feats, i)
+    console.log("Sequence", seq)
     console.groupEnd()
     seq
 
@@ -369,6 +371,7 @@ window.G.GenBank = class GenBank
 
     # for feature in features
       # seq = @annotateFeature(seq, feature)
+
     console.groupEnd()
     seq
 
@@ -570,7 +573,6 @@ window.G.GenBank = class GenBank
   # will return an array of features that are parsed correctly
   processFeatures: (features) ->
 
-    window.returnedfeatures = features
     newFeatures = []
 
     id = @data.features.length
@@ -649,6 +651,7 @@ window.G.GenBank = class GenBank
     newFeature.parameters = GenBank.generateFeatureParamObject feature
     newFeature.currentFeature = "misc_feature"
 
+    console.log("New Feature Object", newFeature)
     newFeature
 
   # returns an array of all the capitalized charaters within the sequence
@@ -807,6 +810,8 @@ window.G.GenBank = class GenBank
     featureArray = fileContents.split("\n")
     featureArray
 
+
+  # --------- METHODS FOR SEARCH -------------
   @getReverseComplement: (sequence) ->
 
     mappings = {"a": "t", "t": "a", "c": "g", "g": "c", "n": "n", "A": "T", "T": "A", "C": "G", "G": "C", "N": "N"}
@@ -817,3 +822,51 @@ window.G.GenBank = class GenBank
 
     reverseComplement = reverseComplement.split("").reverse("").join("")
     reverseComplement
+
+  # generate new feature objects from found indexes
+
+  generateFoundFeatureObjects: (sequence, start_indexes) ->
+
+    id = @data.features.length
+    newFeatures = []
+
+    for start_index in start_indexes
+
+      feature = {}
+      # parameters are the same for all matched features
+      feature.parameters = GenBank.generateFoundFeatureParams()
+
+      feature.currentFeature = "misc_feature"
+      feature.id = id
+      id = id + 1
+
+      ranges = [
+        {
+          id: 0,
+          start: start_index,
+          end: start_index + sequence.length
+        }
+      ]
+
+      location = {ranges: ranges, strand: 0}
+
+      feature.location = location
+
+      newFeatures.push feature
+
+    newFeatures
+
+  @generateFoundFeatureParams: ->
+
+    params = {}
+    params["/ApEinfo_fwdcolor"] = "#FFFF00"
+    params["/ApEinfo_graphicformat"] = "arrow_data {{0 1 2 0 0 -1} {} 0}"
+    params["/ApEinfo_label"] = "found-sequence"
+    params["/ApEinfo_revcolor"] = "#FFFF00"
+    params["/label"] = "found-sequence"
+    params
+
+  pushToFeatureArray:  (featureObject) ->
+    @data.features.push featureObject
+
+

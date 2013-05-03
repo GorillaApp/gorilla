@@ -106,6 +106,9 @@ window.handleFileSelect = (evt) ->
 
 window.bind_features = ->
 
+  matched = null
+  currentIndex = 0
+
   $('#feature-form').unbind('submit').submit (event) ->
     event.preventDefault()
 
@@ -160,6 +163,7 @@ window.bind_features = ->
 
 
   # buttons for search
+  # find next will temporaily create a
   $('#find-next-button').unbind('click').click ->
 
     search = true
@@ -181,7 +185,24 @@ window.bind_features = ->
 
 
     if search
-      isChecked = $('#find-text').is(":checked")
+
+
+
+      indexes = G.GenBank.indexes(G.main_editor.file.data.raw_genes, sequence)
+
+      if isChecked = $('#find-text').is(":checked")
+        console.log("TODO: add sorted indexes of the reverse complement to indexes")
+
+      newFeatures = G.main_editor.file.generateFoundFeatureObjects(sequence, indexes)
+
+
+      console.log("found sequences", newFeatures)
+
+      G.main_editor.file.pushToFeatureArray(newFeatures[0])
+
+      G.main_editor.startEditing()
+
+
 
 
   $('#find-prev-button').unbind('click').click ->
