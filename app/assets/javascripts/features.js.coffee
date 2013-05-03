@@ -266,7 +266,7 @@ window.bind_features = ->
 
   $('#find_sequence').bind('input propertychange', window.resetState)
 
-window.onDialogClose ->
+window.onDialogClose = ->
   $('#find_sequence').val("")
   window.resetState()
 
