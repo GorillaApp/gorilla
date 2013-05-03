@@ -59,6 +59,11 @@ reset_features_form = ->
   $('#feature-form #sequence').val('')
   $('#feature-form #name').val('')
 
+window.G.load_features_form_with_seq = (seq) ->
+  $('#feature-form #name').val('')
+  $('#feature-form #sequence').val(seq)
+  $('#featuredialog').dialog("open")
+
 window.setup_features = ->
   $('#featuredialog').dialog
     autoOpen: false
