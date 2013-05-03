@@ -282,7 +282,16 @@ EOF
         page.should have_content "No Matches Found"
       end
 
+      it 'should say no match found when searching for a sequence that does not exist after searching for one that does exist' do
+        click_link 'find'
+        fill_in :find_sequence, with: "at"
+        click_button 'Find Next'
+        page.should_not have_content "No Matches Found"
 
+        fill_in :find_sequence, with: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaattttttttttttt"
+        click_button 'Find Next'
+        page.should have_content "No Matches Found"
+      end
 
     end
 
