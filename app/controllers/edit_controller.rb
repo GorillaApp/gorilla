@@ -9,8 +9,7 @@ class EditController < ApplicationController
   def load
 
     def fixFileURL(url)
-      http = url[0..6] == 'http://'
-      if !http
+      if !(url[0..6] == 'http://')
         url = 'http://' + url
       end
       return url
@@ -28,7 +27,6 @@ class EditController < ApplicationController
       file = params[:file]
     elsif not params[:fileURL].blank?
       fixedFileURL = fixFileURL(params[:fileURL])
-      #file = open(params[:fileURL]).read()
       file = open(fixedFileURL).read()
     end
 
