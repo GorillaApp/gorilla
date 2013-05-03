@@ -1,10 +1,12 @@
 #= require genbank
 #= require autosave
 #= require util
+#= require mouse
 
 window.G or= {}
 Autosave = G.Autosave
 GenBank = G.GenBank
+Mouse = G.Mouse
 
 window.G.GorillaEditor = class GorillaEditor
   @_editor_instances: {}
@@ -39,9 +41,9 @@ window.G.GorillaEditor = class GorillaEditor
     $(@editorId).html(@file.getAnnotatedSequence())
                 .addClass('gorilla-editor')
                 .find('span')
-                .unbind('mouseenter mouseleave mousemove')
-                .hover((event) -> me.showHoverDialog(event))
-                .mousemove((event) -> me.showHoverDialog(event))
+                  .unbind('mouseenter mouseleave mousemove')
+                  .hover((event) -> me.showHoverDialog(event))
+                  .mousemove((event) -> me.showHoverDialog(event))
 
     if render
         @renderNumbers('viewing')
@@ -72,7 +74,7 @@ window.G.GorillaEditor = class GorillaEditor
                 .unbind('dragleave')
                 .unbind('dragover')
                 .unbind('drop')
-                .unbind('mouseup mousemove keydown click focus')
+                .unbind('mouseup keydown click focus')
 
     $(@editorId).bind('input', (event) -> me.textChanged(event))
                 .keypress((event) -> me.keyPressed(event))
@@ -106,34 +108,25 @@ window.G.GorillaEditor = class GorillaEditor
     return pos
 
   @getSelectionRange: (sel) ->
-    if sel.isCollapsed and sel.rangeCount > 0
-        loc = sel.getRangeAt(0)
-        pos = GorillaEditor.cursorPosition(loc.startOffset, loc.startContainer)
-        return [pos]
-    else if sel.rangeCount > 0
-        loc = sel.getRangeAt(0)
-        startPos = GorillaEditor.cursorPosition(loc.startOffset, loc.startContainer)
-        endPos = GorillaEditor.cursorPosition(loc.endOffset, loc.endContainer)
-        return [startPos, endPos]
+    sel = Mouse.getCursorPosition()
+    if sel.type == "caret"
+      return [sel.start]
+    else if sel.type =="range"
+      return [sel.start, sel.end]
     return []
 
   cursorUpdate: (event) ->
-    sel = window.getSelection()
-    if sel.isCollapsed and sel.rangeCount > 0
-        loc = sel.getRangeAt(0)
-        pos = GorillaEditor.cursorPosition(loc.startOffset, loc.startContainer)
-        $('#positionData').text("#{pos} <#{pos % 3}>")
-    else if sel.rangeCount > 0
-        loc = sel.getRangeAt(0)
+    sel = Mouse.getCursorPosition()
+    if sel
+      if sel.type == "caret"
+        $('#positionData').text("#{sel.start} <#{sel.start % 3}>")
+      else if sel.type == "range"
         txt = ""
-        startPos = GorillaEditor.cursorPosition(loc.startOffset, loc.startContainer)
-        txt += "Start #{startPos} &lt;#{startPos % 3}&gt; "
-        endPos = GorillaEditor.cursorPosition(loc.endOffset, loc.endContainer)
-        txt += "End #{endPos} &lt;#{endPos % 3}&gt; "
-        length = endPos - startPos
+        txt += "Start #{sel.start} &lt;#{sel.start % 3}&gt; "
+        txt += "End #{sel.end} &lt;#{sel.end % 3}&gt; "
+        length = sel.end - sel.start
         txt += "Length #{length} &lt;#{length % 3}&gt; "
-
-        dispCodons = codons = @file.getCodons(startPos, endPos)
+        dispCodons = codons = @file.getCodons(sel.start, sel.end)
 
         if codons.length > 50
             dispCodons = codons[..25] + "..." + codons[(codons.length - 25)..]
@@ -141,23 +134,23 @@ window.G.GorillaEditor = class GorillaEditor
 
         $('#positionData').html(txt)
 
-
   showHoverDialog: (event) ->
     if event.type == "mouseleave"
-        $('#hover-box').remove()
-        return
+      $('#hover-box').remove()
+      return
     if event.type == "mouseenter"
-        data = GenBank.getSpanData(event.target)
-        text = ""
-        for featureId, content of data
-            if text != ""
-                text += '<br>'
-            feat = @file.getFeatures()[featureId]
-            text += feat.parameters['/label']
-        node = $(event.target)
-        newElement = $('<div>', id: 'hover-box')
-        newElement.html(text)
-        $('body').append(newElement)
+      console.log "enter"
+      data = GenBank.getSpanData(event.target)
+      text = ""
+      for featureId, content of data
+        if text != ""
+          text += '<br>'
+        feat = @file.getFeatures()[featureId]
+        text += feat.parameters['/label']
+      node = $(event.target)
+      newElement = $('<div>', id: 'hover-box')
+      newElement.html(text)
+      $('body').append(newElement)
     $('#hover-box').css('top', event.pageY + 10)
     $('#hover-box').css('left', event.pageX + 10)
 
