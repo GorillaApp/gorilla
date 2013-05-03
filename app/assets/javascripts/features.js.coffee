@@ -56,7 +56,8 @@ update_all_features_dialog = ->
     $('#allfeaturesdialog').dialog("open")
 
 reset_features_form = ->
-  $('feature-form').each -> $(this).reset()
+  $('#feature-form #sequence').val('')
+  $('#feature-form #name').val('')
 
 window.setup_features = ->
   $('#featuredialog').dialog
