@@ -110,17 +110,6 @@ describe 'GenBank editor', ->
       newFeature.location.ranges[2].end.should.equal 1398
 
 
-  describe "test search functionality", ->
-
-    sequence = "atcg"
-    reverseComplement = "cgat"
-
-    it 'should correctly return the reverse complement of a sequence', ->
-
-      reverse = G.GenBank.getReverseComplement(sequence)
-
-      reverse.should.equal reverseComplement
-
   it 'should be able to load a file without error', ->
     file = new G.GenBank(testFile)
 

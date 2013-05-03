@@ -293,6 +293,13 @@ EOF
         page.should have_content "No Matches Found"
       end
 
+      it 'should correctly find a match of a sequence' do
+        click_link 'findA'
+        fill_in :find_sequence, with: "cgtct"
+        click_button 'Find Next'
+        page.should_not have_content "No Matches Found"
+
+      end
     end
 
 
