@@ -1,15 +1,15 @@
 <%= content_for :links do %>
-  | <%= link_to "Add a feature", "#", id: :addFeature %>
-  | <%= link_to "List of Features", "#", id: :listFeatures %>
-  | <%= link_to "Reverse Complement", "#", id: :reverseComplement %>
-  | <%= link_to "To Upper", "#", id: :toUpper %>
-  | <%= link_to "To Lower", "#", id: :toLower %>
-  | <%= link_to "Save", "#", id: :save %>
-  | <%= link_to "Use Feature Library", "#", id: :featureLibrary %>
+  <%= link_to image_tag("addFeature.png", title: "Add a Feature", size: "44x26"), "#", id: :addFeature %>
+  <%= link_to image_tag("features.png", title: "List of Features", size: "44x26"), "#", id: :listFeatures %>
+  <%= link_to image_tag("reverseComplement.png", title: "Reverse Complement", size: "44x26"), "#", id: :reverseComplement %>
+  <%= link_to image_tag("toUpper.png", title: "To Upper", size: "44x26"), "#", id: :toUpper %>
+  <%= link_to image_tag("toLower.png", title: "To Lower", size: "44x26"), "#", id: :toLower %>
+  <%= link_to image_tag("save.png", title: "Save", size: "44x26"), "#", id: :save %>
+  <%= link_to image_tag("featureLibrary.png", title: "Use Feature Library", size: "44x26"), "#", id: :featureLibrary %>
   <% if development? %>
     <span class="development">
-      | <%= link_to "Autosave", "#", id: :autosave %>
-      | <%= link_to "Delete Autosave", "#", id: :deleteAutosave %>
+      <%= link_to "Autosave", "#", id: :autosave %>
+      <%= link_to "Delete Autosave", "#", id: :deleteAutosave %>
     </span>
   <% end %>
 <% end %>
@@ -57,8 +57,9 @@
 doc = <%= @file_contents.to_json.html_safe %>;
 doc_restored = <%= @file_restore_contents.to_json.html_safe %>;
 first_line = <%= @first_line.to_json.html_safe %>;
-isRestore = <%= @isRestore.to_json %>;
+isRestore = <%= @isRestore.to_json.html_safe %>;
 saveURL = <%= @saveURL.to_json.html_safe %>;
+extra = <%= @extra.to_json.html_safe %>;
 allFeatures = null;
 user = <%= (current_user.nil? ? -1 : current_user.id) %>;
 
@@ -66,5 +67,6 @@ user = <%= (current_user.nil? ? -1 : current_user.id) %>;
 $(document).ready(function () {
   G.begin_editing("#main_editor", "#autosaved_editor");
 });
+
 
 </script>

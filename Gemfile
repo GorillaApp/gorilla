@@ -34,7 +34,7 @@ gem 'jquery-rails'
 group :development, :test do
   gem 'capybara'
   gem 'selenium-webdriver'
-  #gem 'capybara-webkit'
+  # gem 'capybara-webkit'
   gem 'factory_girl_rails'
   gem 'faker'
   gem 'konacha'

@@ -1,10 +1,12 @@
 #= require genbank
 #= require autosave
 #= require util
+#= require mouse
 
 window.G or= {}
 Autosave = G.Autosave
 GenBank = G.GenBank
+Mouse = G.Mouse
 
 window.G.GorillaEditor = class GorillaEditor
   @_editor_instances: {}
@@ -85,6 +87,21 @@ window.G.GorillaEditor = class GorillaEditor
                 .bind('dragover', (event) -> event.preventDefault())
                 .bind('drop', (event) -> event.preventDefault())
 
+    $('#save').click ->
+      if saveURL == ""
+        notify "No Save URL Specified", "error"
+      else
+        $.ajax
+          type: "POST",
+          url: saveURL,
+          data:
+            extra: extra
+            file: me.file.serialize()
+          success: ->
+            notify "File Saved Successfully", "success"
+          error: ->
+            notify "Unable to save file", "error"
+
     @editorContents = $(@editorId).text()
     @editorHtml = $(@editorId).html()
     @previousEditors = []
@@ -106,41 +123,31 @@ window.G.GorillaEditor = class GorillaEditor
     return pos
 
   @getSelectionRange: (sel) ->
-    if sel.isCollapsed and sel.rangeCount > 0
-        loc = sel.getRangeAt(0)
-        pos = GorillaEditor.cursorPosition(loc.startOffset, loc.startContainer)
-        return [pos]
-    else if sel.rangeCount > 0
-        loc = sel.getRangeAt(0)
-        startPos = GorillaEditor.cursorPosition(loc.startOffset, loc.startContainer)
-        endPos = GorillaEditor.cursorPosition(loc.endOffset, loc.endContainer)
-        return [startPos, endPos]
+    sel = Mouse.getCursorPosition()
+    if sel.type == "caret"
+      return [sel.start]
+    else if sel.type =="range"
+      return [sel.start, sel.end]
     return []
 
   cursorUpdate: (event) ->
-    sel = window.getSelection()
-    if sel.isCollapsed and sel.rangeCount > 0
-        loc = sel.getRangeAt(0)
-        pos = GorillaEditor.cursorPosition(loc.startOffset, loc.startContainer)
-        $('#positionData').text("#{pos} <#{pos % 3}>")
-    else if sel.rangeCount > 0
-        loc = sel.getRangeAt(0)
+    sel = Mouse.getCursorPosition()
+    if sel
+      if sel.type == "caret"
+        $('#positionData').text("#{sel.start} <#{sel.start % 3}>")
+      else if sel.type == "range"
         txt = ""
-        startPos = GorillaEditor.cursorPosition(loc.startOffset, loc.startContainer)
-        txt += "Start #{startPos} &lt;#{startPos % 3}&gt; "
-        endPos = GorillaEditor.cursorPosition(loc.endOffset, loc.endContainer)
-        txt += "End #{endPos} &lt;#{endPos % 3}&gt; "
-        length = endPos - startPos
+        txt += "Start #{sel.start} &lt;#{sel.start % 3}&gt; "
+        txt += "End #{sel.end} &lt;#{sel.end % 3}&gt; "
+        length = sel.end - sel.start
         txt += "Length #{length} &lt;#{length % 3}&gt; "
-
-        dispCodons = codons = @file.getCodons(startPos, endPos)
+        dispCodons = codons = @file.getCodons(sel.start, sel.end)
 
         if codons.length > 50
             dispCodons = codons[..25] + "..." + codons[(codons.length - 25)..]
         txt += "<br>" + dispCodons
 
         $('#positionData').html(txt)
-
 
   showHoverDialog: (event) ->
     if event.type == "mouseleave"
