@@ -7,16 +7,20 @@
 window.G or= {}
 
 window.G.begin_editing = (editor_selector, autosave_selector) ->
-  console.groupCollapsed("Preparing to edit a file")
+  $(autosave_selector).hide()
   setup_features()
+  if not doc? or doc == ""
+    notify "Unable to load file", "error"
+
+  console.groupCollapsed("Preparing to edit a file")
 
   if window.isRestore
     console.groupCollapsed("An autosaved version exists")
+    $(autosave_selector).show()
     G.Autosave.handle(editor_selector, autosave_selector, ->
       G.begin_editing(editor_selector, autosave_selector))
     console.groupEnd()
   else
-    $(autosave_selector).hide()
 
     # G.debug_editor = new G.GorillaEditor(autosave_selector)
     G.main_editor = new G.GorillaEditor(editor_selector, doc, G.debug_editor)
