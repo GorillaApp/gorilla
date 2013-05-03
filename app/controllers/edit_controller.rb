@@ -10,20 +10,10 @@ class EditController < ApplicationController
 
     def fixFileURL(url)
       http = url[0..6] == 'http://'
-      www = url[7..10] == 'www.'
-      wwwFront = url[0..3] == 'www.'
-      if http and www
-        return url
-      elsif http # www not included
-        url = url[0..6] + 'www.' + url[7..-1]
-        return url
-      elsif wwwFront # http not included
+      if !http
         url = 'http://' + url
-        return url
-      else
-        url = 'http://www.' + url
-        return url
       end
+      return url
     end
 
     @file_restore_contents = ''
