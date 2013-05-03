@@ -282,6 +282,8 @@ EOF
         page.should have_content "No Matches Found"
       end
 
+
+
     end
 
 

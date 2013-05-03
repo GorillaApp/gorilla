@@ -872,5 +872,5 @@ window.G.GenBank = class GenBank
     @data.features.push featureObject
 
   removeFromEnd: ->
-    @data.features.remove(-1)
+    @data.features.splice(-1)
 
