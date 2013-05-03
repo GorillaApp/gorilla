@@ -15,6 +15,7 @@
 //= require_tree .
 //= require jquery.ui.dialog
 //= require jscolor
+//= require jquery.contextMenu.js
 
 $(document).ready(function(){
   register_notifications()
