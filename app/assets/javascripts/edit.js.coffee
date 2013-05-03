@@ -11,6 +11,7 @@ window.G.begin_editing = (editor_selector, autosave_selector) ->
   setup_features()
   if not doc? or doc == ""
     notify "Unable to load file", "error"
+    return
 
   console.groupCollapsed("Preparing to edit a file")
 
