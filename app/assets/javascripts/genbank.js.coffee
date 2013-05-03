@@ -803,9 +803,7 @@ window.G.GenBank = class GenBank
 
   removeFeatures: (featList) ->
     feats = @getFeatures()
-
-    # debugger
-
+    
     featList.sort (a,b) -> a.id - b.id
 
     for feat in featList
@@ -830,7 +828,6 @@ window.G.GenBank = class GenBank
     @removeFeatures(featsToDelete)
 
   splitJoinedFeature: (oldFeat, start, end) ->
-    #debugger
     oldFeats = @getFeatures()
     newRanges = []
     newLoc = 

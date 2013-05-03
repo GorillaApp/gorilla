@@ -50,8 +50,6 @@ revCompSelectionLogic = (indices, editor) ->
     eIndex--
   else
     return
-
-  #debugger
   
   seenFeatures = {}
   numSplits = 0
@@ -120,7 +118,6 @@ revCompSelectionLogic = (indices, editor) ->
               feature.location.strand ^= 1
 
 revCompSeq = (seq) ->
-  #debugger
   newSeq = ""
   i = seq.length - 1
   seqMap = 
