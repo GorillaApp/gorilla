@@ -103,11 +103,10 @@ window.handleFileSelect = (evt) ->
 
   reader.readAsText(file)
 
+window.matched = null
+window.currentIndex = 0
 
 window.bind_features = ->
-
-  matched = null
-  currentIndex = 0
 
   $('#feature-form').unbind('submit').submit (event) ->
     event.preventDefault()
@@ -163,54 +162,135 @@ window.bind_features = ->
 
 
   # buttons for search
-  # find next will temporaily create a
+  # find next will temporaily create an annotated feature
   $('#find-next-button').unbind('click').click ->
 
-    search = true
-    $('.issues').hide()
-
-    sequence = $('#find_sequence').val()
-
-    # check that the sequence to find is non-empty
-    if sequence == ""
-      $('.issues').text("You must specify a sequence to find").show()
-      $('.issues').append("<br> <br>")
-      search = false
-
-    # check that all characters in the sequence are valid
-    else if ! /^[actgnACTGN]*$/.test(sequence)
-      $('.issues').text("Invalid characters in sequence").show()
-      $('.issues').append("<br> <br>")
-      search = false
-
+    $('.issues').empty()
+    search = window.validate()
 
     if search
+      sequence = $('#find_sequence').val()
 
+      if window.matched == null
 
+        isChecked = $('#find-reverse').is(":checked")
+        indexes = G.GenBank.indexes(G.main_editor.file.data.raw_genes, sequence)
 
-      indexes = G.GenBank.indexes(G.main_editor.file.data.raw_genes, sequence)
+        if isChecked
+          reverseSequence = G.GenBank.getReverseComplement(sequence)
+          rIndexes = G.GenBank.indexes(G.main_editor.file.data.raw_genes, reverseSequence)
 
-      if isChecked = $('#find-text').is(":checked")
-        console.log("TODO: add sorted indexes of the reverse complement to indexes")
+          console.log("Reverse indexes", rIndexes)
+          indexes = rIndexes.concat indexes
+          indexes.sort (a , b) -> return a - b
 
-      newFeatures = G.main_editor.file.generateFoundFeatureObjects(sequence, indexes)
+        window.matched = G.main_editor.file.generateFoundFeatureObjects(sequence, indexes)
 
+        if window.matched.length == 0
+          $('.issues').text("No Matches Found").show()
+          $('.issues').append("<br> <br>")
+          return
 
-      console.log("found sequences", newFeatures)
+        window.currentIndex = 0
 
-      G.main_editor.file.pushToFeatureArray(newFeatures[0])
+      else
+
+          G.main_editor.file.removeFromEnd()
+          if window.currentIndex == window.matched.length - 1
+            window.currentIndex = 0
+          else
+            window.currentIndex = window.currentIndex + 1
+
+      console.log("Matched", window.matched)
+      console.log("Current Index", window.currentIndex)
+
+      G.main_editor.file.pushToFeatureArray(window.matched[window.currentIndex])
 
       G.main_editor.startEditing()
 
-
-
-
   $('#find-prev-button').unbind('click').click ->
 
-  $('#find-all-button').unbind('click').click ->
+    $('.issues').empty()
+
+    search = window.validate()
+
+    if search
+      sequence = $('#find_sequence').val()
+
+      if window.matched == null
+
+        isChecked = $('#find-reverse').is(":checked")
+        indexes = G.GenBank.indexes(G.main_editor.file.data.raw_genes, sequence)
+
+        if isChecked
+          reverseSequence = G.GenBank.getReverseComplement(sequence)
+          rIndexes = G.GenBank.indexes(G.main_editor.file.data.raw_genes, reverseSequence)
+
+          console.log("Reverse indexes", rIndexes)
+          indexes = rIndexes.concat indexes
+          indexes.sort (a , b) -> return a - b
+
+        window.matched = G.main_editor.file.generateFoundFeatureObjects(sequence, indexes)
+
+        if window.matched.length == 0
+          $('.issues').text("No Matches Found").show()
+          $('.issues').append("<br> <br>")
+
+          return
+
+        window.currentIndex = 0
+
+        window.matched = G.main_editor.file.generateFoundFeatureObjects(sequence, indexes)
+        window.currentIndex = window.matched.length - 1
+
+      else
+
+          G.main_editor.file.removeFromEnd()
+          if window.currentIndex == 0
+            window.currentIndex = window.matched.length - 1
+          else
+            window.currentIndex = window.currentIndex - 1
+
+      G.main_editor.file.pushToFeatureArray(window.matched[window.currentIndex])
+
+      G.main_editor.startEditing()
 
   $('#clear-button').unbind('click').click ->
-    $('#find-text').val("")
+    $('.issues').empty()
+    $('#find_sequence').val("")
+    window.resetState()
 
+  $('#find-reverse').mousedown(window.resetState)
 
+  $('#finddialog').bind('dialogclose', window.resetState)
+
+  $('#find_sequence').bind('input propertychange', window.resetState)
+
+window.resetState = ->
+  console.log("State resetting")
+
+  if window.matched != null
+    window.matched = null
+    G.main_editor.file.removeFromEnd()
+    currentIndex = 0
+    G.main_editor.startEditing()
+
+window.validate = =>
+  search = true
+
+  sequence = $('#find_sequence').val()
+
+  # check that the sequence to find is non-empty
+  if sequence == ""
+    $('.issues').text("You must specify a sequence to find").show()
+    $('.issues').append("<br> <br>")
+    search = false
+
+  # check that all characters in the sequence are valid
+  else if ! /^[actgnACTGN]*$/.test(sequence)
+    $('.issues').text("Invalid characters in sequence").show()
+    $('.issues').append("<br> <br>")
+    search = false
+
+  search
 

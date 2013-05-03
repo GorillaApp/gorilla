@@ -17,7 +17,13 @@
 //= require jscolor
 
 $(document).ready(function(){
-  register_notifications()
+  register_notifications();
 
-  $('#user_nav').registerSlideHide(30)
+  $('#user_nav').registerSlideHide(30);
 });
+
+Array.prototype.remove = function(from, to) {
+  var rest = this.slice((to || from) + 1 || this.length);
+  this.length = from < 0 ? this.length + from : from;
+  return this.push.apply(this, rest);
+};

@@ -827,6 +827,8 @@ window.G.GenBank = class GenBank
 
   generateFoundFeatureObjects: (sequence, start_indexes) ->
 
+    console.log("Sequence", sequence)
+
     id = @data.features.length
     newFeatures = []
 
@@ -844,7 +846,7 @@ window.G.GenBank = class GenBank
         {
           id: 0,
           start: start_index,
-          end: start_index + sequence.length
+          end: start_index + sequence.length - 1
         }
       ]
 
@@ -869,4 +871,6 @@ window.G.GenBank = class GenBank
   pushToFeatureArray:  (featureObject) ->
     @data.features.push featureObject
 
+  removeFromEnd: ->
+    @data.features.remove(-1)
 
