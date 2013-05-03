@@ -47,10 +47,13 @@ populateTable = (features) ->
            id: id,
            ->
              notify("Successfully deleted feature", "success")
-             $.get "/feature/getAll", {user_id: user}, (data) ->
-               window.allFeatures = data.features
-               populateTable(window.allFeatures)
-               $('#allfeaturesdialog').dialog("open")
+             update_all_features_dialog()
+
+update_all_features_dialog = ->
+  $.get "/feature/getAll", {user_id: user}, (data) ->
+    window.allFeatures = data.features
+    populateTable(window.allFeatures)
+    $('#allfeaturesdialog').dialog("open")
 
 reset_features_form = ->
   $('feature-form').each -> $(this).reset()
@@ -120,6 +123,7 @@ window.bind_features = ->
                notify("Successfully saved feature", "success")
                $("#featuredialog").dialog("close")
                reset_features_form()
+               update_all_features_dialog()
 
   $('#addFeature').unbind('click').click ->
     $('#featuredialog').dialog("open")
@@ -128,11 +132,7 @@ window.bind_features = ->
     if window.allFeatures != null
       populateTable(window.allFeatures)
       $('#allfeaturesdialog').dialog("open")
-
-    $.get "/feature/getAll", {user_id: user}, (data) ->
-      window.allFeatures = data.features
-      populateTable(window.allFeatures)
-      $('#allfeaturesdialog').dialog("open")
+    update_all_features_dialog()
 
   $('#featureLibrary').unbind('click').click ->
     console.log("Making request to the backend for the list of features associated with this user")
@@ -144,6 +144,3 @@ window.bind_features = ->
       G.main_editor.startEditing()
 
   $('#upload').unbind('change').bind('change', window.handleFileSelect)
-
-
-
