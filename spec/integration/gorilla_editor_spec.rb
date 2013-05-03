@@ -275,6 +275,13 @@ EOF
 
       end
 
+      it 'should throw an error message when attempting to search for a sequence that is not found' do
+        click_link 'find'
+        fill_in :find_sequence, with: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaattttttttttttt'
+        click_button 'Find Next'
+        page.should have_content "No Matches Found"
+      end
+
     end
 
 
