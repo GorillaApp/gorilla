@@ -9,7 +9,7 @@ modifySelection = (modFunction) ->
     [sIndex, eIndex] = indices
   else
     [sIndex, eIndex] = [0, editor.file.getGeneSequence().length]
-    
+
   data = editor.file.getGeneSequence()
   console.log(sIndex)
   console.log(eIndex)
@@ -20,8 +20,6 @@ modifySelection = (modFunction) ->
   $(editor.editorId).html(editor.file.getAnnotatedSequence())
   editor.startEditing()
   sel.collapse(true)
-
-
 
 toUpper = (s) ->
   return s.toUpperCase()
@@ -65,7 +63,7 @@ revCompSelectionLogic = (indices, editor) ->
         if sIndex != range.start
           editor.file.splitFeatureAtInPlace(feature.id, range.id, distanceInRange)
           numSplits += 1
-  
+
   allFeats = editor.file.getTableOfFeatures()
   if allFeats[eIndex]
       for pair in allFeats[eIndex]
@@ -83,7 +81,7 @@ revCompSelectionLogic = (indices, editor) ->
         for pair in allFeats[i] #gives us a list of feat_id, range_id
           feature = pair.feature
           range = pair.range
-          
+
           hash = feature.id.toString() + ',' + range.id.toString()
           if not seenFeatures[hash]
             seenFeatures[hash] = true
@@ -105,7 +103,7 @@ revCompSeq = (seq) ->
   #debugger
   newSeq = ""
   i = seq.length - 1
-  seqMap = 
+  seqMap =
     a:"t", t:"a", c:"g", g:"c", n:"n"
     A:"T", T:"A", C:"G", G:"C", N:"N"
     y:"r", r:"y", b:"v", v:"b", s:"s"
@@ -131,3 +129,4 @@ window.G or= {}
 G.toUpper = toUpper
 G.modifySelection = modifySelection
 G.reverseCompSelection = reverseCompSelection
+G.revCompSeq = revCompSeq

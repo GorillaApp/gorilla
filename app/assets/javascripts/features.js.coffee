@@ -47,13 +47,10 @@ populateTable = (features) ->
            id: id,
            ->
              notify("Successfully deleted feature", "success")
-             update_all_features_dialog()
-
-update_all_features_dialog = ->
-  $.get "/feature/getAll", {user_id: user}, (data) ->
-    window.allFeatures = data.features
-    populateTable(window.allFeatures)
-    $('#allfeaturesdialog').dialog("open")
+             $.get "/feature/getAll", {user_id: user}, (data) ->
+               window.allFeatures = data.features
+               populateTable(window.allFeatures)
+               $('#allfeaturesdialog').dialog("open")
 
 reset_features_form = ->
   $('#feature-form #sequence').val('')
@@ -80,6 +77,16 @@ window.setup_features = ->
       effect: "drop"
       duration: 1000
 
+  $('#finddialog').dialog
+    autoOpen: false
+    width: 523
+    show:
+      effect: "slide"
+      duration: 1000
+    hide:
+      effect: "drop"
+      duration: 1000
+
 window.handleFileSelect = (evt) ->
   file = evt.target.files[0]
   reader = new FileReader()
@@ -97,6 +104,8 @@ window.handleFileSelect = (evt) ->
 
   reader.readAsText(file)
 
+window.matched = null
+window.currentIndex = 0
 
 window.bind_features = ->
 
@@ -124,7 +133,6 @@ window.bind_features = ->
                notify("Successfully saved feature", "success")
                $("#featuredialog").dialog("close")
                reset_features_form()
-               update_all_features_dialog()
 
   $('#addFeature').unbind('click').click ->
     $('#featuredialog').dialog("open")
@@ -133,7 +141,11 @@ window.bind_features = ->
     if window.allFeatures != null
       populateTable(window.allFeatures)
       $('#allfeaturesdialog').dialog("open")
-    update_all_features_dialog()
+
+    $.get "/feature/getAll", {user_id: user}, (data) ->
+      window.allFeatures = data.features
+      populateTable(window.allFeatures)
+      $('#allfeaturesdialog').dialog("open")
 
   $('#featureLibrary').unbind('click').click ->
     console.log("Making request to the backend for the list of features associated with this user")
@@ -145,3 +157,151 @@ window.bind_features = ->
       G.main_editor.startEditing()
 
   $('#upload').unbind('change').bind('change', window.handleFileSelect)
+
+  $('#find').unbind('click').click ->
+    $('#finddialog').dialog("open")
+
+
+  # buttons for search
+  # find next will temporaily create an annotated feature
+  $('#find-next-button').unbind('click').click ->
+
+    $('.issues').empty()
+    search = window.validate()
+
+    if search
+      sequence = $('#find_sequence').val()
+
+      if window.matched == null
+
+        isChecked = $('#find-reverse').is(":checked")
+        indexes = G.GenBank.indexes(G.main_editor.file.data.raw_genes, sequence)
+
+        if isChecked
+          reverseSequence = G.revCompSeq(sequence)
+          rIndexes = G.GenBank.indexes(G.main_editor.file.data.raw_genes, reverseSequence)
+
+          console.log("Reverse indexes", rIndexes)
+          indexes = rIndexes.concat indexes
+          indexes.sort (a , b) -> return a - b
+
+        window.matched = G.main_editor.file.generateFoundFeatureObjects(sequence, indexes)
+
+        if window.matched.length == 0
+          $('.issues').text("No Matches Found").show()
+          $('.issues').append("<br> <br>")
+          return
+
+        window.currentIndex = 0
+
+      else
+
+          G.main_editor.file.removeFromEnd()
+          if window.currentIndex == window.matched.length - 1
+            window.currentIndex = 0
+          else
+            window.currentIndex = window.currentIndex + 1
+
+      console.log("Matched", window.matched)
+      console.log("Current Index", window.currentIndex)
+
+      G.main_editor.file.pushToFeatureArray(window.matched[window.currentIndex])
+
+      G.main_editor.startEditing()
+
+  $('#find-prev-button').unbind('click').click ->
+
+    $('.issues').empty()
+
+    search = window.validate()
+
+    if search
+      sequence = $('#find_sequence').val()
+
+      if window.matched == null
+
+        isChecked = $('#find-reverse').is(":checked")
+        indexes = G.GenBank.indexes(G.main_editor.file.data.raw_genes, sequence)
+
+        if isChecked
+          reverseSequence = G.revCompSeq(sequence)
+          rIndexes = G.GenBank.indexes(G.main_editor.file.data.raw_genes, reverseSequence)
+
+          console.log("Reverse indexes", rIndexes)
+          indexes = rIndexes.concat indexes
+          indexes.sort (a , b) -> return a - b
+
+        window.matched = G.main_editor.file.generateFoundFeatureObjects(sequence, indexes)
+
+        if window.matched.length == 0
+          $('.issues').text("No Matches Found").show()
+          $('.issues').append("<br> <br>")
+          return
+
+        console.log("This should not show up if we search for a string that does not exist")
+
+        window.currentIndex = 0
+
+        window.matched = G.main_editor.file.generateFoundFeatureObjects(sequence, indexes)
+        window.currentIndex = window.matched.length - 1
+
+      else
+
+          G.main_editor.file.removeFromEnd()
+          if window.currentIndex == 0
+            window.currentIndex = window.matched.length - 1
+          else
+            window.currentIndex = window.currentIndex - 1
+
+      G.main_editor.file.pushToFeatureArray(window.matched[window.currentIndex])
+
+      G.main_editor.startEditing()
+
+  $('#clear-button').unbind('click').click ->
+    window.resetState()
+
+  $('#find-reverse').mousedown(window.resetState)
+
+  $('#finddialog').bind('dialogclose', -> window.onDialogClose)
+
+
+  $('#find_sequence').bind('input propertychange', window.resetState)
+
+window.onDialogClose = ->
+  $('#find_sequence').val("")
+  window.resetState()
+
+
+
+window.resetState = ->
+  console.log("State resetting")
+
+  $('.issues').empty()
+
+
+  if window.matched != null
+    console.log("removing")
+    window.matched = null
+    G.main_editor.file.removeFromEnd()
+    currentIndex = 0
+    G.main_editor.startEditing()
+
+window.validate = =>
+  search = true
+
+  sequence = $('#find_sequence').val()
+
+  # check that the sequence to find is non-empty
+  if sequence == ""
+    $('.issues').text("You must specify a sequence to find").show()
+    $('.issues').append("<br> <br>")
+    search = false
+
+  # check that all characters in the sequence are valid
+  else if ! /^[actgnACTGN]*$/.test(sequence)
+    $('.issues').text("Invalid characters in sequence").show()
+    $('.issues').append("<br> <br>")
+    search = false
+
+  search
+

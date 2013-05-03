@@ -89,6 +89,36 @@ body {
     }
   }
 
+  #find {
+    float: right;
+    padding-right: 17.5px;
+
+    A {
+      color: black;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    A:hover {
+      text-decoration: underline;
+      font-weight: bold;
+    }
+  }
+
+  #finddialog {
+
+    .issues {
+      color: red;
+    }
+
+    li {
+      display: inline;
+      list-style-type: none;
+      padding-right: 6px;
+    }
+
+  }
+
 
   #user_nav {
     position: fixed;

@@ -17,7 +17,8 @@
 //= require jscolor
 
 $(document).ready(function(){
-  register_notifications()
+  register_notifications();
 
-  $('#user_nav').registerSlideHide(30)
+  $('#user_nav').registerSlideHide(30);
 });
+

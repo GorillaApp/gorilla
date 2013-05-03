@@ -14,6 +14,10 @@
   <% end %>
 <% end %>
 
+
+<a id="find" href="#">Find</a>
+
+
 <div id="autosavechoice">
     <p>Please choose which version you would like to use.</p>
     <button type = "button" id = "opened"> Opened Version </button>
@@ -23,6 +27,23 @@
 <div id="positionData"></div>
 <div id="main_editor"></div>
 <div id="autosaved_editor"></div>
+
+<div id="finddialog" >
+  <div class='issues'></div>
+  <label for="find_sequence">Enter sequence to search for: </label>
+  <textarea id="find_sequence" name = "find_sequence" rows="2" cols="50"></textarea>
+  <br>
+  <br>
+
+  <input id="find-reverse" type="checkbox" name="reverse" value="reverse">Include search for reverse complement <br> <br>
+
+  <ul id="findlist">
+    <li><button id="find-next-button" type="button">Find Next</button></li>
+    <li><button id="find-prev-button" type="button">Find Previous</button></li>
+    <li><button id="clear-button" type="button">Clear</button></li>
+  </ul>
+
+</div>
 
 <div id="featuredialog" class='feature' title="Add Feature">
   <%= form_tag "#", method: "GET", id: 'feature-form' do %>
@@ -59,6 +80,13 @@ isRestore = <%= @isRestore.to_json.html_safe %>;
 saveURL = <%= @saveURL.to_json.html_safe %>;
 extra = <%= @extra.to_json.html_safe %>;
 allFeatures = null;
+
+// array of starting indexes for each substring that is found by search
+foundSequences = null;
+
+// current index for find next and find prev for search
+currentSequence = 0;
+
 user = <%= (current_user.nil? ? -1 : current_user.id) %>;
 
 
