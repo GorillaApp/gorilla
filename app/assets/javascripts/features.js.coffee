@@ -235,8 +235,9 @@ window.bind_features = ->
         if window.matched.length == 0
           $('.issues').text("No Matches Found").show()
           $('.issues').append("<br> <br>")
-
           return
+
+        console.log("This should not show up if we search for a string that does not exist")
 
         window.currentIndex = 0
 
@@ -256,18 +257,26 @@ window.bind_features = ->
       G.main_editor.startEditing()
 
   $('#clear-button').unbind('click').click ->
-    $('.issues').empty()
-    $('#find_sequence').val("")
     window.resetState()
 
   $('#find-reverse').mousedown(window.resetState)
 
-  $('#finddialog').bind('dialogclose', window.resetState)
+  $('#finddialog').bind('dialogclose', -> window.onDialogClose)
+
 
   $('#find_sequence').bind('input propertychange', window.resetState)
 
+window.onDialogClose = ->
+  $('#find_sequence').val("")
+  window.resetState()
+
+
+
 window.resetState = ->
   console.log("State resetting")
+
+  $('.issues').empty()
+
 
   if window.matched != null
     window.matched = null
