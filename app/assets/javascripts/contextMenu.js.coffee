@@ -4,14 +4,15 @@ $ ->
     callback: (key, options) ->
       m = "global: " + key
       window.console and console.log(m) or alert(m)
-
+    build: ->
+      window.textSel = window.getSelection().toString()
     items:
       add_feature:
         name: "Add Feature"
         
         callback: (key, options) ->
           m = "Clicked Add Features"
-          window.G.load_features_form_with_seq(window.getSelection().toString())
+          window.G.load_features_form_with_seq(window.textSel)
 
 
       list_features:
