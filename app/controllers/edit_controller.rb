@@ -45,6 +45,7 @@ class EditController < ApplicationController
       @isRestore = true
     end
 
+    @extra = params[:extra] || {}
   end
 
   def autosave
