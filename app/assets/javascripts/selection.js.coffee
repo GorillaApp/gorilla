@@ -21,8 +21,6 @@ modifySelection = (modFunction) ->
   editor.startEditing()
   sel.collapse(true)
 
-
-
 toUpper = (s) ->
   return s.toUpperCase()
 

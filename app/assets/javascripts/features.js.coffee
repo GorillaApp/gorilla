@@ -279,6 +279,7 @@ window.resetState = ->
 
 
   if window.matched != null
+    console.log("removing")
     window.matched = null
     G.main_editor.file.removeFromEnd()
     currentIndex = 0

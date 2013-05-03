@@ -294,7 +294,7 @@ EOF
       end
 
       it 'should correctly find a match of a sequence' do
-        click_link 'findA'
+        click_link 'find'
         fill_in :find_sequence, with: "cgtct"
         click_button 'Find Next'
         page.should_not have_content "No Matches Found"
