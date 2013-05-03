@@ -257,6 +257,7 @@ window.bind_features = ->
       G.main_editor.startEditing()
 
   $('#clear-button').unbind('click').click ->
+    $('#find_sequence').val("")
     window.resetState()
 
   $('#find-reverse').mousedown(window.resetState)
