@@ -261,13 +261,15 @@ window.bind_features = ->
 
   $('#find-reverse').mousedown(window.resetState)
 
-  $('#finddialog').bind('dialogclose', -> window.onDialogClose)
+  $('#finddialog').bind('dialogclose', window.onDialogClose)
 
 
   $('#find_sequence').bind('input propertychange', window.resetState)
 
 window.onDialogClose = ->
   $('#find_sequence').val("")
+
+  console.log("Matched called from dialog close", window.matched)
   window.resetState()
 
 
