@@ -4,19 +4,24 @@ GorillaEditor = window.G.GorillaEditor
 modifySelection = (modFunction, trackChanges = true) ->
   sel = window.getSelection()
   indices = GorillaEditor.getSelectionRange(sel)
+  editor = window.G.main_editor
   if indices.length == 2
-    editor = GorillaEditor.getInstance(sel.anchorNode)
-    if trackChanges
-      editor.trackChanges()
-
     [sIndex, eIndex] = indices
-    data = editor.file.getGeneSequence()
-    subData = modFunction(data.substring(sIndex, eIndex))
-    editor.file.replaceSequence(subData, sIndex, eIndex)
+  else
+    [sIndex, eIndex] = [0, editor.file.getGeneSequence().length]
 
-    $(editor.editorId).html(editor.file.getAnnotatedSequence())
-    editor.completeEdit()
-    sel.collapse(true)
+  editor = GorillaEditor.getInstance(sel.anchorNode)
+  if trackChanges
+    editor.trackChanges()
+
+  data = editor.file.getGeneSequence()
+  subData = modFunction(data.substring(sIndex, eIndex))
+  editor.file.replaceSequence(subData, sIndex, eIndex)
+
+  $(editor.editorId).html(editor.file.getAnnotatedSequence())
+  editor.completeEdit()
+  editor.startEditing()
+  sel.collapse(true)
 
 toUpper = (s) ->
   return s.toUpperCase()

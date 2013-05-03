@@ -22,10 +22,10 @@ describe "A user", :js => true do
       page.should have_content "Welcome!"
     end
 
-    it 'should be able to load a simple file' do
-      visit '/testclient/client'
+      it 'should be able to load a simple file' do
+        visit '/testclient/client'
 
-      find('#file').set <<-EOF
+        find('#file').set <<-EOF
 LOCUS pGG001 20 bp ds-DNA circular UNK 01-JAN-1980
 FEATURES             Location/Qualifiers
      misc_feature    complement(1..10)
@@ -38,13 +38,13 @@ ORIGIN
         1 cgtctctgac cagaccaata
 //
 EOF
-      click_button "Open File"
+        click_button "Open File"
 
-      page.should have_content "cgtctctgaccagaccaata"
+        page.should have_content "cgtctctgaccagaccaata"
 
-      find('#main_editor-0').should have_content "cgtctctgac"
-    end
-
+        find('#main_editor-0').should have_content "cgtctctgac"
+      end
+      
     context 'and opens a file' do
       before(:each) do
         visit '/testclient/client'
@@ -229,6 +229,172 @@ EOF
         type(:delete)
         page.should have_content 'cgtctctgaccaccaata'
       end
+    end
+
+    context 'and open a much more complicated file' do
+      before(:each) do
+        visit '/testclient/client'
+
+        find('#file').set <<-EOF
+LOCUS pGG001 20 bp ds-DNA circular UNK 01-JAN-1980
+FEATURES             Location/Qualifiers
+     misc_feature    complement(join(1..1,3..5,7..7))
+                     /ApEinfo_revcolor="#FF0D0D" 
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}" 
+                     /ApEinfo_label="ColE1" 
+                     /ApEinfo_fwdcolor="#FFFF12" 
+                     /label="Joined" 
+      misc_feature    9..11
+                     /ApEinfo_revcolor="#45FFA8" 
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}" 
+                     /ApEinfo_label="ColE1" 
+                     /ApEinfo_fwdcolor="#2130FF" 
+                     /label="Over1"
+      misc_feature    complement(11..18)
+                     /ApEinfo_revcolor="#F83BFF" 
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}" 
+                     /ApEinfo_label="ColE1" 
+                     /ApEinfo_fwdcolor="#FF8921" 
+                     /label="Over2"
+ORIGIN
+        1 cgtctctgac cagaccaata
+//
+EOF
+        click_button "Open File"
+
+        page.should have_content "cgtctctgaccagaccaata"
+      end
+
+      #delete
+      it 'should be able to select and delete all of a joined feature with backspace' do
+        select_from('main_editor-0', 0, 'main_editor-2', 1)
+        simulate_click('main_editor-0')
+        type(:backspace)
+        page.should have_content 'gaccagaccaata'
+      end
+
+      it 'should be able to select and delete all of a joined feature with delete' do
+        select_from('main_editor-0', 0, 'main_editor-2', 1)
+        simulate_click('main_editor-0')
+        type(:delete)
+        serialize_file()
+        page.should have_content "2..4"
+        page.should have_content "complement(4..11)"
+        page.should have_content "gaccagaccaata"
+      end
+
+      it 'should be able to select and delete the first two parts of a joined feature' do
+        select_from('main_editor-0', 0, 'main_editor-2', 0)
+        simulate_click('main_editor-0')
+        type(:delete)
+        serialize_file()
+        page.should have_content "3..5"
+        page.should have_content "complement(1..1)"
+        page.should have_content "complement(5..12)"
+        page.should have_content "tgaccagaccaata"
+      end
+
+      it 'should be able to select and delete a selection in the middle of a joined feature' do
+        select_from('main_editor-1', 1, 'main_editor-1', 2)
+        simulate_click('main_editor-0')
+        type(:delete)
+        serialize_file()
+        page.should have_content "8..10"
+        page.should have_content "complement(join(1..1,3..4,6..6))"
+        page.should have_content "complement(10..17)"
+        page.should have_content "cgttctgaccagaccaata"
+      end
+
+      it 'should be able to select and delete a selection of overlapping features' do
+        select_from('main_editor-4', 0, 'main_editor-4', 1)
+        simulate_click('main_editor-0')
+        type(:delete)
+        serialize_file()
+        page.should have_content "9..10"
+        page.should have_content "complement(join(1..1,3..5,7..7))"
+        page.should have_content "complement(11..17)"
+        page.should have_content "cgtctctgacagaccaata"
+      end
+      #copy + paste
+      it 'should be able to select and copy and paste all of a joined feature' do
+        select_from('main_editor-0', 0, 'main_editor-2', 1)
+        simulate_click('main_editor-0')
+        type(:copy)
+        set_cursor_at('main_editor-5', 5)
+        simulate_click('main_editor-5')
+        type(:paste)
+        serialize_file()
+        page.should have_content "complement(join(11..16,24..25)"
+        page.should have_content "complement(join(17..17,19..21,23..23))"
+        page.should have_content "cgtctctgaccagacccgtctctaata"
+      end
+
+      it 'should be able to select and copy and paste the first two parts of a joined feature' do
+        select_from('main_editor-0', 0, 'main_editor-2', 0)
+        simulate_click('main_editor-0')
+        type(:copy)
+        set_cursor_at('main_editor-5', 5)
+        simulate_click('main_editor-5')
+        type(:paste)
+        serialize_file()
+        page.should have_content "complement(join(11..16,23..24))"
+        page.should have_content "complement(join(17..17,19..21))"
+        page.should have_content "cgtctctgaccagacccgtctcaata"
+      end
+
+      it 'should be able to select and copy and paste a selection in the middle of a joined feature' do
+        select_from('main_editor-1', 1, 'main_editor-1', 2)
+        simulate_click('main_editor-0')
+        type(:copy)
+        set_cursor_at('main_editor-5', 5)
+        simulate_click('main_editor-5')
+        type(:paste)
+        serialize_file()
+        page.should have_content "complement(join(11..16,18..19))"
+        page.should have_content "complement(17..17)"
+        page.should have_content "cgtctctgaccagacccaata"
+      end
+
+      it 'should be able to select and copy and paste a selection of overlapping features' do
+        select_from('main_editor-4', 0, 'main_editor-4', 1)
+        simulate_click('main_editor-0')
+        type(:copy)
+        set_cursor_at('main_editor-5', 5)
+        simulate_click('main_editor-5')
+        type(:paste)
+        serialize_file()
+        page.should have_content "complement(join(11..16,18..19))"
+        page.should have_content "complement(17..17)"
+        page.should have_content "cgtctctgaccagacccaata"
+      end
+     
+      # it 'should be able to select and cut and paste a selection of overlapping features' do
+      #   select_from('main_editor-4', 0, 'main_editor-4', 1)
+      #   type(:cut)
+      #   set_cursor_at('main_editor-4', 5)
+      #   simulate_click('main_editor-4')
+      #   type(:paste)
+      #   serialize_file()
+      #   page.should have_content "complement(join(10..15,17..18))"
+      #   page.should have_content "complement(16..16)"
+      #   page.should have_content "cgtctctgacagacccaata"
+      # end
+
+      # it 'should be able to select and cut and paste all of a joined feature' do
+      #   select_from('main_editor-0', 0, 'main_editor-2', 1)
+      #   type(:cut)
+      #   set_cursor_at('main_editor-2', 5)
+      #   simulate_click('main_editor-2')
+      #   type(:paste)
+      #   serialize_file()
+      #   page.should have_content "2..4"
+      #   page.should have_content "complement(join(4..9,17..18))"
+      #   page.should have_content "complement(join(10..10,12..14,16..16))"
+      #   page.should have_content "gaccagacccgtctctaata"
+      # end
+      
+
+
     end
   end
 end

@@ -819,10 +819,14 @@ window.G.GenBank = class GenBank
   removeRanges: (featRangePairs) ->
     featsToDelete = []
     for [feat, range] in featRangePairs
-      if feat.location.ranges.length == 1
+      ranges = feat.location.ranges
+      ranges.sort (a,b) -> a.id - b.id
+      if ranges.length == 1
         featsToDelete.push(feat)
       else
-        feat.location.ranges.splice(range.id,1)
+        ranges.splice(range.id,1)
+        for r in ranges[range.id ..]
+          r.id -= 1
     @removeFeatures(featsToDelete)
 
   splitJoinedFeature: (oldFeat, start, end) ->

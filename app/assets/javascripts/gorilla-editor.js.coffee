@@ -75,7 +75,7 @@ window.G.GorillaEditor = class GorillaEditor
                 .unbind('dragover')
                 .unbind('drop')
                 .unbind('copy cut paste')
-                .unbind('mouseup keydown click focus')
+                .unbind('mouseup mousemove keydown click focus')
 
     $(@editorId).bind('input', (event) -> me.textChanged(event))
                 .keypress((event) -> me.keyPressed(event))
@@ -216,6 +216,31 @@ window.G.GorillaEditor = class GorillaEditor
     @previousFiles.push($.extend(true, {}, @file))
 
   completeEdit: ->
+    me = @
+    $(@editorId).find("*").andSelf()
+                .unbind('keypress')
+                .unbind('keydown')
+                .unbind('keyup')
+                .unbind('dragenter')
+                .unbind('dragleave')
+                .unbind('dragover')
+                .unbind('drop')
+                .unbind('copy cut paste')
+                .unbind('mouseup mousemove keydown click focus')
+
+    $(@editorId).bind('input', (event) -> me.textChanged(event))
+                .keypress((event) -> me.keyPressed(event))
+                .keydown((event) -> me.keyDown(event))
+                .keyup((event) -> me.keyUp(event))
+                .bind('mouseup mousemove keydown click focus', (event) ->
+                    setTimeout((-> me.cursorUpdate(event)), 10))
+                .bind('dragenter', (event) -> event.preventDefault())
+                .bind('dragleave', (event) -> event.preventDefault())
+                .bind('dragover', (event) -> event.preventDefault())
+                .bind('drop', (event) -> event.preventDefault())
+                .bind('copy', (event) -> me.copy(event))
+                .bind('cut', (event) -> me.cut(event))
+                .bind('paste', (event) -> me.paste(event))
     @renderNumbers()
     @file.updateSequence($(@editorId).text())
     if @debugEditor != null
@@ -302,11 +327,10 @@ window.G.GorillaEditor = class GorillaEditor
       if indicies.length == 2
         @deleteSelection(indicies)
         $(@editorId).html(@file.getAnnotatedSequence())
-        sel.collapse(true)
+        Mouse.setCaretIndex(@editorId, indicies[0])
       else
         console.error "How Dare You"
     @completeEdit()
-    # @startEditing()
 
   deleteSelection: (indicies) ->
     removalAmount = 0
@@ -386,14 +410,14 @@ window.G.GorillaEditor = class GorillaEditor
     sel = window.getSelection()
     indicies = GorillaEditor.getSelectionRange(sel)
     @trackChanges()
-    if not sel.isCollapsed
-      if indicies.length == 2
-        @deleteSelection(indicies)
 
     insert = indicies[0]
 
     #Determine which clipboard to use
-    cb = event.originalEvent.clipboardData.getData('text/plain')
+    if event.originalEvent != undefined and event.originalEvent.clipboardData != undefined
+      cb = event.originalEvent.clipboardData.getData('text/plain')
+    else
+      cb = @copiedInfo.text
     console.log("Clipboard contains: ",cb)
     console.log("Local Clipboard contains: ",@copiedInfo)
     if @copiedInfo == undefined or @copiedInfo.text != cb
@@ -473,6 +497,8 @@ window.G.GorillaEditor = class GorillaEditor
     if useFeats
       @file.addFeatures(newFeats)
     $(@editorId).html(@file.getAnnotatedSequence())
+    sel = Mouse.getCursorPosition()
+    Mouse.setCaretIndex(@editorId, indicies[0] + textToPaste.length)
     @completeEdit()
     console.groupEnd()
 
@@ -486,7 +512,8 @@ window.G.GorillaEditor = class GorillaEditor
       @deleteSelection(indicies)
       $(@editorId).html(@file.getAnnotatedSequence())
       sel.collapse(true)
-      @completeEdit()    
+      Mouse.setCaretIndex(@editorId, indicies[0])  
+      @completeEdit()  
     console.groupEnd()
 
   copy: (event) -> 
@@ -566,7 +593,8 @@ window.G.GorillaEditor = class GorillaEditor
         id:r.id
       feat.location.ranges.push(newRange)
     data = @file.getGeneSequence().substring(sIndex, eIndex + 1)
-    event.originalEvent.clipboardData.setData('text/plain',data)
+    if event.originalEvent != undefined and event.originalEvent.clipboardData != undefined
+      event.originalEvent.clipboardData.setData('text/plain',data)
     @copiedInfo =
       text:data
       features:copiedFeats
@@ -592,7 +620,6 @@ window.G.GorillaEditor = class GorillaEditor
         event.preventDefault()
         console.groupCollapsed("Handling Redo")
         @redo()
-
     else
       return
     console.groupEnd()
@@ -605,12 +632,15 @@ window.G.GorillaEditor = class GorillaEditor
     code = if event.keyCode then event.keyCode else event.which
     char = String.fromCharCode(code)
     console.groupCollapsed("Handling Key: ", char)
+    tracked = false
 
     if "agtcnACTGN".indexOf(char) != -1
       console.log("ooh, exciting!")
 
       s = Mouse.getCursorPosition()
-      if s.type = "range"
+      if s.type == "range"
+        tracked = true
+        @trackChanges()
         @deleteSelection([s.start,s.end])
         $(@editorId).html(@file.getAnnotatedSequence())
         Mouse.setCaretIndex(@editorId, s.start)
@@ -618,7 +648,8 @@ window.G.GorillaEditor = class GorillaEditor
       sel = window.getSelection()
 
       if sel.isCollapsed
-        @trackChanges()
+        if not tracked
+          @trackChanges()
 
         loc = sel.getRangeAt(0)
 
