@@ -2,10 +2,12 @@
 #= require autosave
 #= require util
 #= require local-storage
+#= require mouse
 
 window.G or= {}
 Autosave = G.Autosave
 GenBank = G.GenBank
+Mouse = G.Mouse
 
 window.G.GorillaEditor = class GorillaEditor
   @_editor_instances: {}
@@ -40,9 +42,9 @@ window.G.GorillaEditor = class GorillaEditor
     $(@editorId).html(@file.getAnnotatedSequence())
                 .addClass('gorilla-editor')
                 .find('span')
-                .unbind('mouseenter mouseleave mousemove')
-                .hover((event) -> me.showHoverDialog(event))
-                .mousemove((event) -> me.showHoverDialog(event))
+                  .unbind('mouseenter mouseleave mousemove')
+                  .hover((event) -> me.showHoverDialog(event))
+                  .mousemove((event) -> me.showHoverDialog(event))
 
     if render
         @renderNumbers('viewing')
@@ -73,6 +75,7 @@ window.G.GorillaEditor = class GorillaEditor
                 .unbind('dragleave')
                 .unbind('dragover')
                 .unbind('drop')
+                .unbind('copy cut paste')
                 .unbind('mouseup mousemove keydown click focus')
 
     $(@editorId).bind('input', (event) -> me.textChanged(event))
@@ -85,6 +88,24 @@ window.G.GorillaEditor = class GorillaEditor
                 .bind('dragleave', (event) -> event.preventDefault())
                 .bind('dragover', (event) -> event.preventDefault())
                 .bind('drop', (event) -> event.preventDefault())
+                .bind('copy', (event) -> me.copy(event))
+                .bind('cut', (event) -> me.cut(event))
+                .bind('paste', (event) -> me.paste(event))
+
+    $('#save').click ->
+      if saveURL == ""
+        notify "No Save URL Specified", "error"
+      else
+        $.ajax
+          type: "POST",
+          url: saveURL,
+          data:
+            extra: extra
+            file: me.file.serialize()
+          success: ->
+            notify "File Saved Successfully", "success"
+          error: ->
+            notify "Unable to save file", "error"
 
     G.LocalStorage.store(G.request_id, 'sequence', @file.getGeneSequence())
     G.LocalStorage.store(G.request_id, 'filename', @file.data.LOCUS.name)
@@ -110,34 +131,25 @@ window.G.GorillaEditor = class GorillaEditor
     return pos
 
   @getSelectionRange: (sel) ->
-    if sel.isCollapsed and sel.rangeCount > 0
-        loc = sel.getRangeAt(0)
-        pos = GorillaEditor.cursorPosition(loc.startOffset, loc.startContainer)
-        return [pos]
-    else if sel.rangeCount > 0
-        loc = sel.getRangeAt(0)
-        startPos = GorillaEditor.cursorPosition(loc.startOffset, loc.startContainer)
-        endPos = GorillaEditor.cursorPosition(loc.endOffset, loc.endContainer)
-        return [startPos, endPos]
+    sel = Mouse.getCursorPosition()
+    if sel.type == "caret"
+      return [sel.start]
+    else if sel.type =="range"
+      return [sel.start, sel.end]
     return []
 
   cursorUpdate: (event) ->
-    sel = window.getSelection()
-    if sel.isCollapsed and sel.rangeCount > 0
-        loc = sel.getRangeAt(0)
-        pos = GorillaEditor.cursorPosition(loc.startOffset, loc.startContainer)
-        $('#positionData').text("#{pos} <#{pos % 3}>")
-    else if sel.rangeCount > 0
-        loc = sel.getRangeAt(0)
+    sel = Mouse.getCursorPosition()
+    if sel
+      if sel.type == "caret"
+        $('#positionData').text("#{sel.start} <#{sel.start % 3}>")
+      else if sel.type == "range"
         txt = ""
-        startPos = GorillaEditor.cursorPosition(loc.startOffset, loc.startContainer)
-        txt += "Start #{startPos} &lt;#{startPos % 3}&gt; "
-        endPos = GorillaEditor.cursorPosition(loc.endOffset, loc.endContainer)
-        txt += "End #{endPos} &lt;#{endPos % 3}&gt; "
-        length = endPos - startPos
+        txt += "Start #{sel.start} &lt;#{sel.start % 3}&gt; "
+        txt += "End #{sel.end} &lt;#{sel.end % 3}&gt; "
+        length = sel.end - sel.start
         txt += "Length #{length} &lt;#{length % 3}&gt; "
-
-        dispCodons = codons = @file.getCodons(startPos, endPos)
+        dispCodons = codons = @file.getCodons(sel.start, sel.end)
 
         if codons.length > 50
             dispCodons = codons[..25] + "..." + codons[(codons.length - 25)..]
@@ -145,23 +157,23 @@ window.G.GorillaEditor = class GorillaEditor
 
         $('#positionData').html(txt)
 
-
   showHoverDialog: (event) ->
     if event.type == "mouseleave"
-        $('#hover-box').remove()
-        return
+      $('#hover-box').remove()
+      return
     if event.type == "mouseenter"
-        data = GenBank.getSpanData(event.target)
-        text = ""
-        for featureId, content of data
-            if text != ""
-                text += '<br>'
-            feat = @file.getFeatures()[featureId]
-            text += feat.parameters['/label']
-        node = $(event.target)
-        newElement = $('<div>', id: 'hover-box')
-        newElement.html(text)
-        $('body').append(newElement)
+      console.log "enter"
+      data = GenBank.getSpanData(event.target)
+      text = ""
+      for featureId, content of data
+        if text != ""
+          text += '<br>'
+        feat = @file.getFeatures()[featureId]
+        text += feat.parameters['/label']
+      node = $(event.target)
+      newElement = $('<div>', id: 'hover-box')
+      newElement.html(text)
+      $('body').append(newElement)
     $('#hover-box').css('top', event.pageY + 10)
     $('#hover-box').css('left', event.pageX + 10)
 
@@ -219,11 +231,36 @@ window.G.GorillaEditor = class GorillaEditor
     $(@numbersId).html(text)
 
   trackChanges: ->
-    @renderNumbers()
     Autosave.request(this)
     @previousFiles.push($.extend(true, {}, @file))
 
   completeEdit: ->
+    me = @
+    $(@editorId).find("*").andSelf()
+                .unbind('keypress')
+                .unbind('keydown')
+                .unbind('keyup')
+                .unbind('dragenter')
+                .unbind('dragleave')
+                .unbind('dragover')
+                .unbind('drop')
+                .unbind('copy cut paste')
+                .unbind('mouseup mousemove keydown click focus')
+
+    $(@editorId).bind('input', (event) -> me.textChanged(event))
+                .keypress((event) -> me.keyPressed(event))
+                .keydown((event) -> me.keyDown(event))
+                .keyup((event) -> me.keyUp(event))
+                .bind('mouseup mousemove keydown click focus', (event) ->
+                    setTimeout((-> me.cursorUpdate(event)), 10))
+                .bind('dragenter', (event) -> event.preventDefault())
+                .bind('dragleave', (event) -> event.preventDefault())
+                .bind('dragover', (event) -> event.preventDefault())
+                .bind('drop', (event) -> event.preventDefault())
+                .bind('copy', (event) -> me.copy(event))
+                .bind('cut', (event) -> me.cut(event))
+                .bind('paste', (event) -> me.paste(event))
+    @renderNumbers()
     @file.updateSequence($(@editorId).text())
     G.LocalStorage.store(G.request_id, 'sequence', @file.getGeneSequence())
     if @debugEditor != null
@@ -232,11 +269,10 @@ window.G.GorillaEditor = class GorillaEditor
 
   deleteAtCursor: (key = "<backspace>") ->
     sel = window.getSelection()
-
     console.log sel
 
+    @trackChanges()
     if sel.isCollapsed
-      @trackChanges()
 
       loc = sel.getRangeAt(0)
 
@@ -306,12 +342,286 @@ window.G.GorillaEditor = class GorillaEditor
         $(delme).remove()
 
       sel.addRange l
-
-      @completeEdit()
     else
-      console.error "How Dare You"
+      indicies = GorillaEditor.getSelectionRange(window.getSelection())
+      if indicies.length == 2
+        @deleteSelection(indicies)
+        $(@editorId).html(@file.getAnnotatedSequence())
+        Mouse.setCaretIndex(@editorId, indicies[0])
+      else
+        console.error "How Dare You"
+    @completeEdit()
+
+  deleteSelection: (indicies) ->
+    removalAmount = 0
+    if indicies.length == 2
+      [sIndex, eIndex] = indicies
+      @file.replaceSequence("", sIndex, eIndex)
+      removalAmount = eIndex - sIndex
+      eIndex--
+    else
+      return
+
+    handledRange = {}
+
+    @iterateOverFileRange(sIndex, sIndex, (feature, range, file) ->
+      distanceInRange = sIndex - range.start - 1
+      if sIndex != range.start
+        if feature.location.ranges.length > 1
+          hash = feature.id.toString() + ',' + range.id.toString()
+          handledRange[hash] = true
+          if eIndex > range.end
+            range.end = sIndex - 1
+          else
+            range.end -= 1 + eIndex - sIndex
+        else
+          file.splitFeatureAtInPlace(feature.id, range.id, distanceInRange))
+
+    @iterateOverFileRange(eIndex, eIndex, (feature, range, file) ->
+      distanceInRange = eIndex - range.start
+      if eIndex != range.end
+        hash = feature.id.toString() + ',' + range.id.toString()
+        if feature.location.ranges.length > 1 and not handledRange[hash]
+          handledRange[hash] = true
+          if sIndex < range.start
+            range.start = sIndex
+            range.end = sIndex - 1 + (range.end - eIndex)
+        else
+          file.splitFeatureAtInPlace(feature.id, range.id, distanceInRange))
+
+    seenFeatures = {}
+    allFeats = @file.getTableOfFeatures()
+    featRangePairs = [] 
+    for i in [sIndex .. eIndex]
+      if allFeats[i]
+        for pair in allFeats[i]
+          hash = pair.feature.id.toString() + ',' + pair.range.id.toString()
+          if not seenFeatures[hash]
+            seenFeatures[hash] = true
+            if not handledRange[hash]
+              featRangePairs.push([pair.feature, pair.range])
+    @file.removeRanges(featRangePairs)
+
+    @iterateOverFileRange(sIndex, -1 , (feature, range, file) ->
+      hash = feature.id.toString() + ',' + range.id.toString()
+      if not handledRange[hash]
+        file.advanceFeature(feature.id, range.id, -1 * removalAmount))
+
+  #Iterates over a specified range in the file
+  #if end is -1 then the range goes to the end of the file           
+  iterateOverFileRange: (start, end, funct) ->
+    seenFeatures = {}
+    allFeats = @file.getTableOfFeatures() 
+    if end == -1
+       end = allFeats.length - 1
+    if start > end
+      return
+    for i in [start .. end]
+      if allFeats[i]
+        for pair in allFeats[i]
+          hash = pair.feature.id.toString() + ',' + pair.range.id.toString()
+          if not seenFeatures[hash]
+            seenFeatures[hash] = true
+            funct(pair.feature, pair.range, @file)
+
+  paste: (event, isRevComp = false) ->
+    console.groupCollapsed("Handling Paste")
+    event.preventDefault()
+    sel = window.getSelection()
+    indicies = GorillaEditor.getSelectionRange(sel)
+    @trackChanges()
+
+    insert = indicies[0]
+
+    #Determine which clipboard to use
+    if event.originalEvent != undefined and event.originalEvent.clipboardData != undefined
+      cb = event.originalEvent.clipboardData.getData('text/plain')
+    else
+      cb = @copiedInfo.text
+    console.log("Clipboard contains: ",cb)
+    console.log("Local Clipboard contains: ",@copiedInfo)
+    if @copiedInfo == undefined or @copiedInfo.text != cb
+      #screen input
+      l = cb.length
+      filteredText = ""
+      for i in [0 ... l]
+        invalidChar = false
+        if "agtcnACTGN".indexOf(cb[i]) == -1
+          invalidChar = true
+          #need to add option here to let them remove invalid chars or to replace them with N or to cancel the paste
+          replaceWithN = false #default for the moment is to strip out invalid chars
+          if replaceWithN
+            filteredText += "N"
+        else
+          filteredText += cb[i]
+      console.log("Text is good to go!")
+      textToPaste = filteredText
+      useFeats = false
+    else
+      textToPaste = @copiedInfo.text
+      useFeats = true
+
+    #Add copied features in sorted order to the features list, modifying the ranges of each
+    if useFeats
+      end = textToPaste.length - 1
+      if isRevComp
+        for f in @copiedInfo.features
+          f.location.strand ^= 1
+          for r in f.location.ranges
+            rangeLen = r.end - r.start
+            r.start = end - rangeLen - r.start
+            r.end = end - r.start
+
+      featList = []
+      for f in @copiedInfo.features
+        featList.push(f)
+      featList.sort (a,b) -> a.id - b.id
+
+      newFeats = []
+      i = @file.getFeatures().length
+      for f in featList
+        feat = $.extend(true, {}, f)
+        feat.id = i++
+        j = 0
+        for r in feat.location.ranges
+          r.id = j++
+          r.start += insert
+          r.end += insert
+        newFeats.push(feat)
+
+
+    joined = true
+
+    allFeats = @file.getTableOfFeatures()
+    #split feats at insert
+    if insert != 0 and insert != @file.getGeneSequence().length
+      if allFeats[insert]   
+        for p in allFeats[insert]
+          f = p.feature
+          r = p.range
+          if r.start < insert
+            if joined          
+              newRange =
+                start:insert
+                end:r.end
+                id:f.location.ranges.length
+              r.end = insert - 1
+              f.location.ranges.push(newRange)
+
+    #shift all feats after insert
+    @iterateOverFileRange(insert, -1 , (feature, range, file) ->
+      file.advanceFeature(feature.id, range.id, textToPaste.length))
+
+    #update info and complete the edit
+    @file.replaceSequence(textToPaste, insert, insert)
+    if useFeats
+      @file.addFeatures(newFeats)
+    $(@editorId).html(@file.getAnnotatedSequence())
+    sel = Mouse.getCursorPosition()
+    Mouse.setCaretIndex(@editorId, indicies[0] + textToPaste.length)
+    @completeEdit()
+    console.groupEnd()
+
+  cut: (event) ->
+    console.groupCollapsed("Handling Cut")
+    @copy(event)
+    sel = window.getSelection()
+    indicies = GorillaEditor.getSelectionRange(sel)
+    if indicies.length == 2
+      @trackChanges()
+      @deleteSelection(indicies)
+      $(@editorId).html(@file.getAnnotatedSequence())
+      sel.collapse(true)
+      Mouse.setCaretIndex(@editorId, indicies[0])  
+      @completeEdit()  
+    console.groupEnd()
+
+  copy: (event) -> 
+    console.groupCollapsed("Handling Copy")
+    event.preventDefault()
+    indicies = GorillaEditor.getSelectionRange(window.getSelection())
+    @fileCopy = $.extend(true, {}, @file)
+    if indicies.length < 2
+      return
+
+    if indicies.length == 2
+      [sIndex, eIndex] = indicies
+      eIndex--
+    else
+      return
+
+    allFeats = @fileCopy.getTableOfFeatures()
+    if allFeats[sIndex]
+      for pair in allFeats[sIndex]
+        feature = pair.feature
+        range = pair.range
+        distanceInRange = sIndex - range.start - 1
+        if sIndex != range.start and feature.location.ranges.length == 1
+          @fileCopy.splitFeatureAtInPlace(feature.id, range.id, distanceInRange)
+            
+    allFeats = @fileCopy.getTableOfFeatures()
+    if allFeats[eIndex]
+        for pair in allFeats[eIndex]
+          feature = pair.feature
+          range = pair.range
+          distanceInRange = eIndex - range.start
+          if eIndex != range.end and feature.location.ranges.length == 1
+            @fileCopy.splitFeatureAtInPlace(feature.id, range.id, distanceInRange)
+
+    seenFeatures = {}
+    allFeats = @fileCopy.getTableOfFeatures()
+    for i in [sIndex .. eIndex]
+      if allFeats[i]   
+        for pair in allFeats[i] #gives us a list of feat_id, range_id
+          feature = pair.feature
+          range = pair.range
+          if not seenFeatures[feature] and feature.location.ranges.length > 1
+            seenFeatures[feature] = true
+            @fileCopy.splitJoinedFeature(feature, sIndex, eIndex)
+
+    seenFeatures = {}
+    allFeats = @fileCopy.getTableOfFeatures()
+    featRangePairs = [] 
+    for i in [sIndex .. eIndex]
+      if allFeats[i]
+        for pair in allFeats[i]
+          hash = pair.feature.id.toString() + ',' + pair.range.id.toString()
+          if not seenFeatures[hash]
+            seenFeatures[hash] = true
+            featRangePairs.push([pair.feature, pair.range])
+    
+    copiedFeatsHash = {}
+    copiedFeats = []
+    for [f,r] in featRangePairs
+      fId = f.id.toString()
+      if copiedFeatsHash[fId] == undefined
+        newRanges = []
+        newLoc = 
+          ranges:newRanges
+          strand:f.location.strand
+        newFeat = 
+          location:newLoc
+          id:f.id
+          currentFeature:f.currentFeature
+          parameters:f.parameters
+        copiedFeatsHash[fId] = newFeat
+        copiedFeats.push(newFeat)
+      feat = copiedFeatsHash[fId]
+      newRange =
+        start:r.start - sIndex
+        end:r.end - sIndex
+        id:r.id
+      feat.location.ranges.push(newRange)
+    data = @file.getGeneSequence().substring(sIndex, eIndex + 1)
+    if event.originalEvent != undefined and event.originalEvent.clipboardData != undefined
+      event.originalEvent.clipboardData.setData('text/plain',data)
+    @copiedInfo =
+      text:data
+      features:copiedFeats
+    console.groupEnd()
 
   keyDown: (event) ->
+    console.log("Key code: ", event.keyCode)
     if event.keyCode == 8
       console.groupCollapsed("Handling Backspace")
       event.preventDefault()
@@ -342,13 +652,24 @@ window.G.GorillaEditor = class GorillaEditor
     code = if event.keyCode then event.keyCode else event.which
     char = String.fromCharCode(code)
     console.groupCollapsed("Handling Key: ", char)
+    tracked = false
 
     if "agtcnACTGN".indexOf(char) != -1
       console.log("ooh, exciting!")
+
+      s = Mouse.getCursorPosition()
+      if s.type == "range"
+        tracked = true
+        @trackChanges()
+        @deleteSelection([s.start,s.end])
+        $(@editorId).html(@file.getAnnotatedSequence())
+        Mouse.setCaretIndex(@editorId, s.start)
+
       sel = window.getSelection()
 
       if sel.isCollapsed
-        @trackChanges()
+        if not tracked
+          @trackChanges()
 
         loc = sel.getRangeAt(0)
 

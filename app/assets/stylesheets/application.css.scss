@@ -12,6 +12,7 @@
  *= require_self
  *= require_tree .
  *= require jquery.ui.dialog
+ *= require jquery.contextMenu.css
  */
 
 @mixin radius($topleft, $topright: $topleft, $bottomright: $topleft, $bottomleft: $topleft) {
@@ -75,7 +76,7 @@ body {
     #header_links {
       float: right;
       padding-right: 20px;
-      padding-top: 5px;
+      padding-top: 40px;
 
       A {
         color: black;
@@ -88,6 +89,7 @@ body {
       }
     }
   }
+
 
   #user_nav {
     position: fixed;
