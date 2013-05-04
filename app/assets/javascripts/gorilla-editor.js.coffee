@@ -75,7 +75,7 @@ window.G.GorillaEditor = class GorillaEditor
                 .unbind('dragover')
                 .unbind('drop')
                 .unbind('copy cut paste')
-                .unbind('mouseup mousemove keydown click focus')
+                .unbind('mouseup keydown click focus')
 
     $(@editorId).bind('input', (event) -> me.textChanged(event))
                 .keypress((event) -> me.keyPressed(event))

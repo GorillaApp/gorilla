@@ -16,7 +16,7 @@ modifySelection = (modFunction, trackChanges = true, sel = null) ->
   else
     [sIndex, eIndex] = [0, editor.file.getGeneSequence().length]
 
-  editor = GorillaEditor.getInstance(sel.anchorNode)
+  editor = G.main_editor
   if trackChanges
     editor.trackChanges()
 
