@@ -1,2 +1,2 @@
 desc "Run all unit tests"
-task :test => [ "spec", "konacha:run" ]
+task :test => [ "coffeelint", "spec", "konacha:run" ]
