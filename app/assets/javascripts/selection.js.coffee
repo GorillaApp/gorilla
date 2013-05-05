@@ -11,6 +11,8 @@ modifySelection = (modFunction, trackChanges = true, sel = null) ->
     collapseFlag = true
 
   editor = window.G.main_editor
+
+
   if indices.length == 2
     [sIndex, eIndex] = indices
   else
@@ -26,7 +28,6 @@ modifySelection = (modFunction, trackChanges = true, sel = null) ->
 
   $(editor.editorId).html(editor.file.getAnnotatedSequence())
   editor.completeEdit()
-  editor.startEditing()
   
   if collapseFlag
     sel.collapse(true)
