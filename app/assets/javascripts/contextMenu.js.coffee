@@ -1,46 +1,63 @@
-$ ->
-  $.contextMenu
-    selector: '.editor.gorilla-editor'
-    callback: (key, options) ->
-      m = "global: " + key
-      window.console and console.log(m) or alert(m)
-    build: ->
-      window.textSelString = window.getSelection().toString()
-      window.textSel = window.G.Mouse.getCursorPosition()
+#= require mouse
 
-    items:
-      add_feature:
-        name: "Add Feature"
-        
-        callback: (key, options) ->
-          m = "Clicked Add Features" 
-          console.log(window.textSel)
-          window.G.load_features_form_with_seq(window.textSelString)
+window.G or= {}
+Mouse = G.Mouse
 
-      # rev_comp:
-      #   name: "Reverse Complement"
+class ContextMenu
+  @bind: (selector = '#main_editor .editor', autosave = false) ->
+    $.contextMenu
+      selector: selector
+      build: ->
+        ContextMenu.textSelString = window.getSelection().toString()
+        ContextMenu.textSel = Mouse.getCursorPosition()
+        return true
 
-      #   callback: (key, options) ->
-      #     window.G.modifySelection(window.G.reverseCompSelection, window.textSel)
+      events:
+        hide: ->
+          sel = ContextMenu.textSel
+          if sel.type == "range"
+            Mouse.selectIndices(selector, sel.start, sel.end)
+          delete ContextMenu.textSelString
+          delete ContextMenu.textSel
 
-      to_upper:
-        name: "To Uppercase"
+      items:
+        add_feature:
+          name: "Add Feature"
+          
+          callback: (key, options) ->
+            m = "Clicked Add Features"
+            console.log(window.textSel)
+            G.load_features_form_with_seq(ContextMenu.textSelString)
 
-        callback: (key, options) ->
-          window.G.modifySelection(window.G.toUpper, window.textSel)
+        rev_comp:
+          name: "Reverse Complement"
+          disabled: true
+          callback: (key, options) ->
+            G.modifySelection(G.reverseCompSelection, G.textSel)
 
-      to_lower:
-        name: "To Lowercase"
+        to_upper:
+          name: "To Uppercase"
+          disabled: autosave
+          callback: (key, options) ->
+            G.modifySelection(G.toUpper, true, ContextMenu.textSel)
 
-        callback: (key, options) ->
-          window.G.modifySelection(window.G.toLower, window.textSel)
+        to_lower:
+          name: "To Lowercase"
+          disabled: autosave
+          callback: (key, options) ->
+            G.modifySelection(G.toLower, true, ContextMenu.textSel)
 
-      # sep1: "---------"
-      # cut:
-      #   name: "Cut"
+        sep1: "---------"
+        cut:
+          name: "Cut"
+          disabled: true
 
-      # copy:
-      #   name: "Copy"
+        copy:
+          name: "Copy"
+          disabled: true
 
-      # paste:
-      #   name: "Paste"
+        paste:
+          name: "Paste"
+          disabled: true
+
+G.ContextMenu = ContextMenu
