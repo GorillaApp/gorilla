@@ -1,7 +1,7 @@
 #= require genbank
 #= require jquery
 
-testFile = """LOCUS       pGG001                  2559 bp ds-DNA   circular    UNK 01-JAN-1980
+testFile = """LOCUS pGG001         2559 bp ds-DNA   circular    UNK 01-JAN-1980
 DEFINITION  .
 ACCESSION   <unknown id>
 VERSION     <unknown id>
@@ -28,7 +28,7 @@ ORIGIN
 //
 """
 
-testFile2 = """LOCUS       pGG001                  2559 bp ds-DNA   circular    UNK 01-JAN-1980
+testFile2 = """LOCUS pGG001        2559 bp ds-DNA   circular    UNK 01-JAN-1980
 FEATURES             Location/Qualifiers
      misc_feature    1..10
                      /ApEinfo_revcolor="#7f7f7f"
@@ -49,8 +49,10 @@ describe 'GenBank editor', ->
     file = new G.GenBank(testFile)
     genes = file.serializeGenes()
     genes.should.contain "ORIGIN"
-    genes.should.contain "1 cgtctctgac cagaccaata aaaaacgccc ggcggcaacc gagcgttctg aacaaatcca"
-    genes.should.contain "61 gatggagttc tgaggtcatt actggatcta tcaacaggag tccaagcgag ctcgatatca"
+    genes.should.contain "1 cgtctctgac cagaccaata aaaaacgccc ggcggcaacc" +
+                         " gagcgttctg aacaaatcca"
+    genes.should.contain "61 gatggagttc tgaggtcatt actggatcta tcaacaggag " +
+                         "tccaagcgag ctcgatatca"
     genes.should.contain "//"
 
   it 'should be able to serialize features', ->
@@ -66,7 +68,10 @@ describe 'GenBank editor', ->
   it 'should annotate a simple file correctly', ->
     file = new G.GenBank(testFile2)
     features = file.getAnnotatedSequence()
-    features.should.contain "<span id='default-0' style='background-color:#7f7f7f' data-offsets='0:0' data-features='0:0'>cgtctctgac</span>cagaccaata"
+    features.should.contain "<span id='default-0' " +
+                            "style='background-color:#7f7f7f' " +
+                            "data-offsets='0:0' data-features='0:0'>" +
+                            "cgtctctgac</span>cagaccaata"
 
   describe "locations", ->
     it 'should serialize a location correctly', ->
@@ -106,7 +111,7 @@ describe 'GenBank editor', ->
     seq = "GGTggAGCTgggttCCCt"
     returned_indicies = G.GenBank.getLowerIndicies(seq, 0)
 
-    it 'should correctly return correct length of ranges of lower case indicies', ->
+    it 'should return correct length of ranges of lower case indicies', ->
 
       returned_indicies.length.should.equal 3
 
@@ -117,7 +122,7 @@ describe 'GenBank editor', ->
       returned_indicies[0].end.should.equal 4
 
   describe "check indexes method", ->
-    it 'should correctly identify all the occurences of the substring in the source', ->
+    it 'should identify all the occurences of the substring in the source', ->
       seq = "GGTggggAGCTgggttCCCt"
       find = "ggg"
 
@@ -170,16 +175,3 @@ describe 'GenBank editor', ->
 
       newFeature.location.ranges[3].start.should.equal 1399
       newFeature.location.ranges[3].end.should.equal 1399
-
-
-
-
-
-
-
-
-
-
-
-
-
