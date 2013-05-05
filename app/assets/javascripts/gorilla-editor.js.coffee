@@ -84,8 +84,9 @@ window.G.GorillaEditor = class GorillaEditor
                 .keypress((event) -> me.keyPressed(event))
                 .keydown((event) -> me.keyDown(event))
                 .keyup((event) -> me.keyUp(event))
-                .bind('mouseup mousemove keydown click focus', (event) ->
-                  setTimeout((-> me.cursorUpdate(event)), 10))
+                .bind('mouseup mousemove keydown click focus',
+                      (event) ->
+                        setTimeout((-> me.cursorUpdate(event)), 10))
                 .bind('dragenter', (event) -> event.preventDefault())
                 .bind('dragleave', (event) -> event.preventDefault())
                 .bind('dragover', (event) -> event.preventDefault())
@@ -250,8 +251,9 @@ window.G.GorillaEditor = class GorillaEditor
                 .keypress((event) -> me.keyPressed(event))
                 .keydown((event) -> me.keyDown(event))
                 .keyup((event) -> me.keyUp(event))
-                .bind('mouseup mousemove keydown click focus', (event) ->
-                  setTimeout((-> me.cursorUpdate(event)), 10))
+                .bind('mouseup mousemove keydown click focus',
+                      (event) ->
+                        setTimeout((-> me.cursorUpdate(event)), 10))
                 .bind('dragenter', (event) -> event.preventDefault())
                 .bind('dragleave', (event) -> event.preventDefault())
                 .bind('dragover', (event) -> event.preventDefault())
