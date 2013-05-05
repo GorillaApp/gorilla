@@ -1,1 +1,1 @@
-task :default => ['konacha:run', 'spec']
+task :default => 'test'

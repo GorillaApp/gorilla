@@ -142,7 +142,8 @@ window.bind_features = ->
     update_all_features_dialog()
 
   $('#featureLibrary').unbind('click').click ->
-    console.log("Making request to the backend for the list of features associated with this user")
+    console.log("Making request to the backend for the list of features " +
+                "associated with this user")
     $.get "/feature/getAll", {user_id: user}, (data) ->
 
       # data: Object (features -> Array of features)
