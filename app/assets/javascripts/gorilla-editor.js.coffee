@@ -2,6 +2,7 @@
 #= require autosave
 #= require util
 #= require mouse
+#= require mousetrap.min
 
 window.G or= {}
 Autosave = G.Autosave
@@ -94,6 +95,7 @@ window.G.GorillaEditor = class GorillaEditor
 
   bindEditEvents: () ->
     me = @
+    console.error("Binding")
     $(@editorId).find("*").andSelf()
                 .unbind('keypress')
                 .unbind('keydown')
@@ -103,6 +105,7 @@ window.G.GorillaEditor = class GorillaEditor
                 .unbind('dragover')
                 .unbind('drop')
                 .unbind('copy cut paste')
+                .unbind('input')
                 .unbind('mouseup mousemove keydown click focus')
 
     $(@editorId).find('span')
@@ -111,9 +114,9 @@ window.G.GorillaEditor = class GorillaEditor
                 .mousemove((event) -> me.showHoverDialog(event))
 
     $(@editorId).bind('input', (event) -> me.textChanged(event))
-                .keypress((event) -> me.keyPressed(event))
-                .keydown((event) -> me.keyDown(event))
-                .keyup((event) -> me.keyUp(event))
+                .bind('keypress', (event) -> me.keyPressed(event))
+                .bind('keydown', (event) -> me.keyDown(event))
+                .bind('keyup', (event) -> me.keyUp(event))
                 .bind('mouseup mousemove keydown click focus', (event) ->
                     setTimeout((-> me.cursorUpdate(event)), 10))
                 .bind('dragenter', (event) -> event.preventDefault())
@@ -123,6 +126,8 @@ window.G.GorillaEditor = class GorillaEditor
                 .bind('copy', (event) -> me.copy(event))
                 .bind('cut', (event) -> me.cut(event))
                 .bind('paste', (event) -> me.paste(event))
+
+    $(window).unbind('keydown').keydown((event) -> me.keyDown(event))
 
   @cursorPosition: (pos, element) ->
     if element.parentNode.tagName == "SPAN"
@@ -238,7 +243,7 @@ window.G.GorillaEditor = class GorillaEditor
     Autosave.request(this)
     @previousFiles.push($.extend(true, {}, @file))
 
-  completeEdit: ->
+  completeEdit: (rebind = false) ->
     @bindEditEvents()
     @renderNumbers()
     @file.updateSequence($(@editorId).text())
@@ -370,7 +375,7 @@ window.G.GorillaEditor = class GorillaEditor
 
     seenFeatures = {}
     allFeats = @file.getTableOfFeatures()
-    featRangePairs = [] 
+    featRangePairs = []
     for i in [sIndex .. eIndex]
       if allFeats[i]
         for pair in allFeats[i]
@@ -390,7 +395,7 @@ window.G.GorillaEditor = class GorillaEditor
   #if end is -1 then the range goes to the end of the file           
   iterateOverFileRange: (start, end, funct) ->
     seenFeatures = {}
-    allFeats = @file.getTableOfFeatures() 
+    allFeats = @file.getTableOfFeatures()
     if end == -1
        end = allFeats.length - 1
     if start > end
@@ -474,12 +479,12 @@ window.G.GorillaEditor = class GorillaEditor
     allFeats = @file.getTableOfFeatures()
     #split feats at insert
     if insert != 0 and insert != @file.getGeneSequence().length
-      if allFeats[insert]   
+      if allFeats[insert]
         for p in allFeats[insert]
           f = p.feature
           r = p.range
           if r.start < insert
-            if joined          
+            if joined
               newRange =
                 start:insert
                 end:r.end
@@ -511,11 +516,11 @@ window.G.GorillaEditor = class GorillaEditor
       @deleteSelection(indicies)
       $(@editorId).html(@file.getAnnotatedSequence())
       sel.collapse(true)
-      Mouse.setCaretIndex(@editorId, indicies[0])  
-      @completeEdit()  
+      Mouse.setCaretIndex(@editorId, indicies[0])
+      @completeEdit()
     console.groupEnd()
 
-  copy: (event) -> 
+  copy: (event) ->
     console.groupCollapsed("Handling Copy")
     event.preventDefault()
     indicies = GorillaEditor.getSelectionRange(window.getSelection())
@@ -550,7 +555,7 @@ window.G.GorillaEditor = class GorillaEditor
     seenFeatures = {}
     allFeats = @fileCopy.getTableOfFeatures()
     for i in [sIndex .. eIndex]
-      if allFeats[i]   
+      if allFeats[i]
         for pair in allFeats[i] #gives us a list of feat_id, range_id
           feature = pair.feature
           range = pair.range
@@ -560,7 +565,7 @@ window.G.GorillaEditor = class GorillaEditor
 
     seenFeatures = {}
     allFeats = @fileCopy.getTableOfFeatures()
-    featRangePairs = [] 
+    featRangePairs = []
     for i in [sIndex .. eIndex]
       if allFeats[i]
         for pair in allFeats[i]
@@ -575,10 +580,10 @@ window.G.GorillaEditor = class GorillaEditor
       fId = f.id.toString()
       if copiedFeatsHash[fId] == undefined
         newRanges = []
-        newLoc = 
+        newLoc =
           ranges:newRanges
           strand:f.location.strand
-        newFeat = 
+        newFeat =
           location:newLoc
           id:f.id
           currentFeature:f.currentFeature
@@ -604,19 +609,23 @@ window.G.GorillaEditor = class GorillaEditor
     if event.keyCode == 8
       console.groupCollapsed("Handling Backspace")
       event.preventDefault()
+      event.stopPropagation()
       @deleteAtCursor('<backspace>')
     else if event.keyCode == 46
       console.groupCollapsed("Handling Delete")
       event.preventDefault()
+      event.stopPropagation()
       @deleteAtCursor('<delete>')
     else if event.ctrlKey
       console.log(event)
       if event.keyCode == 90
         event.preventDefault()
+        event.stopPropagation()
         console.groupCollapsed("Handling Undo")
         @undo()
       if event.keyCode == 89
         event.preventDefault()
+        event.stopPropagation()
         console.groupCollapsed("Handling Redo")
         @redo()
     else
