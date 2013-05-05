@@ -65,31 +65,7 @@ window.G.GorillaEditor = class GorillaEditor
     $(@editorId).attr('contenteditable','true')
                 .attr('spellcheck','false')
 
-
-    $(@editorId).find("*").andSelf()
-                .unbind('keypress')
-                .unbind('keydown')
-                .unbind('keyup')
-                .unbind('dragenter')
-                .unbind('dragleave')
-                .unbind('dragover')
-                .unbind('drop')
-                .unbind('copy cut paste')
-                .unbind('mouseup keydown click focus')
-
-    $(@editorId).bind('input', (event) -> me.textChanged(event))
-                .keypress((event) -> me.keyPressed(event))
-                .keydown((event) -> me.keyDown(event))
-                .keyup((event) -> me.keyUp(event))
-                .bind('mouseup mousemove keydown click focus', (event) ->
-                    setTimeout((-> me.cursorUpdate(event)), 10))
-                .bind('dragenter', (event) -> event.preventDefault())
-                .bind('dragleave', (event) -> event.preventDefault())
-                .bind('dragover', (event) -> event.preventDefault())
-                .bind('drop', (event) -> event.preventDefault())
-                .bind('copy', (event) -> me.copy(event))
-                .bind('cut', (event) -> me.cut(event))
-                .bind('paste', (event) -> me.paste(event))
+    @bindEditEvents()
 
     $('#save').click ->
       if saveURL == ""
@@ -115,6 +91,38 @@ window.G.GorillaEditor = class GorillaEditor
     console.log("Editor ready!")
 
     console.groupEnd()
+
+  bindEditEvents: () ->
+    me = @
+    $(@editorId).find("*").andSelf()
+                .unbind('keypress')
+                .unbind('keydown')
+                .unbind('keyup')
+                .unbind('dragenter')
+                .unbind('dragleave')
+                .unbind('dragover')
+                .unbind('drop')
+                .unbind('copy cut paste')
+                .unbind('mouseup mousemove keydown click focus')
+
+    $(@editorId).find('span')
+                .unbind('mouseenter mouseleave mousemove')
+                .hover((event) -> me.showHoverDialog(event))
+                .mousemove((event) -> me.showHoverDialog(event))
+
+    $(@editorId).bind('input', (event) -> me.textChanged(event))
+                .keypress((event) -> me.keyPressed(event))
+                .keydown((event) -> me.keyDown(event))
+                .keyup((event) -> me.keyUp(event))
+                .bind('mouseup mousemove keydown click focus', (event) ->
+                    setTimeout((-> me.cursorUpdate(event)), 10))
+                .bind('dragenter', (event) -> event.preventDefault())
+                .bind('dragleave', (event) -> event.preventDefault())
+                .bind('dragover', (event) -> event.preventDefault())
+                .bind('drop', (event) -> event.preventDefault())
+                .bind('copy', (event) -> me.copy(event))
+                .bind('cut', (event) -> me.cut(event))
+                .bind('paste', (event) -> me.paste(event))
 
   @cursorPosition: (pos, element) ->
     if element.parentNode.tagName == "SPAN"
@@ -214,7 +222,7 @@ window.G.GorillaEditor = class GorillaEditor
     $('#get-chars-wide-gorilla').remove()
     return txt.length
 
-  renderNumbers: (type, resize = false) ->
+  renderNumbers: (type = 'editing', resize = false) ->
     $(@numbersId).html('1')
     if not @chars? or resize
         @chars = @getCharsWide(type)
@@ -231,34 +239,10 @@ window.G.GorillaEditor = class GorillaEditor
     @previousFiles.push($.extend(true, {}, @file))
 
   completeEdit: ->
-    me = @
-    $(@editorId).find("*").andSelf()
-                .unbind('keypress')
-                .unbind('keydown')
-                .unbind('keyup')
-                .unbind('dragenter')
-                .unbind('dragleave')
-                .unbind('dragover')
-                .unbind('drop')
-                .unbind('copy cut paste')
-                .unbind('mouseup mousemove keydown click focus')
-
-    $(@editorId).bind('input', (event) -> me.textChanged(event))
-                .keypress((event) -> me.keyPressed(event))
-                .keydown((event) -> me.keyDown(event))
-                .keyup((event) -> me.keyUp(event))
-                .bind('mouseup mousemove keydown click focus', (event) ->
-                    setTimeout((-> me.cursorUpdate(event)), 10))
-                .bind('dragenter', (event) -> event.preventDefault())
-                .bind('dragleave', (event) -> event.preventDefault())
-                .bind('dragover', (event) -> event.preventDefault())
-                .bind('drop', (event) -> event.preventDefault())
-                .bind('copy', (event) -> me.copy(event))
-                .bind('cut', (event) -> me.cut(event))
-                .bind('paste', (event) -> me.paste(event))
+    @bindEditEvents()
     @renderNumbers()
     @file.updateSequence($(@editorId).text())
-    if @debugEditor != null
+    if @debugEditor?
       @debugEditor.file = new G.GenBank(@file.serialize())
       @debugEditor.viewFile()
 
