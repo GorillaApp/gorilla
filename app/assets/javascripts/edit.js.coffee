@@ -5,7 +5,7 @@
 #= require autosave
 #= require contextMenu
 #= require gorilla-editor
-#= require mousetrap.min
+#= require mousetrap
 
 window.G or= {}
 Autosave = G.Autosave

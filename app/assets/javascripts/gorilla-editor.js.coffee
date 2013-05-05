@@ -2,7 +2,8 @@
 #= require autosave
 #= require util
 #= require mouse
-#= require mousetrap.min
+#= require mousetrap
+#= require mousetrap-global
 
 window.G or= {}
 Autosave = G.Autosave
@@ -95,7 +96,6 @@ window.G.GorillaEditor = class GorillaEditor
 
   bindEditEvents: () ->
     me = @
-    console.error("Binding")
     $(@editorId).find("*").andSelf()
                 .unbind('keypress')
                 .unbind('keydown')
@@ -126,6 +126,10 @@ window.G.GorillaEditor = class GorillaEditor
                 .bind('copy', (event) -> me.copy(event))
                 .bind('cut', (event) -> me.cut(event))
                 .bind('paste', (event) -> me.paste(event))
+
+    Mousetrap.unbind(['ctrl+z', 'command+z', 'ctrl+y', 'command+y'])
+    Mousetrap.bindGlobal(['ctrl+z', 'command+z'], (event) -> me.undo())
+    Mousetrap.bindGlobal(['ctrl+y', 'command+y'], (event) -> me.redo())
 
     $(window).unbind('keydown').keydown((event) -> me.keyDown(event))
 
@@ -616,18 +620,6 @@ window.G.GorillaEditor = class GorillaEditor
       event.preventDefault()
       event.stopPropagation()
       @deleteAtCursor('<delete>')
-    else if event.ctrlKey
-      console.log(event)
-      if event.keyCode == 90
-        event.preventDefault()
-        event.stopPropagation()
-        console.groupCollapsed("Handling Undo")
-        @undo()
-      if event.keyCode == 89
-        event.preventDefault()
-        event.stopPropagation()
-        console.groupCollapsed("Handling Redo")
-        @redo()
     else
       return
     console.groupEnd()
