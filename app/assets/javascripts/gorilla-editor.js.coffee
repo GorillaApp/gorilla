@@ -131,8 +131,6 @@ window.G.GorillaEditor = class GorillaEditor
     Mousetrap.bindGlobal(['ctrl+z', 'command+z'], (event) -> me.undo())
     Mousetrap.bindGlobal(['ctrl+y', 'command+y'], (event) -> me.redo())
 
-    $(window).unbind('keydown').keydown((event) -> me.keyDown(event))
-
   @cursorPosition: (pos, element) ->
     if element.parentNode.tagName == "SPAN"
         element = element.parentNode
