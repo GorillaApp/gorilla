@@ -173,6 +173,7 @@ window.G.GorillaEditor = class GorillaEditor
       $('#hover-box').remove()
       return
     if event.type == "mouseenter"
+      $('#hover-box').remove()
       console.log "enter"
       data = GenBank.getSpanData(event.target)
       text = ""
