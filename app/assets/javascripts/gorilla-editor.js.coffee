@@ -2,6 +2,8 @@
 #= require autosave
 #= require util
 #= require mouse
+#= require mousetrap
+#= require mousetrap-global
 
 window.G or= {}
 Autosave = G.Autosave
@@ -68,32 +70,7 @@ window.G.GorillaEditor = class GorillaEditor
     $(@editorId).attr('contenteditable','true')
                 .attr('spellcheck','false')
 
-
-    $(@editorId).find("*").andSelf()
-                .unbind('keypress')
-                .unbind('keydown')
-                .unbind('keyup')
-                .unbind('dragenter')
-                .unbind('dragleave')
-                .unbind('dragover')
-                .unbind('drop')
-                .unbind('copy cut paste')
-                .unbind('mouseup keydown click focus')
-
-    $(@editorId).bind('input', (event) -> me.textChanged(event))
-                .keypress((event) -> me.keyPressed(event))
-                .keydown((event) -> me.keyDown(event))
-                .keyup((event) -> me.keyUp(event))
-                .bind('mouseup mousemove keydown click focus',
-                      (event) ->
-                        setTimeout((-> me.cursorUpdate(event)), 10))
-                .bind('dragenter', (event) -> event.preventDefault())
-                .bind('dragleave', (event) -> event.preventDefault())
-                .bind('dragover', (event) -> event.preventDefault())
-                .bind('drop', (event) -> event.preventDefault())
-                .bind('copy', (event) -> me.copy(event))
-                .bind('cut', (event) -> me.cut(event))
-                .bind('paste', (event) -> me.paste(event))
+    @bindEditEvents()
 
     $('#save').click ->
       if saveURL == ""
@@ -119,6 +96,44 @@ window.G.GorillaEditor = class GorillaEditor
     console.log("Editor ready!")
 
     console.groupEnd()
+
+  bindEditEvents: () ->
+    me = @
+    $(@editorId).find("*").andSelf()
+                .unbind('keypress')
+                .unbind('keydown')
+                .unbind('keyup')
+                .unbind('dragenter')
+                .unbind('dragleave')
+                .unbind('dragover')
+                .unbind('drop')
+                .unbind('copy cut paste')
+                .unbind('input')
+                .unbind('mouseup mousemove keydown click focus')
+
+    $(@editorId).find('span')
+                .unbind('mouseenter mouseleave mousemove')
+                .hover((event) -> me.showHoverDialog(event))
+                .mousemove((event) -> me.showHoverDialog(event))
+
+    $(@editorId).bind('input', (event) -> me.textChanged(event))
+                .bind('keypress', (event) -> me.keyPressed(event))
+                .bind('keydown', (event) -> me.keyDown(event))
+                .bind('keyup', (event) -> me.keyUp(event))
+                .bind('mouseup mousemove keydown click focus',
+                      (event) ->
+                        setTimeout((-> me.cursorUpdate(event)), 10))
+                .bind('dragenter', (event) -> event.preventDefault())
+                .bind('dragleave', (event) -> event.preventDefault())
+                .bind('dragover', (event) -> event.preventDefault())
+                .bind('drop', (event) -> event.preventDefault())
+                .bind('copy', (event) -> me.copy(event))
+                .bind('cut', (event) -> me.cut(event))
+                .bind('paste', (event) -> me.paste(event))
+
+    Mousetrap.unbind(['ctrl+z', 'command+z', 'ctrl+y', 'command+y'])
+    Mousetrap.bindGlobal(['ctrl+z', 'command+z'], (event) -> me.undo())
+    Mousetrap.bindGlobal(['ctrl+y', 'command+y'], (event) -> me.redo())
 
   @cursorPosition: (pos, element) ->
     if element.parentNode.tagName == "SPAN"
@@ -162,6 +177,7 @@ window.G.GorillaEditor = class GorillaEditor
       $('#hover-box').remove()
       return
     if event.type == "mouseenter"
+      $('#hover-box').remove()
       console.log "enter"
       data = GenBank.getSpanData(event.target)
       text = ""
@@ -218,7 +234,7 @@ window.G.GorillaEditor = class GorillaEditor
     $('#get-chars-wide-gorilla').remove()
     return txt.length
 
-  renderNumbers: (type, resize = false) ->
+  renderNumbers: (type = 'editing', resize = false) ->
     $(@numbersId).html('1')
     if not @chars? or resize
       @chars = @getCharsWide(type)
@@ -234,36 +250,11 @@ window.G.GorillaEditor = class GorillaEditor
     Autosave.request(this)
     @previousFiles.push($.extend(true, {}, @file))
 
-  completeEdit: ->
-    me = @
-    $(@editorId).find("*").andSelf()
-                .unbind('keypress')
-                .unbind('keydown')
-                .unbind('keyup')
-                .unbind('dragenter')
-                .unbind('dragleave')
-                .unbind('dragover')
-                .unbind('drop')
-                .unbind('copy cut paste')
-                .unbind('mouseup mousemove keydown click focus')
-
-    $(@editorId).bind('input', (event) -> me.textChanged(event))
-                .keypress((event) -> me.keyPressed(event))
-                .keydown((event) -> me.keyDown(event))
-                .keyup((event) -> me.keyUp(event))
-                .bind('mouseup mousemove keydown click focus',
-                      (event) ->
-                        setTimeout((-> me.cursorUpdate(event)), 10))
-                .bind('dragenter', (event) -> event.preventDefault())
-                .bind('dragleave', (event) -> event.preventDefault())
-                .bind('dragover', (event) -> event.preventDefault())
-                .bind('drop', (event) -> event.preventDefault())
-                .bind('copy', (event) -> me.copy(event))
-                .bind('cut', (event) -> me.cut(event))
-                .bind('paste', (event) -> me.paste(event))
+  completeEdit: (rebind = false) ->
+    @bindEditEvents()
     @renderNumbers()
     @file.updateSequence($(@editorId).text())
-    if @debugEditor != null
+    if @debugEditor?
       @debugEditor.file = new G.GenBank(@file.serialize())
       @debugEditor.viewFile()
 
@@ -630,21 +621,13 @@ window.G.GorillaEditor = class GorillaEditor
     if event.keyCode == 8
       console.groupCollapsed("Handling Backspace")
       event.preventDefault()
+      event.stopPropagation()
       @deleteAtCursor('<backspace>')
     else if event.keyCode == 46
       console.groupCollapsed("Handling Delete")
       event.preventDefault()
+      event.stopPropagation()
       @deleteAtCursor('<delete>')
-    else if event.ctrlKey
-      console.log(event)
-      if event.keyCode == 90
-        event.preventDefault()
-        console.groupCollapsed("Handling Undo")
-        @undo()
-      if event.keyCode == 89
-        event.preventDefault()
-        console.groupCollapsed("Handling Redo")
-        @redo()
     else
       return
     console.groupEnd()
