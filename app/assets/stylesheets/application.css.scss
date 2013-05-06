@@ -12,6 +12,7 @@
  *= require_self
  *= require_tree .
  *= require jquery.ui.dialog
+ *= require jquery.contextMenu.css
  */
 
 @mixin radius($topleft, $topright: $topleft, $bottomright: $topleft, $bottomleft: $topleft) {

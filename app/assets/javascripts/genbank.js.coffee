@@ -1,9 +1,3 @@
-if !String.prototype.format
-  String.prototype.format = () ->
-    args = arguments
-    return this.replace /{(\d+)}/g, (match, number) ->
-        return if (typeof args[number] != 'undefined') then args[number] else match
-
 String.prototype.padBy = (length) ->
   pad = length - this.length
   retval = this
@@ -82,7 +76,8 @@ window.G.GenBank = class GenBank
     console.groupEnd()
 
   annotateOld: (sequence, start, end, color, name, spanId, featureId) ->
-    console.groupCollapsed("Adding annotation #{featureId}-#{spanId} to sequence: (#{start}..#{end})")
+    console.groupCollapsed("Adding annotation #{featureId}-#{spanId} " +
+                           "to sequence: (#{start}..#{end})")
     if typeof(start) != "number"
       start = parseInt(start) - 1
     if typeof(end) != "number"
@@ -113,19 +108,21 @@ window.G.GenBank = class GenBank
     end = sequence[endix+1..]
     mid = sequence[startix..endix]
     console.groupEnd()
-    beg + "<span id='#{name}-#{featureId}-#{spanId}-#{@id}' class='#{name}-#{featureId}' style='background-color:#{color}'>" + mid + "</span>" + end
+    beg + "<span id='#{name}-#{featureId}-#{spanId}-#{@id}' " +
+          "class='#{name}-#{featureId}' style='background-color:#{color}'>" +
+          mid + "</span>" + end
 
   getCodons: (start, end) ->
     txt = @getGeneSequence()[start...end].toLowerCase()
     codons = ""
     while txt.length >= 3
-        selection = txt[..2].replace(/t/g, 'u')
-        cod = GenBank.codons[selection]
-        if cod?
-            codons += cod
-        else
-            codons += 'X'
-        txt = txt[3..]
+      selection = txt[..2].replace(/t/g, 'u')
+      cod = GenBank.codons[selection]
+      if cod?
+        codons += cod
+      else
+        codons += 'X'
+      txt = txt[3..]
     return codons
 
   annotateFeature: (seq, feature) ->
@@ -135,12 +132,14 @@ window.G.GenBank = class GenBank
       color = feature.parameters["/ApEinfo_revcolor"]
     name = feature.parameters["/label"]
     for span in feature.location.ranges
-      seq = @annotateOld(seq, span.start, span.end, color, name, span.id, feature.id)
+      seq = @annotateOld(seq, span.start, span.end, color, name, span.id,
+                         feature.id)
     console.groupEnd()
     seq
 
   annotate: (sequence, start, end, color, features, id) ->
-    console.groupCollapsed("Adding annotation #{id} to sequence: (#{start}..#{end})")
+    console.groupCollapsed("Adding annotation #{id} " +
+                           "to sequence: (#{start}..#{end})")
     if typeof(start) != "number"
       start = parseInt(start) - 1
     if typeof(end) != "number"
@@ -173,17 +172,19 @@ window.G.GenBank = class GenBank
     data_features = ""
     data_offsets = ""
     for parts in features
-        feat = parts.feature
-        span = parts.range
-        offset = start - span.start
-        if data_features != ""
-            data_features += ","
-            data_offsets += ","
-        data_features += "#{feat.id}:#{span.id}"
-        data_offsets += "#{feat.id}:#{offset}"
+      feat = parts.feature
+      span = parts.range
+      offset = start - span.start
+      if data_features != ""
+        data_features += ","
+        data_offsets += ","
+      data_features += "#{feat.id}:#{span.id}"
+      data_offsets += "#{feat.id}:#{offset}"
 
     console.groupEnd()
-    beg + "<span id='#{@id}-#{id}' style='background-color:#{color}' data-offsets='#{data_offsets}' data-features='#{data_features}'>" + mid + "</span>" + end
+    beg + "<span id='#{@id}-#{id}' style='background-color:#{color}' " +
+          "data-offsets='#{data_offsets}' data-features='#{data_features}'>" +
+          mid + "</span>" + end
 
   annotateRange: (seq, range, i = 0) ->
     console.groupCollapsed("Annotating range: ", range)
@@ -193,9 +194,10 @@ window.G.GenBank = class GenBank
     console.log("The feature: ", feat, "is on top")
     color = feat.parameters['/ApEinfo_fwdcolor']
     if feat.location.strand == 1
-        color = feat.parameters['/ApEinfo_revcolor']
+      color = feat.parameters['/ApEinfo_revcolor']
     name = feat.parameters["/label"]
-    seq = @annotate(seq, range.selection.start, range.selection.end, color, range.feats, i)
+    seq = @annotate(seq, range.selection.start, range.selection.end, color,
+                    range.feats, i)
     console.groupEnd()
     seq
 
@@ -222,9 +224,9 @@ window.G.GenBank = class GenBank
 
     # push new range
     f.location.ranges.push
-        start: newLength + 1
-        end: r.end
-        id: f.location.ranges.length
+      start: newLength + 1
+      end: r.end
+      id: f.location.ranges.length
 
     # update end point of current range
     r.end = newLength
@@ -331,11 +333,11 @@ window.G.GenBank = class GenBank
     features = @getFeatures()
     selections = new Array(seq.length)
     for feature in features
-        for range in feature.location.ranges
-            for i in [range.start..range.end] by 1
-                if selections[i] == undefined
-                    selections[i] = []
-                selections[i].push(feature: feature, range: range)
+      for range in feature.location.ranges
+        for i in [range.start..range.end] by 1
+          if selections[i] == undefined
+            selections[i] = []
+          selections[i].push(feature: feature, range: range)
     selections
 
   getAnnotatedSequence: () ->
@@ -346,30 +348,30 @@ window.G.GenBank = class GenBank
     sel = start: 0, end: 0
     i = 0
     for selection in selections
-        eq = (previous != undefined and selection != undefined)
-        if eq and (previous.length != selection.length)
+      eq = (previous != undefined and selection != undefined)
+      if eq and (previous.length != selection.length)
+        eq = false
+      if eq
+        for j in [0...selection.length]
+          s = selection[j]
+          p = previous[j]
+          if s.range != p.range or s.feature != p.feature
             eq = false
-        if eq
-            for j in [0...selection.length]
-                s = selection[j]
-                p = previous[j]
-                if s.range != p.range or s.feature != p.feature
-                    eq = false
-        if eq
-            sel.end = i
-        else
-            if previous != undefined
-                ranges.push(feats: previous, selection: sel)
-            previous = selection
-            sel = start: i, end: i
-        i += 1
+      if eq
+        sel.end = i
+      else
+        if previous != undefined
+          ranges.push(feats: previous, selection: sel)
+        previous = selection
+        sel = start: i, end: i
+      i += 1
     if previous != undefined
-        ranges.push(feats: previous, selection: sel)
+      ranges.push(feats: previous, selection: sel)
 
     rangeId = 0
     for range in ranges
-        seq = @annotateRange(seq, range, rangeId)
-        rangeId += 1
+      seq = @annotateRange(seq, range, rangeId)
+      rangeId += 1
 
     # for feature in features
       # seq = @annotateFeature(seq, feature)
@@ -432,9 +434,11 @@ window.G.GenBank = class GenBank
       features = "FEATURES             Location/Qualifiers" + @newline
       for feat in feats
         if feat.location.ranges.length > 0
-          features += "     " + feat.currentFeature.padBy(16) + GenBank.serializeLocation(feat.location) + @newline
+          features += "     " + feat.currentFeature.padBy(16) +
+                      GenBank.serializeLocation(feat.location) + @newline
           for own key, value of feat.parameters
-            features += "                     " + "#{key}=\"#{value}\" " + @newline
+            features += "                     " + "#{key}=\"#{value}\" " +
+                        @newline
     console.groupEnd()
     features
 
@@ -447,18 +451,18 @@ window.G.GenBank = class GenBank
     genes = @getGeneSequence()
     num_iter = Math.ceil(genes.length / (count+increment))
     for i in [0...num_iter] by 1
-        leading_num = i*increment + 1
-        num_digits = Math.floor(Math.log(leading_num) / Math.LN10) + 1
-        for spaces in [0...offset - num_digits] by 1
-            serialized += " "
-        serialized += leading_num.toString()
+      leading_num = i*increment + 1
+      num_digits = Math.floor(Math.log(leading_num) / Math.LN10) + 1
+      for spaces in [0...offset - num_digits] by 1
         serialized += " "
+      serialized += leading_num.toString()
+      serialized += " "
 
-        for j in [0...increment/group_size] by 1
-            serialized += genes.substring(count, count + 10)
-            serialized += " "
-            count += 10
-        serialized += @newline
+      for j in [0...increment/group_size] by 1
+        serialized += genes.substring(count, count + 10)
+        serialized += " "
+        count += 10
+      serialized += @newline
     return serialized + "// " + @newline
 
   @parseLocationData: (data) ->
@@ -564,7 +568,8 @@ window.G.GenBank = class GenBank
         result.push(i)
     result
 
-  # params: array of features, [Object, Object, Object] where each Object is a feature representation from the backend
+  # params: array of features, [Object, Object, Object] where each Object is a
+  # feature representation from the backend
   # will return an array of features that are parsed correctly
   processFeatures: (features) ->
 
@@ -579,7 +584,8 @@ window.G.GenBank = class GenBank
       # console.log("Feature Sequence", feature.sequence)
 
 
-      resultIndexes = GenBank.indexes(@data.raw_genes, feature.sequence.toLowerCase())
+      resultIndexes = GenBank.indexes(@data.raw_genes,
+                                      feature.sequence.toLowerCase())
 
       # forward match
 
@@ -589,7 +595,8 @@ window.G.GenBank = class GenBank
 
           console.log("RESULT", result)
 
-          newFeatures.push GenBank.generateNewFeatureObject(feature, 0, id, result)
+          newFeatures.push GenBank.generateNewFeatureObject(feature, 0, id,
+                                                            result)
           id = id + 1
 
       else
@@ -597,13 +604,15 @@ window.G.GenBank = class GenBank
         # check for the reverse string
         feature.sequence = feature.sequence.split("").reverse("").join("")
         # result = @searchString(feature.sequence)
-        resultIndexes = GenBank.indexes(@data.raw_genes, feature.sequence.toLowerCase())
+        resultIndexes = GenBank.indexes(@data.raw_genes,
+                                        feature.sequence.toLowerCase())
 
         for result in resultIndexes
           # reverse match
           if result > 0
 
-            newFeatures.push GenBank.generateNewFeatureObject(feature, 1, id, result)
+            newFeatures.push GenBank.generateNewFeatureObject(feature, 1, id,
+                                                              result)
             id = id + 1
 
     # add the newly generated features to the Genbank object
@@ -717,30 +726,55 @@ window.G.GenBank = class GenBank
 
     allFeatures = []
 
-    colors = {"aliceblue":"#f0f8ff","antiquewhite":"#faebd7","aqua":"#00ffff","aquamarine":"#7fffd4","azure":"#f0ffff",
-    "beige":"#f5f5dc","bisque":"#ffe4c4","black":"#000000","blanchedalmond":"#ffebcd","blue":"#0000ff","blueviolet":"#8a2be2","brown":"#a52a2a","burlywood":"#deb887",
-    "cadetblue":"#5f9ea0","chartreuse":"#7fff00","chocolate":"#d2691e","coral":"#ff7f50","cornflowerblue":"#6495ed","cornsilk":"#fff8dc","crimson":"#dc143c","cyan":"#00ffff",
-    "darkblue":"#00008b","darkcyan":"#008b8b","darkgoldenrod":"#b8860b","darkgray":"#a9a9a9","darkgreen":"#006400","darkkhaki":"#bdb76b","darkmagenta":"#8b008b","darkolivegreen":"#556b2f",
-    "darkorange":"#ff8c00","darkorchid":"#9932cc","darkred":"#8b0000","darksalmon":"#e9967a","darkseagreen":"#8fbc8f","darkslateblue":"#483d8b","darkslategray":"#2f4f4f","darkturquoise":"#00ced1",
-    "darkviolet":"#9400d3","deeppink":"#ff1493","deepskyblue":"#00bfff","dimgray":"#696969","dodgerblue":"#1e90ff",
-    "firebrick":"#b22222","floralwhite":"#fffaf0","forestgreen":"#228b22","fuchsia":"#ff00ff",
-    "gainsboro":"#dcdcdc","ghostwhite":"#f8f8ff","gold":"#ffd700","goldenrod":"#daa520","gray":"#808080","green":"#008000","greenyellow":"#adff2f",
-    "honeydew":"#f0fff0","hotpink":"#ff69b4",
-    "indianred ":"#cd5c5c","indigo ":"#4b0082","ivory":"#fffff0","khaki":"#f0e68c",
-    "lavender":"#e6e6fa","lavenderblush":"#fff0f5","lawngreen":"#7cfc00","lemonchiffon":"#fffacd","lightblue":"#add8e6","lightcoral":"#f08080","lightcyan":"#e0ffff","lightgoldenrodyellow":"#fafad2",
-    "lightgrey":"#d3d3d3","lightgreen":"#90ee90","lightpink":"#ffb6c1","lightsalmon":"#ffa07a","lightseagreen":"#20b2aa","lightskyblue":"#87cefa","lightslategray":"#778899","lightsteelblue":"#b0c4de",
-    "lightyellow":"#ffffe0","lime":"#00ff00","limegreen":"#32cd32","linen":"#faf0e6",
-    "magenta":"#ff00ff","maroon":"#800000","mediumaquamarine":"#66cdaa","mediumblue":"#0000cd","mediumorchid":"#ba55d3","mediumpurple":"#9370d8","mediumseagreen":"#3cb371","mediumslateblue":"#7b68ee",
-    "mediumspringgreen":"#00fa9a","mediumturquoise":"#48d1cc","mediumvioletred":"#c71585","midnightblue":"#191970","mintcream":"#f5fffa","mistyrose":"#ffe4e1","moccasin":"#ffe4b5",
-    "navajowhite":"#ffdead","navy":"#000080",
-    "oldlace":"#fdf5e6","olive":"#808000","olivedrab":"#6b8e23","orange":"#ffa500","orangered":"#ff4500","orchid":"#da70d6",
-    "palegoldenrod":"#eee8aa","palegreen":"#98fb98","paleturquoise":"#afeeee","palevioletred":"#d87093","papayawhip":"#ffefd5","peachpuff":"#ffdab9","peru":"#cd853f","pink":"#ffc0cb","plum":"#dda0dd","powderblue":"#b0e0e6","purple":"#800080",
-    "red":"#ff0000","rosybrown":"#bc8f8f","royalblue":"#4169e1",
-    "saddlebrown":"#8b4513","salmon":"#fa8072","sandybrown":"#f4a460","seagreen":"#2e8b57","seashell":"#fff5ee","sienna":"#a0522d","silver":"#c0c0c0","skyblue":"#87ceeb","slateblue":"#6a5acd","slategray":"#708090","snow":"#fffafa","springgreen":"#00ff7f","steelblue":"#4682b4",
-    "tan":"#d2b48c","teal":"#008080","thistle":"#d8bfd8","tomato":"#ff6347","turquoise":"#40e0d0",
-    "violet":"#ee82ee",
-    "wheat":"#f5deb3","white":"#ffffff","whitesmoke":"#f5f5f5",
-    "yellow":"#ffff00","yellowgreen":"#9acd32"}
+    colors = {"aliceblue":"#f0f8ff","antiquewhite":"#faebd7","aqua":"#00ffff",
+    "aquamarine":"#7fffd4","azure":"#f0ffff","beige":"#f5f5dc",
+    "bisque":"#ffe4c4","black":"#000000","blanchedalmond":"#ffebcd",
+    "blue":"#0000ff","blueviolet":"#8a2be2","brown":"#a52a2a",
+    "burlywood":"#deb887","cadetblue":"#5f9ea0","chartreuse":"#7fff00",
+    "chocolate":"#d2691e","coral":"#ff7f50","cornflowerblue":"#6495ed",
+    "cornsilk":"#fff8dc","crimson":"#dc143c","cyan":"#00ffff",
+    "darkblue":"#00008b","darkcyan":"#008b8b","darkgoldenrod":"#b8860b",
+    "darkgray":"#a9a9a9","darkgreen":"#006400","darkkhaki":"#bdb76b",
+    "darkmagenta":"#8b008b","darkolivegreen":"#556b2f","darkorange":"#ff8c00",
+    "darkorchid":"#9932cc","darkred":"#8b0000","darksalmon":"#e9967a",
+    "darkseagreen":"#8fbc8f","darkslateblue":"#483d8b",
+    "darkslategray":"#2f4f4f","darkturquoise":"#00ced1","darkviolet":"#9400d3",
+    "deeppink":"#ff1493","deepskyblue":"#00bfff","dimgray":"#696969",
+    "dodgerblue":"#1e90ff","firebrick":"#b22222","floralwhite":"#fffaf0",
+    "forestgreen":"#228b22","fuchsia":"#ff00ff","gainsboro":"#dcdcdc",
+    "ghostwhite":"#f8f8ff","gold":"#ffd700","goldenrod":"#daa520",
+    "gray":"#808080","green":"#008000","greenyellow":"#adff2f",
+    "honeydew":"#f0fff0","hotpink":"#ff69b4","indianred ":"#cd5c5c",
+    "indigo":"#4b0082","ivory":"#fffff0","khaki":"#f0e68c",
+    "lavender":"#e6e6fa","lavenderblush":"#fff0f5","lawngreen":"#7cfc00",
+    "lemonchiffon":"#fffacd","lightblue":"#add8e6","lightcoral":"#f08080",
+    "lightcyan":"#e0ffff","lightgoldenrodyellow":"#fafad2",
+    "lightgrey":"#d3d3d3","lightgreen":"#90ee90","lightpink":"#ffb6c1",
+    "lightsalmon":"#ffa07a","lightseagreen":"#20b2aa","lightskyblue":"#87cefa",
+    "lightslategray":"#778899","lightsteelblue":"#b0c4de",
+    "lightyellow":"#ffffe0","lime":"#00ff00","limegreen":"#32cd32",
+    "linen":"#faf0e6","magenta":"#ff00ff","maroon":"#800000",
+    "mediumaquamarine":"#66cdaa","mediumblue":"#0000cd",
+    "mediumorchid":"#ba55d3","mediumpurple":"#9370d8",
+    "mediumseagreen":"#3cb371","mediumslateblue":"#7b68ee",
+    "mediumspringgreen":"#00fa9a","mediumturquoise":"#48d1cc",
+    "mediumvioletred":"#c71585","midnightblue":"#191970","mintcream":"#f5fffa",
+    "mistyrose":"#ffe4e1","moccasin":"#ffe4b5","navajowhite":"#ffdead",
+    "navy":"#000080","oldlace":"#fdf5e6","olive":"#808000",
+    "olivedrab":"#6b8e23","orange":"#ffa500","orangered":"#ff4500",
+    "orchid":"#da70d6","palegoldenrod":"#eee8aa","palegreen":"#98fb98",
+    "paleturquoise":"#afeeee","palevioletred":"#d87093","papayawhip":"#ffefd5",
+    "peachpuff":"#ffdab9","peru":"#cd853f","pink":"#ffc0cb","plum":"#dda0dd",
+    "powderblue":"#b0e0e6","purple":"#800080","red":"#ff0000",
+    "rosybrown":"#bc8f8f","royalblue":"#4169e1","saddlebrown":"#8b4513",
+    "salmon":"#fa8072","sandybrown":"#f4a460","seagreen":"#2e8b57",
+    "seashell":"#fff5ee","sienna":"#a0522d","silver":"#c0c0c0",
+    "skyblue":"#87ceeb","slateblue":"#6a5acd","slategray":"#708090",
+    "snow":"#fffafa","springgreen":"#00ff7f","steelblue":"#4682b4",
+    "tan":"#d2b48c","teal":"#008080","thistle":"#d8bfd8","tomato":"#ff6347",
+    "turquoise":"#40e0d0","violet":"#ee82ee","wheat":"#f5deb3",
+    "white":"#ffffff","whitesmoke":"#f5f5f5","yellow":"#ffff00",
+    "yellowgreen":"#9acd32"}
 
     count = 0
     for featText in featArray
@@ -830,10 +864,10 @@ window.G.GenBank = class GenBank
   splitJoinedFeature: (oldFeat, start, end) ->
     oldFeats = @getFeatures()
     newRanges = []
-    newLoc = 
+    newLoc =
       ranges:newRanges
       strand:oldFeat.location.strand
-    newFeat = 
+    newFeat =
       location:newLoc
       id:oldFeat.id + 1
       currentFeature:oldFeat.currentFeature
@@ -844,12 +878,12 @@ window.G.GenBank = class GenBank
     i = 0
     for r in oldFeat.location.ranges
       if start <= r.end and end >= r.start
-        updateFeats = true      
+        updateFeats = true
         if start <= r.start
-          s = r.start       
+          s = r.start
           if end < r.end #shave left
             r.start = end + 1
-            e = end 
+            e = end
           else #grab whole piece
             e = r.end
             rangesToRemove.push([oldFeat, r])
@@ -857,23 +891,23 @@ window.G.GenBank = class GenBank
           s = start
           if end < r.end #grab center slice
             e = end
-            splitRange = 
+            splitRange =
               start:r.start
               end:s - 1
               id:oldFeat.location.ranges.length + i
             rangesToAdd.push(splitRange)
-            r.start = end + 1         
+            r.start = end + 1
           else #shave right
             e = r.end
             r.end = start - 1
-        newRange = 
+        newRange =
           start:s
           end:e
           id:newFeat.location.ranges.length
         newFeat.location.ranges.push(newRange)
 
 
-    if updateFeats      
+    if updateFeats
       oldFeat.location.ranges = oldFeat.location.ranges.concat(rangesToAdd)
       @removeRanges(rangesToRemove)
       #insert new feature into feats array
@@ -883,10 +917,5 @@ window.G.GenBank = class GenBank
       post = oldFeats[featId+1..]
       for feat in post
         feat.id += 1
-      pre.push newFeat     
+      pre.push newFeat
       @data.features = pre.concat post
-    
-      
-
-
-      
