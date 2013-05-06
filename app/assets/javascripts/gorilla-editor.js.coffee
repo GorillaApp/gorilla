@@ -66,6 +66,7 @@ window.G.GorillaEditor = class GorillaEditor
 
     @renderNumbers('editing')
     $(@editorId).resize((event) -> me.renderNumbers('editing', true))
+    $(window).resize((event) -> me.renderNumbers('editing', true))
 
     $(@editorId).attr('contenteditable','true')
                 .attr('spellcheck','false')
