@@ -1,11 +1,3 @@
-GIT
-  remote: git://github.com/zipcodeman/coffeelint-ruby.git
-  revision: 830c46be4855d2c9ae6c716282e76d464a34b05c
-  submodules: true
-  specs:
-    coffeelint (0.0.1)
-      coffee-script
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -56,6 +48,8 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.6.2)
+    coffeelint (0.0.1)
+      coffee-script
     colorize (0.5.8)
     daemons (1.1.9)
     devise (2.2.3)
@@ -198,7 +192,7 @@ DEPENDENCIES
   bio
   capybara
   coffee-rails (~> 3.2.1)
-  coffeelint!
+  coffeelint
   devise
   factory_girl_rails
   faker
