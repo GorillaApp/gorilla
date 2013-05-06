@@ -2,6 +2,8 @@
 #= require autosave
 #= require util
 #= require mouse
+#= require mousetrap
+#= require mousetrap-global
 
 window.G or= {}
 Autosave = G.Autosave
@@ -13,7 +15,9 @@ window.G.GorillaEditor = class GorillaEditor
 
   constructor: (@mainId, @initialDocument = '', @debugEditor = null) ->
     console.groupCollapsed("Initializing GorillaEditor: #{@mainId}")
-    $(@mainId).html('<div class="numbers"></div><div class="editor"></div><div style="clear:both;"></div>')
+    $(@mainId).html('''<div class="numbers"></div>
+                       <div class="editor"></div>
+                       <div style="clear:both;"></div>''')
               .addClass('gorilla-container')
     GorillaEditor._editor_instances[@mainId[1..]] = @
     @editorId = @mainId + ' .editor'
@@ -21,16 +25,17 @@ window.G.GorillaEditor = class GorillaEditor
     if @initialDocument != ''
       @file = new GenBank(@initialDocument, @mainId[1..])
       if @debugEditor != null
-        @debugEditor.file = new GenBank(@initialDocument, @debugEditor.editorId[1..])
+        @debugEditor.file = new GenBank(@initialDocument,
+                                        @debugEditor.editorId[1..])
         @debugEditor.startEditing()
     console.log("GorillaEditor ready!")
     console.groupEnd()
 
   @getInstance: (node) ->
     while !!node
-        if $(node).hasClass('gorilla-container')
-            return GorillaEditor._editor_instances[node.id]
-        node = node.parentNode
+      if $(node).hasClass('gorilla-container')
+        return GorillaEditor._editor_instances[node.id]
+      node = node.parentNode
 
   viewFile: (render = true) ->
     console.groupCollapsed("Preparing Editor to be viewed")
@@ -46,8 +51,8 @@ window.G.GorillaEditor = class GorillaEditor
                   .mousemove((event) -> me.showHoverDialog(event))
 
     if render
-        @renderNumbers('viewing')
-        $(window).resize((event) -> me.renderNumbers('viewing', true))
+      @renderNumbers('viewing')
+      $(window).resize((event) -> me.renderNumbers('viewing', true))
     console.log("Ready to view")
     console.groupEnd()
 
@@ -65,31 +70,7 @@ window.G.GorillaEditor = class GorillaEditor
     $(@editorId).attr('contenteditable','true')
                 .attr('spellcheck','false')
 
-
-    $(@editorId).find("*").andSelf()
-                .unbind('keypress')
-                .unbind('keydown')
-                .unbind('keyup')
-                .unbind('dragenter')
-                .unbind('dragleave')
-                .unbind('dragover')
-                .unbind('drop')
-                .unbind('copy cut paste')
-                .unbind('mouseup mousemove keydown click focus')
-
-    $(@editorId).bind('input', (event) -> me.textChanged(event))
-                .keypress((event) -> me.keyPressed(event))
-                .keydown((event) -> me.keyDown(event))
-                .keyup((event) -> me.keyUp(event))
-                .bind('mouseup mousemove keydown click focus', (event) ->
-                    setTimeout((-> me.cursorUpdate(event)), 10))
-                .bind('dragenter', (event) -> event.preventDefault())
-                .bind('dragleave', (event) -> event.preventDefault())
-                .bind('dragover', (event) -> event.preventDefault())
-                .bind('drop', (event) -> event.preventDefault())
-                .bind('copy', (event) -> me.copy(event))
-                .bind('cut', (event) -> me.cut(event))
-                .bind('paste', (event) -> me.paste(event))
+    @bindEditEvents()
 
     $('#save').click ->
       if saveURL == ""
@@ -116,14 +97,52 @@ window.G.GorillaEditor = class GorillaEditor
 
     console.groupEnd()
 
+  bindEditEvents: () ->
+    me = @
+    $(@editorId).find("*").andSelf()
+                .unbind('keypress')
+                .unbind('keydown')
+                .unbind('keyup')
+                .unbind('dragenter')
+                .unbind('dragleave')
+                .unbind('dragover')
+                .unbind('drop')
+                .unbind('copy cut paste')
+                .unbind('input')
+                .unbind('mouseup mousemove keydown click focus')
+
+    $(@editorId).find('span')
+                .unbind('mouseenter mouseleave mousemove')
+                .hover((event) -> me.showHoverDialog(event))
+                .mousemove((event) -> me.showHoverDialog(event))
+
+    $(@editorId).bind('input', (event) -> me.textChanged(event))
+                .bind('keypress', (event) -> me.keyPressed(event))
+                .bind('keydown', (event) -> me.keyDown(event))
+                .bind('keyup', (event) -> me.keyUp(event))
+                .bind('mouseup mousemove keydown click focus',
+                      (event) ->
+                        setTimeout((-> me.cursorUpdate(event)), 10))
+                .bind('dragenter', (event) -> event.preventDefault())
+                .bind('dragleave', (event) -> event.preventDefault())
+                .bind('dragover', (event) -> event.preventDefault())
+                .bind('drop', (event) -> event.preventDefault())
+                .bind('copy', (event) -> me.copy(event))
+                .bind('cut', (event) -> me.cut(event))
+                .bind('paste', (event) -> me.paste(event))
+
+    Mousetrap.unbind(['ctrl+z', 'command+z', 'ctrl+y', 'command+y'])
+    Mousetrap.bindGlobal(['ctrl+z', 'command+z'], (event) -> me.undo())
+    Mousetrap.bindGlobal(['ctrl+y', 'command+y'], (event) -> me.redo())
+
   @cursorPosition: (pos, element) ->
     if element.parentNode.tagName == "SPAN"
-        element = element.parentNode
+      element = element.parentNode
     element = element.previousSibling
 
     while !!element
-        pos += $(element).text().length
-        element = element.previousSibling
+      pos += $(element).text().length
+      element = element.previousSibling
     return pos
 
   @getSelectionRange: (sel) ->
@@ -148,7 +167,7 @@ window.G.GorillaEditor = class GorillaEditor
         dispCodons = codons = @file.getCodons(sel.start, sel.end)
 
         if codons.length > 50
-            dispCodons = codons[..25] + "..." + codons[(codons.length - 25)..]
+          dispCodons = codons[..25] + "..." + codons[(codons.length - 25)..]
         txt += "<br>" + dispCodons
 
         $('#positionData').html(txt)
@@ -158,6 +177,7 @@ window.G.GorillaEditor = class GorillaEditor
       $('#hover-box').remove()
       return
     if event.type == "mouseenter"
+      $('#hover-box').remove()
       console.log "enter"
       data = GenBank.getSpanData(event.target)
       text = ""
@@ -206,59 +226,35 @@ window.G.GorillaEditor = class GorillaEditor
     node.text(txt)
     hei = node.height()
     while hei >= node.height() and txt.length < 2000
-        txt += 'aaaaaaa'
-        node.text(txt)
+      txt += 'aaaaaaa'
+      node.text(txt)
     while hei < node.height() and txt.length > 0
-        txt = txt[1..]
-        node.text(txt)
+      txt = txt[1..]
+      node.text(txt)
     $('#get-chars-wide-gorilla').remove()
     return txt.length
 
-  renderNumbers: (type, resize = false) ->
+  renderNumbers: (type = 'editing', resize = false) ->
     $(@numbersId).html('1')
     if not @chars? or resize
-        @chars = @getCharsWide(type)
+      @chars = @getCharsWide(type)
     lines = $(@editorId).get(0).clientHeight / 16
     text = ''
     loc = 1
     for line in [0...lines]
-        text += loc + '<br>'
-        loc += @chars
+      text += loc + '<br>'
+      loc += @chars
     $(@numbersId).html(text)
 
   trackChanges: ->
     Autosave.request(this)
     @previousFiles.push($.extend(true, {}, @file))
 
-  completeEdit: ->
-    me = @
-    $(@editorId).find("*").andSelf()
-                .unbind('keypress')
-                .unbind('keydown')
-                .unbind('keyup')
-                .unbind('dragenter')
-                .unbind('dragleave')
-                .unbind('dragover')
-                .unbind('drop')
-                .unbind('copy cut paste')
-                .unbind('mouseup mousemove keydown click focus')
-
-    $(@editorId).bind('input', (event) -> me.textChanged(event))
-                .keypress((event) -> me.keyPressed(event))
-                .keydown((event) -> me.keyDown(event))
-                .keyup((event) -> me.keyUp(event))
-                .bind('mouseup mousemove keydown click focus', (event) ->
-                    setTimeout((-> me.cursorUpdate(event)), 10))
-                .bind('dragenter', (event) -> event.preventDefault())
-                .bind('dragleave', (event) -> event.preventDefault())
-                .bind('dragover', (event) -> event.preventDefault())
-                .bind('drop', (event) -> event.preventDefault())
-                .bind('copy', (event) -> me.copy(event))
-                .bind('cut', (event) -> me.cut(event))
-                .bind('paste', (event) -> me.paste(event))
+  completeEdit: (rebind = false) ->
+    @bindEditEvents()
     @renderNumbers()
     @file.updateSequence($(@editorId).text())
-    if @debugEditor != null
+    if @debugEditor?
       @debugEditor.file = new G.GenBank(@file.serialize())
       @debugEditor.viewFile()
 
@@ -279,16 +275,16 @@ window.G.GorillaEditor = class GorillaEditor
       if key == "<delete>"
         console.log element.length, caretPosition
         if element.length <= caretPosition
-            caretPosition = 0
-            if pe.tagName == "SPAN"
-                element = pe
+          caretPosition = 0
+          if pe.tagName == "SPAN"
+            element = pe
+          element = element.nextSibling
+          pe = element.parentNode
+          while element.nodeName == "#text" and element.length == 0
             element = element.nextSibling
-            pe = element.parentNode
-            while element.nodeName == "#text" and element.length == 0
-                element = element.nextSibling
-            if element.tagName == "SPAN"
-                pe = element
-                element = pe.firstChild
+          if element.tagName == "SPAN"
+            pe = element
+            element = pe.firstChild
 
       removedChar = caretPosition - 1
       if key == "<delete>"
@@ -299,7 +295,7 @@ window.G.GorillaEditor = class GorillaEditor
         console.log 'caretPosition',caretPosition
         data = GenBank.getSpanData(pe)
         for featureId, content of data
-            @file.moveEndBy(featureId, content.span, -1)
+          @file.moveEndBy(featureId, content.span, -1)
         node = pe.nextSibling
       else
         node = element
@@ -308,8 +304,8 @@ window.G.GorillaEditor = class GorillaEditor
         if node.tagName == "SPAN"
           data = GenBank.getSpanData(node)
           for featureId, content of data
-              if content.offset == 0
-                  @file.advanceFeature(featureId, content.span, -1)
+            if content.offset == 0
+              @file.advanceFeature(featureId, content.span, -1)
         node = node.nextSibling
 
       sel.removeAllRanges()
@@ -321,7 +317,7 @@ window.G.GorillaEditor = class GorillaEditor
       if removedChar == 0
         if element.tagName != "SPAN"
           if not $(element.parentNode).hasClass('editor')
-              element = element.parentNode
+            element = element.parentNode
         if element.innerHTML?.length == 0
           delme = element
         element = element.previousSibling
@@ -386,7 +382,7 @@ window.G.GorillaEditor = class GorillaEditor
 
     seenFeatures = {}
     allFeats = @file.getTableOfFeatures()
-    featRangePairs = [] 
+    featRangePairs = []
     for i in [sIndex .. eIndex]
       if allFeats[i]
         for pair in allFeats[i]
@@ -403,12 +399,12 @@ window.G.GorillaEditor = class GorillaEditor
         file.advanceFeature(feature.id, range.id, -1 * removalAmount))
 
   #Iterates over a specified range in the file
-  #if end is -1 then the range goes to the end of the file           
+  #if end is -1 then the range goes to the end of the file
   iterateOverFileRange: (start, end, funct) ->
     seenFeatures = {}
-    allFeats = @file.getTableOfFeatures() 
+    allFeats = @file.getTableOfFeatures()
     if end == -1
-       end = allFeats.length - 1
+      end = allFeats.length - 1
     if start > end
       return
     for i in [start .. end]
@@ -433,7 +429,8 @@ window.G.GorillaEditor = class GorillaEditor
     insert = s.start
 
     #Determine which clipboard to use
-    if event.originalEvent != undefined and event.originalEvent.clipboardData != undefined
+    if event.originalEvent != undefined and
+       event.originalEvent.clipboardData != undefined
       cb = event.originalEvent.clipboardData.getData('text/plain')
     else
       cb = @copiedInfo.text
@@ -447,8 +444,10 @@ window.G.GorillaEditor = class GorillaEditor
         invalidChar = false
         if "agtcnACTGN".indexOf(cb[i]) == -1
           invalidChar = true
-          #need to add option here to let them remove invalid chars or to replace them with N or to cancel the paste
-          replaceWithN = false #default for the moment is to strip out invalid chars
+          # need to add option here to let them remove invalid chars or to
+          # replace them with N or to cancel the paste
+          replaceWithN = false # default for the moment is to strip out invalid
+                               # chars
           if replaceWithN
             filteredText += "N"
         else
@@ -460,7 +459,8 @@ window.G.GorillaEditor = class GorillaEditor
       textToPaste = @copiedInfo.text
       useFeats = true
 
-    #Add copied features in sorted order to the features list, modifying the ranges of each
+    # Add copied features in sorted order to the features list, modifying the
+    # ranges of each
     if useFeats
       end = textToPaste.length - 1
       if isRevComp
@@ -494,12 +494,12 @@ window.G.GorillaEditor = class GorillaEditor
     allFeats = @file.getTableOfFeatures()
     #split feats at insert
     if insert != 0 and insert != @file.getGeneSequence().length
-      if allFeats[insert]   
+      if allFeats[insert]
         for p in allFeats[insert]
           f = p.feature
           r = p.range
           if r.start < insert
-            if joined          
+            if joined
               newRange =
                 start:insert
                 end:r.end
@@ -530,11 +530,11 @@ window.G.GorillaEditor = class GorillaEditor
       @deleteSelection(indicies)
       $(@editorId).html(@file.getAnnotatedSequence())
       sel.collapse(true)
-      Mouse.setCaretIndex(@editorId, indicies[0])  
-      @completeEdit()  
+      Mouse.setCaretIndex(@editorId, indicies[0])
+      @completeEdit()
     console.groupEnd()
 
-  copy: (event) -> 
+  copy: (event) ->
     console.groupCollapsed("Handling Copy")
     event.preventDefault()
     indicies = GorillaEditor.getSelectionRange(window.getSelection())
@@ -559,17 +559,17 @@ window.G.GorillaEditor = class GorillaEditor
             
     allFeats = @fileCopy.getTableOfFeatures()
     if allFeats[eIndex]
-        for pair in allFeats[eIndex]
-          feature = pair.feature
-          range = pair.range
-          distanceInRange = eIndex - range.start
-          if eIndex != range.end and feature.location.ranges.length == 1
-            @fileCopy.splitFeatureAtInPlace(feature.id, range.id, distanceInRange)
+      for pair in allFeats[eIndex]
+        feature = pair.feature
+        range = pair.range
+        distanceInRange = eIndex - range.start
+        if eIndex != range.end and feature.location.ranges.length == 1
+          @fileCopy.splitFeatureAtInPlace(feature.id, range.id, distanceInRange)
 
     seenFeatures = {}
     allFeats = @fileCopy.getTableOfFeatures()
     for i in [sIndex .. eIndex]
-      if allFeats[i]   
+      if allFeats[i]
         for pair in allFeats[i] #gives us a list of feat_id, range_id
           feature = pair.feature
           range = pair.range
@@ -579,7 +579,7 @@ window.G.GorillaEditor = class GorillaEditor
 
     seenFeatures = {}
     allFeats = @fileCopy.getTableOfFeatures()
-    featRangePairs = [] 
+    featRangePairs = []
     for i in [sIndex .. eIndex]
       if allFeats[i]
         for pair in allFeats[i]
@@ -594,10 +594,10 @@ window.G.GorillaEditor = class GorillaEditor
       fId = f.id.toString()
       if copiedFeatsHash[fId] == undefined
         newRanges = []
-        newLoc = 
+        newLoc =
           ranges:newRanges
           strand:f.location.strand
-        newFeat = 
+        newFeat =
           location:newLoc
           id:f.id
           currentFeature:f.currentFeature
@@ -611,7 +611,8 @@ window.G.GorillaEditor = class GorillaEditor
         id:r.id
       feat.location.ranges.push(newRange)
     data = @file.getGeneSequence().substring(sIndex, eIndex + 1)
-    if event.originalEvent != undefined and event.originalEvent.clipboardData != undefined
+    if event.originalEvent != undefined and
+       event.originalEvent.clipboardData != undefined
       event.originalEvent.clipboardData.setData('text/plain',data)
     @copiedInfo =
       text:data
@@ -623,21 +624,13 @@ window.G.GorillaEditor = class GorillaEditor
     if event.keyCode == 8
       console.groupCollapsed("Handling Backspace")
       event.preventDefault()
+      event.stopPropagation()
       @deleteAtCursor('<backspace>')
     else if event.keyCode == 46
       console.groupCollapsed("Handling Delete")
       event.preventDefault()
+      event.stopPropagation()
       @deleteAtCursor('<delete>')
-    else if event.ctrlKey
-      console.log(event)
-      if event.keyCode == 90
-        event.preventDefault()
-        console.groupCollapsed("Handling Undo")
-        @undo()
-      if event.keyCode == 89
-        event.preventDefault()
-        console.groupCollapsed("Handling Redo")
-        @redo()
     else
       return
     console.groupEnd()
@@ -687,13 +680,13 @@ window.G.GorillaEditor = class GorillaEditor
           features = pe.getAttribute('data-features').split(',')
           data = {}
           for offset in offsets
-              split = offset.split(':')
-              data[split[0]] or= {}
-              data[split[0]]['offset'] = parseInt(split[1])
+            split = offset.split(':')
+            data[split[0]] or= {}
+            data[split[0]]['offset'] = parseInt(split[1])
           for feature in features
-              split = feature.split(':')
-              data[split[0]] or= {}
-              data[split[0]]['span'] = parseInt(split[1])
+            split = feature.split(':')
+            data[split[0]] or= {}
+            data[split[0]]['span'] = parseInt(split[1])
 
           console.log data
 
@@ -717,13 +710,14 @@ window.G.GorillaEditor = class GorillaEditor
             data_offsets = ""
             featuresAffected = []
             for featureId, content of data
-                if data_features != ""
-                    data_features += ","
-                    data_offsets += ","
-                feat = @file.splitFeatureAt(featureId, content.span, content.offset + caretPosition - 1)
-                featuresAffected.push(feat)
-                data_features += "#{feat.new.id}:#{content.span}"
-                data_offsets += "#{feat.new.id}:0"
+              if data_features != ""
+                data_features += ","
+                data_offsets += ","
+              feat = @file.splitFeatureAt(featureId, content.span,
+                                          content.offset + caretPosition - 1)
+              featuresAffected.push(feat)
+              data_features += "#{feat.new.id}:#{content.span}"
+              data_offsets += "#{feat.new.id}:0"
 
             # Populate new span with appropriate information
             newGuy = document.createElement("SPAN")
@@ -738,28 +732,29 @@ window.G.GorillaEditor = class GorillaEditor
             # Update successive ranges if there are more than one.
             node = tn
             while !!node
-                if node.tagName == "SPAN"
-                    features = node.getAttribute('data-features').split(',')
-                    offsets = node.getAttribute('data-offsets').split(',')
-                    feats = []
-                    offs = []
-                    for feature in features
-                        split = feature.split(':')
-                        for feat in featuresAffected
-                            if parseInt(split[0]) == feat.old.id
-                                split[0] = feat.new.id
-                        feats.push(split.join(':'))
-                    node.setAttribute('data-features', feats.join(','))
+              if node.tagName == "SPAN"
+                features = node.getAttribute('data-features').split(',')
+                offsets = node.getAttribute('data-offsets').split(',')
+                feats = []
+                offs = []
+                for feature in features
+                  split = feature.split(':')
+                  for feat in featuresAffected
+                    if parseInt(split[0]) == feat.old.id
+                      split[0] = feat.new.id
+                  feats.push(split.join(':'))
+                node.setAttribute('data-features', feats.join(','))
 
-                    for offset in offsets
-                        split = offset.split(':')
-                        for feat in featuresAffected
-                            if parseInt(split[0]) == feat.old.id
-                                split[0] = feat.new.id
-                                split[1] = parseInt(split[1]) - caretPosition - data[feat.old.id].offset
-                        offs.push(split.join(':'))
-                    node.setAttribute('data-offsets', offs.join(','))
-                node = node.nextSibling
+                for offset in offsets
+                  split = offset.split(':')
+                  for feat in featuresAffected
+                    if parseInt(split[0]) == feat.old.id
+                      split[0] = feat.new.id
+                      split[1] = parseInt(split[1]) - caretPosition -
+                                 data[feat.old.id].offset
+                  offs.push(split.join(':'))
+                node.setAttribute('data-offsets', offs.join(','))
+              node = node.nextSibling
           element = tn
         else
           end = element.splitText(caretPosition)
@@ -781,11 +776,11 @@ window.G.GorillaEditor = class GorillaEditor
             data = GenBank.getSpanData(node)
 
             for featureId, content of data
-                rangeId = content.span
-                advancedFeatures[featureId] or= {}
-                if advancedFeatures[featureId][rangeId] == undefined
-                    advancedFeatures[featureId][rangeId] = true
-                    @file.advanceFeature(featureId, rangeId, 1)
+              rangeId = content.span
+              advancedFeatures[featureId] or= {}
+              if advancedFeatures[featureId][rangeId] == undefined
+                advancedFeatures[featureId][rangeId] = true
+                @file.advanceFeature(featureId, rangeId, 1)
           node = node.nextSibling
 
         @completeEdit()

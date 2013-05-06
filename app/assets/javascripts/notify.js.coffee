@@ -38,5 +38,8 @@ window.register_notifications = ->
 window.notify = (message, type="status", duration="3000" ) ->
   console.log message
   id = $(".notification DIV").length
-  $(".notification").append("<div data-duration='#{duration}' data-order='#{id}' class='#{type}'>#{message}</div>")
+  $(".notification").append("""
+    <div data-duration='#{duration}' data-order='#{id}'
+         class='#{type}'>#{message}</div>
+  """)
   register_notifications()

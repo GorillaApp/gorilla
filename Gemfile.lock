@@ -48,6 +48,8 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.6.2)
+    coffeelint (0.0.4)
+      coffee-script
     colorize (0.5.8)
     daemons (1.1.9)
     devise (2.2.3)
@@ -79,6 +81,8 @@ GEM
     jquery-ui-rails (4.0.2)
       jquery-rails
       railties (>= 3.1.0)
+    jquery_context_menu-rails (0.0.4)
+      jquery-rails
     jscolor-rails (1.4.0.1)
     json (1.7.7)
     konacha (2.6.0)
@@ -93,7 +97,7 @@ GEM
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
     mime-types (1.23)
-    multi_json (1.7.2)
+    multi_json (1.7.3)
     nokogiri (1.5.9)
     nokogiri (1.5.9-x86-mingw32)
     orm_adapter (0.4.0)
@@ -188,11 +192,13 @@ DEPENDENCIES
   bio
   capybara
   coffee-rails (~> 3.2.1)
+  coffeelint
   devise
   factory_girl_rails
   faker
   jquery-rails
   jquery-ui-rails
+  jquery_context_menu-rails
   jscolor-rails
   konacha
   nokogiri
