@@ -16,9 +16,12 @@ window.G.Autosave = class Autosave
     d = new G.GenBank(doc)
     dr = new G.GenBank(doc_restored)
 
-    if doc_restored != null and d.getAnnotatedSequence() != dr.getAnnotatedSequence()
+    if doc_restored != null and
+       d.getAnnotatedSequence() != dr.getAnnotatedSequence()
 
-      recover_autosave = confirm("You may have closed this file without saving. Would you like to recover your changes?")
+      recover_autosave = confirm("You may have closed this file without " +
+                                 "saving. Would you like to recover your " +
+                                 "changes?")
 
       if recover_autosave
         main_editor = new G.GorillaEditor(editor_selector, doc)
@@ -56,7 +59,7 @@ window.G.Autosave = class Autosave
            id: first_line,
            user: user,
            ->
-              notify("Delete Successful", 'status', 1000)
+             notify("Delete Successful", 'status', 1000)
 
   @start: (editor) ->
     $("#autosavechoice").hide()
@@ -69,5 +72,6 @@ window.G.Autosave = class Autosave
     $('#deleteAutosave').click ->
       Autosave.delete()
 
-    # I'm not sure the below line is necessary because the GorillaEditor autosaves with each change
+    # I'm not sure the below line is necessary because the GorillaEditor
+    # autosaves with each change
     # window.setInterval (-> Autosave.save(editor.file)), 10000

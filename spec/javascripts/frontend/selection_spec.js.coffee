@@ -4,26 +4,26 @@
 #= require jquery
 #= require helpers/keyboard_helper
 
-smallOverlapFile = '''LOCUS       pGG001       3 bp      ds-DNA circular UNK 01-JAN-1980
+smallOverlapFile = '''LOCUS pGG001    3 bp      ds-DNA circular UNK 01-JAN-1980
 FEATURES             Location/Qualifiers
      misc_feature    1..2
-                     /ApEinfo_revcolor="#1f1f1f" 
-                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}" 
-                     /ApEinfo_label="ColE1" 
-                     /ApEinfo_fwdcolor="#7f7f7f" 
-                     /label="ColE1" 
+                     /ApEinfo_revcolor="#1f1f1f"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}"
+                     /ApEinfo_label="ColE1"
+                     /ApEinfo_fwdcolor="#7f7f7f"
+                     /label="ColE1"
      misc_feature    2..3
-                     /ApEinfo_revcolor="#7e7e7e" 
-                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}" 
-                     /ApEinfo_label="ColE1" 
-                     /ApEinfo_fwdcolor="#6f6f6f" 
+                     /ApEinfo_revcolor="#7e7e7e"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}"
+                     /ApEinfo_label="ColE1"
+                     /ApEinfo_fwdcolor="#6f6f6f"
                      /label="ColE2"
 ORIGIN
         1 atc
 //
 '''
 
-simpleFile = '''LOCUS       pGG001                  20 bp ds-DNA   circular    UNK 01-JAN-1980
+simpleFile = '''LOCUS       pGG001   20 bp ds-DNA   circular    UNK 01-JAN-1980
 FEATURES             Location/Qualifiers
      misc_feature    5..15
                      /ApEinfo_revcolor="#1f1f1f"
@@ -53,7 +53,8 @@ describe 'selection methods', ->
     f.should.contain("5..6")
     f.should.contain("10..15")
 
-  it 'should split a feature into two upon revComp from feature into plain text', ->
+  it 'should split a feature in two upon revComp ' +
+     'from feature into plain text', ->
     file = new G.GenBank(simpleFile)
     G.reverseCompSelection([9,17],file,true)
     f = file.serialize()

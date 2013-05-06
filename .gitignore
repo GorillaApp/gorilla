@@ -29,3 +29,7 @@ public/assets/
 html/
 
 .DS_Store
+node_modules
+
+!lib/
+coffeelint-rails
