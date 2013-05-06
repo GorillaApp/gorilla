@@ -1,5 +1,7 @@
 Gorilla::Application.routes.draw do
 
+  post "save/file"
+
   devise_for :users
 
   get "feature/", :to => "feature#feature"
