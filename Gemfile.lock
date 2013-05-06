@@ -1,5 +1,5 @@
 GIT
-  remote: git://github.com/zipcodeman/coffeelint-ruby.git
+  remote: https://github.com/zipcodeman/coffeelint-ruby.git
   revision: ab4e29caa73bfc175147160e57fb4b621bfd9965
   submodules: true
   specs:

@@ -42,7 +42,7 @@ group :development, :test do
   gem 'simplecov'
   gem 'spork', '~> 0.9.0.rc'
   gem 'watchr'
-  gem 'coffeelint', :git => 'git://github.com/zipcodeman/coffeelint-ruby.git', :submodules => true
+  gem 'coffeelint', :git => 'https://github.com/zipcodeman/coffeelint-ruby.git', :submodules => true
 end
 
 # To use ActiveModel has_secure_password
