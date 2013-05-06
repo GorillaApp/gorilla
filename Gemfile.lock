@@ -1,3 +1,11 @@
+GIT
+  remote: git://github.com/zipcodeman/coffeelint-ruby.git
+  revision: ab4e29caa73bfc175147160e57fb4b621bfd9965
+  submodules: true
+  specs:
+    coffeelint (0.0.1)
+      coffee-script
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -95,7 +103,7 @@ GEM
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
     mime-types (1.23)
-    multi_json (1.7.2)
+    multi_json (1.7.3)
     nokogiri (1.5.9)
     nokogiri (1.5.9-x86-mingw32)
     orm_adapter (0.4.0)
@@ -190,6 +198,7 @@ DEPENDENCIES
   bio
   capybara
   coffee-rails (~> 3.2.1)
+  coffeelint!
   devise
   factory_girl_rails
   faker
