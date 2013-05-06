@@ -48,7 +48,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.6.2)
-    coffeelint (0.0.1)
+    coffeelint (0.0.3)
       coffee-script
     colorize (0.5.8)
     daemons (1.1.9)
