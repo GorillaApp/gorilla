@@ -12,7 +12,7 @@ def which(cmd)
 end
 
 desc "Run coffeelint"
-task :coffeelint do
+task :my_coffeelint do
   if which('coffeelint').nil?
     puts "You need to install coffeelint"
   else
