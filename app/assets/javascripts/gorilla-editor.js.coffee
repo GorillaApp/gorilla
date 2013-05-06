@@ -418,11 +418,15 @@ window.G.GorillaEditor = class GorillaEditor
   paste: (event, isRevComp = false) ->
     console.groupCollapsed("Handling Paste")
     event.preventDefault()
-    sel = window.getSelection()
-    indicies = GorillaEditor.getSelectionRange(sel)
+
     @trackChanges()
 
-    insert = indicies[0]
+    s = Mouse.getCursorPosition()
+    if s.type == "range"
+      @deleteSelection([s.start,s.end])
+      $(@editorId).html(@file.getAnnotatedSequence())
+
+    insert = s.start
 
     #Determine which clipboard to use
     if event.originalEvent != undefined and
@@ -512,8 +516,7 @@ window.G.GorillaEditor = class GorillaEditor
     if useFeats
       @file.addFeatures(newFeats)
     $(@editorId).html(@file.getAnnotatedSequence())
-    sel = Mouse.getCursorPosition()
-    Mouse.setCaretIndex(@editorId, indicies[0] + textToPaste.length)
+    Mouse.setCaretIndex(@editorId, insert + textToPaste.length)
     @completeEdit()
     console.groupEnd()
 
