@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/zipcodeman/coffeelint-ruby.git
-  revision: ab4e29caa73bfc175147160e57fb4b621bfd9965
+  revision: 830c46be4855d2c9ae6c716282e76d464a34b05c
   submodules: true
   specs:
     coffeelint (0.0.1)
