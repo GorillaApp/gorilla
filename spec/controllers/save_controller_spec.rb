@@ -2,9 +2,9 @@ require 'spec_helper'
 
 describe SaveController do
 
-  describe "GET 'file'" do
+  describe "POST 'file'" do
     it "returns http success" do
-      get 'file'
+      post 'file'
       response.should be_success
     end
   end
