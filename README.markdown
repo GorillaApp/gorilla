@@ -1,4 +1,4 @@
-# Gorilla [![Build Status](https://travis-ci.org/GorillaApp/gorilla.png?branch=master)](https://travis-ci.org/GorillaApp/gorilla)
+# Gorilla [![Build Status](https://travis-ci.org/GorillaApp/gorilla.png?branch=master)](https://travis-ci.org/GorillaApp/gorilla) [![Dependency Status](https://gemnasium.com/GorillaApp/gorilla.png)](https://gemnasium.com/GorillaApp/gorilla)
 
 Gorilla is a rails/javascript re-implementation of the biological tool
 [ApE][ape]. 
