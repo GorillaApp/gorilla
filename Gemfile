@@ -4,7 +4,7 @@ gem 'bio'
 gem 'jquery-ui-rails'
 gem 'jquery_context_menu-rails'
 gem 'jscolor-rails'
-gem 'rack', '~> 1.4.1'
+gem 'rack'
 gem 'rails', '~> 3.2.8'
 gem 'thin'
 
@@ -20,13 +20,13 @@ gem 'pg'
 # Gems used only for assets and not required
 # in production environments by default.
 group :assets do
-  gem 'sass-rails',   '~> 3.2.3'
-  gem 'coffee-rails', '~> 3.2.1'
+  gem 'sass-rails'
+  gem 'coffee-rails'
 
   # See https://github.com/sstephenson/execjs#readme for more supported runtimes
   gem 'therubyracer', :platforms => :ruby
 
-  gem 'uglifier', '>= 1.0.3'
+  gem 'uglifier'
 end
 
 gem 'jquery-rails'
@@ -40,7 +40,7 @@ group :development, :test do
   gem 'konacha'
   gem 'rspec-rails'
   gem 'simplecov'
-  gem 'spork', '~> 0.9.0.rc'
+  gem 'spork'
   gem 'watchr'
   gem 'coffeelint' # , :git => 'git://github.com/zipcodeman/coffeelint-ruby.git', :submodules => true
 end

@@ -3,10 +3,8 @@ before_install:
   - sh -e /etc/init.d/xvfb start
 
 before_script:
-  - npm install coffeelint
   - bundle exec rake db:create
   - bundle exec rake db:migrate
-  - bundle exec spork &
 
 script:
   - bundle exec rake test
