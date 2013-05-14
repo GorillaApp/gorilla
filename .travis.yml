@@ -6,6 +6,7 @@ before_script:
   - npm install coffeelint
   - bundle exec rake db:create
   - bundle exec rake db:migrate
+  - bundle exec spork &
 
 script:
   - bundle exec rake test
